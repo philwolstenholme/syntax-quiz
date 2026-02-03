@@ -43,24 +43,3 @@
   -webkit-user-select: none;
 }
 
-/* Shiki code styling */
-.shiki-container pre {
-  padding: 1.5rem;
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.7;
-}
-
-.shiki-container code {
-  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
-}
-
-/* Highlighted code decoration */
-.highlighted-code {
-  background-color: rgb(253, 224, 71) !important;
-  color: rgb(17, 24, 39) !important;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-weight: 700;
-  box-shadow: 0 0 0 2px rgb(234, 179, 8);
-}

@@ -1,34 +1,9 @@
-import { useEffect, useState } from 'react';
-import { codeToHtml } from 'shiki';
-
 export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, onDrop }) => {
-  const [highlightedCode, setHighlightedCode] = useState('');
+  const { code, highlight } = question;
 
-  useEffect(() => {
-    const highlightCode = async () => {
-      try {
-        const html = await codeToHtml(question.code, {
-          lang: 'typescript',
-          theme: 'github-dark',
-          decorations: [
-            {
-              start: question.highlight.start,
-              end: question.highlight.end,
-              properties: {
-                class: 'highlighted-code'
-              }
-            }
-          ]
-        });
-        setHighlightedCode(html);
-      } catch (error) {
-        console.error('Error highlighting code:', error);
-        setHighlightedCode(`<pre><code>${question.code}</code></pre>`);
-      }
-    };
-
-    highlightCode();
-  }, [question]);
+  const before = code.substring(0, highlight.start);
+  const highlighted = code.substring(highlight.start, highlight.end);
+  const after = code.substring(highlight.end);
 
   return (
     <div
@@ -44,7 +19,7 @@ export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, on
       <div
         className={`
           relative rounded-xl overflow-hidden transition-all duration-200
-          ${isDragOver ? 'ring-4 ring-indigo-500 scale-102' : ''}
+          ${isDragOver ? 'ring-4 ring-indigo-500 scale-[1.02]' : ''}
         `}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
@@ -57,10 +32,9 @@ export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, on
             </span>
           </div>
         )}
-        <div
-          className="shiki-container overflow-x-auto"
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
-        />
+        <pre className="bg-gray-900 p-6 rounded-xl overflow-x-auto text-base leading-relaxed">
+          <code className="font-mono text-gray-300">{before}<span className="bg-yellow-300 text-gray-900 px-1 rounded font-bold">{highlighted}</span>{after}</code>
+        </pre>
       </div>
     </div>
   );

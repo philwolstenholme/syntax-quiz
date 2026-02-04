@@ -164,7 +164,7 @@ function App() {
           disabled={isAnswering}
         />
 
-        <div className="mt-4 text-center">
+        <div className="mt-8 text-center">
           <a
             href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
             target="_blank"

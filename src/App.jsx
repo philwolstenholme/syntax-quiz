@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { shuffle } from 'es-toolkit';
 import { questions as rawQuestions } from './data/questions';
 import { vibrateCorrect, vibrateIncorrect } from './utils/vibrate';
+import { playCorrectSound, playIncorrectSound } from './utils/sounds';
 import { useViewTransition } from './hooks/useViewTransition';
 import { QuizHeader } from './components/QuizHeader';
 import { FeedbackBanner } from './components/FeedbackBanner';
@@ -38,12 +39,14 @@ function App() {
 
     if (correct) {
       vibrateCorrect();
+      playCorrectSound();
       const points = 10 * (streak + 1);
       setScore((prev) => prev + points);
       setStreak((prev) => prev + 1);
       setCorrectAnswers((prev) => prev + 1);
     } else {
       vibrateIncorrect();
+      playIncorrectSound();
       setStreak(0);
     }
 

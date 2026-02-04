@@ -1,5 +1,5 @@
 // Maps quiz terms to specific MDN documentation pages
-// Falls back to MDN search if no specific page is available
+// Falls back to multi-site search if no specific page is available
 
 const mdnBaseUrl = 'https://developer.mozilla.org/en-US';
 
@@ -35,9 +35,9 @@ const mdnPages = {
 };
 
 /**
- * Get an MDN URL for a quiz term
+ * Get a documentation URL for a quiz term
  * @param {string} term - The quiz answer term
- * @returns {string} The MDN URL (direct page or search)
+ * @returns {string} The documentation URL (direct MDN page or multi-site search)
  */
 export function getMdnUrl(term) {
   const normalizedTerm = term.toLowerCase();
@@ -46,6 +46,7 @@ export function getMdnUrl(term) {
     return `${mdnBaseUrl}${mdnPages[normalizedTerm]}`;
   }
 
-  // Fall back to MDN search for terms without specific pages
-  return `${mdnBaseUrl}/search?q=${encodeURIComponent(term)}`;
+  // Fall back to Google search across multiple JS/TS documentation sites
+  const searchQuery = `${term} AND inurl:https://developer.mozilla.org OR inurl:https://javascript.info OR inurl:https://eloquentjavascript.net OR inurl:https://exploringjs.com OR inurl:https://www.typescriptlang.org/docs`;
+  return `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
 }

@@ -2,8 +2,8 @@
 // SOUND CONFIGURATION - Change URLs here
 // ===========================================
 const SOUND_URLS = {
-  correct: 'https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3', // Happy chime
-  incorrect: 'https://cdn.freesound.org/previews/331/331912_3248244-lq.mp3', // Dull knock
+  correct: 'https://cdn.freesound.org/previews/615/615099_6890478-lq.mp3', 
+  incorrect: 'https://cdn.freesound.org/previews/625/625687_13682949-lq.mp3', // Dull knock
 };
 // ===========================================
 

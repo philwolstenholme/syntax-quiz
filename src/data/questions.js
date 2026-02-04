@@ -25,28 +25,6 @@ export const level1Questions = [
     options: ["string interpolation", "variable injection", "placeholder", "expression slot"]
   },
   {
-    code: `let count = 0;
-count = count + 1;`,
-    highlight: { start: 0, end: 3 },
-    question: "What keyword is used here?",
-    correct: "let",
-    options: ["let", "var", "const", "define"]
-  },
-  {
-    code: `const PI = 3.14159;`,
-    highlight: { start: 0, end: 5 },
-    question: "What keyword declares a constant?",
-    correct: "const",
-    options: ["const", "let", "final", "immutable"]
-  },
-  {
-    code: `import { useState } from 'react';`,
-    highlight: { start: 0, end: 6 },
-    question: "What keyword is used to bring in modules?",
-    correct: "import",
-    options: ["import", "require", "include", "load"]
-  },
-  {
     code: `import { useState } from 'react';`,
     highlight: { start: 9, end: 17 },
     question: "What is being imported here?",
@@ -94,15 +72,6 @@ const user = { name };`,
     question: "What is this syntax called?",
     correct: "JSX",
     options: ["JSX", "HTML", "XML", "template"]
-  },
-  {
-    code: `console.log('Hello');
-console.error('Error!');
-console.warn('Warning!');`,
-    highlight: { start: 0, end: 7 },
-    question: "What is this object called?",
-    correct: "console",
-    options: ["console", "logger", "output", "terminal"]
   },
   {
     code: `const colors = ['red', 'green', 'blue'];
@@ -194,16 +163,6 @@ console.log(fruits[0]);`,
     question: "What is this syntax called?",
     correct: "arrow function",
     options: ["arrow function", "lambda", "anonymous function", "inline function"]
-  },
-  {
-    code: `async function fetchData() {
-  const data = await api.get('/users');
-  return data;
-}`,
-    highlight: { start: 44, end: 49 },
-    question: "What is this keyword called?",
-    correct: "await",
-    options: ["await", "async", "promise", "defer"]
   },
   {
     code: `const point = { x: 10, y: 20 };`,
@@ -299,16 +258,6 @@ const name = user?.profile?.name;`,
     options: ["inheritance", "extension", "composition", "implementation"]
   },
   {
-    code: `interface Point {
-  readonly x: number;
-  readonly y: number;
-}`,
-    highlight: { start: 20, end: 28 },
-    question: "What is the highlighted part called?",
-    correct: "readonly",
-    options: ["readonly", "immutable", "const", "final"]
-  },
-  {
     code: `type ID = string | number;`,
     highlight: { start: 0, end: 25 },
     question: "What is this declaration called?",
@@ -316,31 +265,11 @@ const name = user?.profile?.name;`,
     options: ["type alias", "type definition", "typedef", "interface"]
   },
   {
-    code: `function log(message: string): void {
-  console.log(message);
-}`,
-    highlight: { start: 31, end: 35 },
-    question: "What does this type represent?",
-    correct: "void",
-    options: ["void", "null", "undefined", "empty"]
-  },
-  {
     code: `type Coordinates = [number, number];`,
     highlight: { start: 19, end: 35 },
     question: "What is this type called?",
     correct: "tuple",
     options: ["tuple", "array", "pair", "vector"]
-  },
-  {
-    code: `enum Color {
-  Red = 'RED',
-  Green = 'GREEN',
-  Blue = 'BLUE'
-}`,
-    highlight: { start: 0, end: 11 },
-    question: "What is this declaration called?",
-    correct: "enum",
-    options: ["enum", "enumeration", "constant", "type"]
   },
   // New Level 2 questions from glossaries
   {
@@ -494,13 +423,6 @@ const str = value as string;`,
     options: ["type assertion", "type cast", "type conversion", "type coercion"]
   },
   {
-    code: `type Keys = keyof User;`,
-    highlight: { start: 12, end: 17 },
-    question: "What is this operator called?",
-    correct: "keyof",
-    options: ["keyof", "typeof", "instanceof", "keys"]
-  },
-  {
     code: `function isString(value: unknown): value is string {
   return typeof value === 'string';
 }`,
@@ -548,13 +470,6 @@ const str = value as string;`,
     options: ["conditional type", "ternary type", "generic constraint", "mapped type"]
   },
   {
-    code: `const colors = ['red', 'green', 'blue'] as const;`,
-    highlight: { start: 40, end: 48 },
-    question: "What is this assertion called?",
-    correct: "as const",
-    options: ["as const", "readonly", "immutable", "const assertion"]
-  },
-  {
     code: `export default class App {
   render() {
     return <div>Hello</div>;
@@ -584,15 +499,6 @@ export function fetchData() { }`,
     options: ["mapped type", "conditional type", "indexed type", "generic type"]
   },
   {
-    code: `type Partial<T> = {
-  [P in keyof T]?: T[P];
-};`,
-    highlight: { start: 25, end: 27 },
-    question: "What keyword iterates over keys?",
-    correct: "in",
-    options: ["in", "of", "for", "each"]
-  },
-  {
     code: `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;`,
     highlight: { start: 51, end: 58 },
     question: "What keyword extracts a type from a pattern?",
@@ -618,15 +524,6 @@ export function fetchData() { }`,
     options: ["generic constraint", "type bound", "type limit", "interface requirement"]
   },
   {
-    code: `type Readonly<T> = {
-  readonly [P in keyof T]: T[P];
-};`,
-    highlight: { start: 23, end: 31 },
-    question: "What modifier makes properties immutable?",
-    correct: "readonly",
-    options: ["readonly", "const", "immutable", "frozen"]
-  },
-  {
     code: `type NonNullable<T> = T extends null | undefined ? never : T;`,
     highlight: { start: 49, end: 54 },
     question: "What type represents an impossible value?",
@@ -639,25 +536,6 @@ export function fetchData() { }`,
     question: "What is this type syntax called?",
     correct: "template literal type",
     options: ["template literal type", "string pattern type", "format type", "interpolated type"]
-  },
-  {
-    code: `declare module 'lodash' {
-  export function chunk<T>(arr: T[], size: number): T[][];
-}`,
-    highlight: { start: 0, end: 7 },
-    question: "What keyword is used for ambient declarations?",
-    correct: "declare",
-    options: ["declare", "define", "ambient", "external"]
-  },
-  {
-    code: `const config = {
-  api: 'https://api.com',
-  timeout: 5000
-} satisfies Config;`,
-    highlight: { start: 61, end: 70 },
-    question: "What operator validates a type without widening?",
-    correct: "satisfies",
-    options: ["satisfies", "as", "implements", "extends"]
   },
   {
     code: `type DeepReadonly<T> = {
@@ -714,15 +592,6 @@ inputRef.current?.focus();`,
     question: "What utility type removes specific properties?",
     correct: "Omit",
     options: ["Omit", "Exclude", "Remove", "Without"]
-  },
-  {
-    code: `type Required<T> = {
-  [P in keyof T]-?: T[P];
-};`,
-    highlight: { start: 37, end: 39 },
-    question: "What modifier removes optionality?",
-    correct: "-?",
-    options: ["-?", "+?", "!", "required"]
   },
   {
     code: `function useCustomHook(initialValue: number) {

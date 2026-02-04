@@ -1,4 +1,5 @@
-export const questions = [
+// Level 1 - Easy: Basic syntax concepts that beginners should know
+export const level1Questions = [
   {
     code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
@@ -51,20 +52,6 @@ greet('Alice');`,
     options: ["parentheses", "curly braces", "square brackets", "angle brackets"]
   },
   {
-    code: `const numbers: Array<number> = [1, 2, 3];`,
-    highlight: { start: 15, end: 28 },
-    question: "What is the highlighted part called?",
-    correct: "generic",
-    options: ["generic", "type parameter", "template", "type annotation"]
-  },
-  {
-    code: `type Status = 'active' | 'inactive' | 'pending';`,
-    highlight: { start: 14, end: 47 },
-    question: "What is the highlighted part called?",
-    correct: "union type",
-    options: ["union type", "intersection type", "literal type", "enum"]
-  },
-  {
     code: `interface User {
   name: string;
   age: number;
@@ -81,6 +68,55 @@ console.log(fruits[0]);`,
     question: "What is the highlighted part called?",
     correct: "index",
     options: ["index", "key", "position", "offset"]
+  },
+  {
+    code: `const add = (a, b) => a + b;`,
+    highlight: { start: 12, end: 27 },
+    question: "What is this syntax called?",
+    correct: "arrow function",
+    options: ["arrow function", "lambda", "anonymous function", "inline function"]
+  },
+  {
+    code: `async function fetchData() {
+  const data = await api.get('/users');
+  return data;
+}`,
+    highlight: { start: 44, end: 49 },
+    question: "What is this keyword called?",
+    correct: "await",
+    options: ["await", "async", "promise", "defer"]
+  },
+  {
+    code: `const point = { x: 10, y: 20 };`,
+    highlight: { start: 14, end: 30 },
+    question: "What is this syntax called?",
+    correct: "object literal",
+    options: ["object literal", "object notation", "hash", "dictionary"]
+  },
+  {
+    code: `const doubled = numbers.map(n => n * 2);`,
+    highlight: { start: 28, end: 38 },
+    question: "What is the function passed to map called?",
+    correct: "callback",
+    options: ["callback", "lambda", "handler", "delegate"]
+  }
+];
+
+// Level 2 - Medium: Intermediate TypeScript/JavaScript concepts
+export const level2Questions = [
+  {
+    code: `const numbers: Array<number> = [1, 2, 3];`,
+    highlight: { start: 15, end: 28 },
+    question: "What is the highlighted part called?",
+    correct: "generic",
+    options: ["generic", "type parameter", "template", "type annotation"]
+  },
+  {
+    code: `type Status = 'active' | 'inactive' | 'pending';`,
+    highlight: { start: 14, end: 47 },
+    question: "What is the highlighted part called?",
+    correct: "union type",
+    options: ["union type", "intersection type", "literal type", "enum"]
   },
   {
     code: `function getName(): string {
@@ -131,23 +167,6 @@ const name = user?.profile?.name;`,
     question: "What is this operator called?",
     correct: "nullish coalescing",
     options: ["nullish coalescing", "default operator", "fallback operator", "or operator"]
-  },
-  {
-    code: `const add = (a, b) => a + b;`,
-    highlight: { start: 12, end: 27 },
-    question: "What is this syntax called?",
-    correct: "arrow function",
-    options: ["arrow function", "lambda", "anonymous function", "inline function"]
-  },
-  {
-    code: `async function fetchData() {
-  const data = await api.get('/users');
-  return data;
-}`,
-    highlight: { start: 44, end: 49 },
-    question: "What is this keyword called?",
-    correct: "await",
-    options: ["await", "async", "promise", "defer"]
   },
   {
     code: `class Dog extends Animal {
@@ -203,7 +222,11 @@ const name = user?.profile?.name;`,
     question: "What is this declaration called?",
     correct: "enum",
     options: ["enum", "enumeration", "constant", "type"]
-  },
+  }
+];
+
+// Level 3 - Hard: Advanced TypeScript concepts
+export const level3Questions = [
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,
@@ -227,20 +250,6 @@ const str = value as string;`,
     question: "What is this syntax called?",
     correct: "type guard",
     options: ["type guard", "type predicate", "type check", "type assertion"]
-  },
-  {
-    code: `const point = { x: 10, y: 20 };`,
-    highlight: { start: 14, end: 30 },
-    question: "What is this syntax called?",
-    correct: "object literal",
-    options: ["object literal", "object notation", "hash", "dictionary"]
-  },
-  {
-    code: `const doubled = numbers.map(n => n * 2);`,
-    highlight: { start: 28, end: 38 },
-    question: "What is the function passed to map called?",
-    correct: "callback",
-    options: ["callback", "lambda", "handler", "delegate"]
   },
   {
     code: `class User {
@@ -305,5 +314,36 @@ export function fetchData() { }`,
     question: "What is this type of export called?",
     correct: "named export",
     options: ["named export", "explicit export", "public export", "module export"]
+  }
+];
+
+// Combined questions for backwards compatibility
+export const questions = [...level1Questions, ...level2Questions, ...level3Questions];
+
+// Level metadata
+export const levels = [
+  {
+    id: 1,
+    name: "Level 1",
+    subtitle: "Easy",
+    description: "Basic syntax fundamentals",
+    questions: level1Questions,
+    color: "from-green-500 to-emerald-500"
+  },
+  {
+    id: 2,
+    name: "Level 2",
+    subtitle: "Medium",
+    description: "Intermediate concepts",
+    questions: level2Questions,
+    color: "from-yellow-500 to-orange-500"
+  },
+  {
+    id: 3,
+    name: "Level 3",
+    subtitle: "Hard",
+    description: "Advanced TypeScript",
+    questions: level3Questions,
+    color: "from-red-500 to-pink-500"
   }
 ];

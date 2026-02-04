@@ -1,6 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
-import { questions as rawQuestions } from './data/questions';
 import { vibrateCorrect, vibrateIncorrect } from './utils/vibrate';
 import { useViewTransition } from './hooks/useViewTransition';
 import { QuizHeader } from './components/QuizHeader';
@@ -8,17 +7,13 @@ import { FeedbackBanner } from './components/FeedbackBanner';
 import { QuestionCard } from './components/QuestionCard';
 import { AnswerOptions } from './components/AnswerOptions';
 import { CompletionScreen } from './components/CompletionScreen';
+import { LevelSelect } from './components/LevelSelect';
 
 function App() {
   const withTransition = useViewTransition();
 
-  const [questions] = useState(() =>
-    shuffle(rawQuestions).map((q) => ({
-      ...q,
-      options: shuffle(q.options)
-    }))
-  );
-
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -29,6 +24,24 @@ function App() {
   const [isAnswering, setIsAnswering] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  const handleSelectLevel = (level) => {
+    const shuffledQuestions = shuffle(level.questions).map((q) => ({
+      ...q,
+      options: shuffle(q.options)
+    }));
+
+    withTransition(() => {
+      setSelectedLevel(level);
+      setQuestions(shuffledQuestions);
+      setCurrentQuestionIndex(0);
+      setScore(0);
+      setStreak(0);
+      setCorrectAnswers(0);
+      setLastAnswer(null);
+      setQuizComplete(false);
+    });
+  };
 
   const handleAnswer = (answer) => {
     if (isAnswering) return;
@@ -90,8 +103,21 @@ function App() {
   };
 
   const handleRestart = () => {
-    window.location.reload();
+    handleSelectLevel(selectedLevel);
   };
+
+  const handleBackToLevels = () => {
+    withTransition(() => {
+      setSelectedLevel(null);
+      setQuestions([]);
+      setQuizComplete(false);
+    });
+  };
+
+  // Show level selection if no level is selected
+  if (!selectedLevel) {
+    return <LevelSelect onSelectLevel={handleSelectLevel} />;
+  }
 
   if (quizComplete) {
     return (
@@ -99,7 +125,9 @@ function App() {
         score={score}
         correctAnswers={correctAnswers}
         totalQuestions={questions.length}
+        level={selectedLevel}
         onRestart={handleRestart}
+        onBackToLevels={handleBackToLevels}
       />
     );
   }
@@ -112,6 +140,7 @@ function App() {
           streak={streak}
           currentQuestion={currentQuestionIndex}
           totalQuestions={questions.length}
+          level={selectedLevel}
         />
 
         {lastAnswer && currentQuestionIndex > 0 && (

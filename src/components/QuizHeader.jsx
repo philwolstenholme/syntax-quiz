@@ -1,12 +1,17 @@
 import { Flame, Star } from 'lucide-react';
 
-export const QuizHeader = ({ score, streak, currentQuestion, totalQuestions }) => {
+export const QuizHeader = ({ score, streak, currentQuestion, totalQuestions, level }) => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          {level && (
+            <span className={`text-sm font-medium px-3 py-1.5 rounded-lg bg-gradient-to-r ${level.color} text-white`}>
+              {level.name}
+            </span>
+          )}
           <div className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl font-bold">
             <Flame size={20} />
             <span>{streak}</span>

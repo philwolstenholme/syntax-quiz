@@ -1,4 +1,16 @@
 import { CheckCircle, XCircle } from 'lucide-react';
+import { getMdnUrl } from '../utils/mdnLinks';
+
+const MdnLink = ({ term, className }) => (
+  <a
+    href={getMdnUrl(term)}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`underline decoration-2 underline-offset-2 hover:opacity-80 ${className}`}
+  >
+    {term}
+  </a>
+);
 
 export const FeedbackBanner = ({ lastAnswer }) => {
   if (!lastAnswer) return null;
@@ -15,13 +27,16 @@ export const FeedbackBanner = ({ lastAnswer }) => {
       {lastAnswer.correct ? (
         <>
           <CheckCircle size={24} />
-          <span>Correct! {lastAnswer.term}</span>
+          <span>
+            Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+          </span>
         </>
       ) : (
         <>
           <XCircle size={24} />
           <span>
-            Wrong! It was {lastAnswer.term}, not {lastAnswer.userAnswer}
+            Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+            <MdnLink term={lastAnswer.userAnswer} className="text-red-800" />
           </span>
         </>
       )}

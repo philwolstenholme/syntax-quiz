@@ -1,15 +1,7 @@
-// ===========================================
-// SOUND CONFIGURATION - Change URLs here
-// ===========================================
 const SOUND_URLS = {
-  correct: 'https://cdn.freesound.org/previews/615/615099_6890478-lq.mp3', 
-  incorrect: 'https://cdn.freesound.org/previews/625/625687_13682949-lq.mp3', // Dull knock
+  correct: 'https://cdn.freesound.org/previews/615/615099_6890478-lq.mp3',
+  incorrect: 'https://cdn.freesound.org/previews/625/625687_13682949-lq.mp3',
 };
-// ===========================================
-
-// Cache audio instances for better performance
-let correctSound = null;
-let incorrectSound = null;
 
 const createAudio = (url) => {
   const audio = new Audio(url);
@@ -17,29 +9,18 @@ const createAudio = (url) => {
   return audio;
 };
 
-const playSound = (audio, url) => {
+const correctSound = createAudio(SOUND_URLS.correct);
+const incorrectSound = createAudio(SOUND_URLS.incorrect);
+
+const playSound = (audio) => {
   try {
-    // Clone the audio to allow overlapping plays
-    const sound = audio ? audio.cloneNode() : new Audio(url);
-    sound.volume = 0.5;
-    sound.play().catch(() => {
-      // Silently fail if autoplay is blocked
-    });
+    const clone = audio.cloneNode();
+    clone.volume = 0.5;
+    clone.play().catch(() => {});
   } catch {
-    // Silently fail if audio is not supported
+    // silently fail if audio is not supported
   }
 };
 
-// Preload sounds when module loads
-if (typeof window !== 'undefined') {
-  correctSound = createAudio(SOUND_URLS.correct);
-  incorrectSound = createAudio(SOUND_URLS.incorrect);
-}
-
-export const playCorrectSound = () => {
-  playSound(correctSound, SOUND_URLS.correct);
-};
-
-export const playIncorrectSound = () => {
-  playSound(incorrectSound, SOUND_URLS.incorrect);
-};
+export const playCorrectSound = () => playSound(correctSound);
+export const playIncorrectSound = () => playSound(incorrectSound);

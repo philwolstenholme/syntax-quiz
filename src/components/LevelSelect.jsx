@@ -1,9 +1,10 @@
 import { Code2, ChevronRight } from 'lucide-react';
 import { levels } from '../data/questions';
+import { PageLayout } from './PageLayout';
 
 export const LevelSelect = ({ onSelectLevel }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <PageLayout>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl mb-6 shadow-lg">
@@ -56,6 +57,6 @@ export const LevelSelect = ({ onSelectLevel }) => {
           Choose a level to begin practicing
         </p>
       </div>
-    </div>
+    </PageLayout>
   );
 };

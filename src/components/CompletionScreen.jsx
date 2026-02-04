@@ -1,10 +1,12 @@
 import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
+import { PageLayout } from './PageLayout';
+import { StatCard } from './StatCard';
 
 export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level, onRestart, onBackToLevels }) => {
   const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <PageLayout centered>
       <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-lg w-full text-center">
         <div className="mb-6">
           <Trophy className="w-24 h-24 text-yellow-500 mx-auto" />
@@ -28,16 +30,8 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level,
         </div>
 
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-50 rounded-xl p-6">
-            <Target className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
-            <div className="text-3xl font-bold text-gray-800">{accuracy}%</div>
-            <div className="text-gray-600 mt-1">Accuracy</div>
-          </div>
-          <div className="bg-gray-50 rounded-xl p-6">
-            <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-            <div className="text-3xl font-bold text-gray-800">{correctAnswers}</div>
-            <div className="text-gray-600 mt-1">Correct</div>
-          </div>
+          <StatCard icon={Target} iconColor="text-indigo-500" value={`${accuracy}%`} label="Accuracy" />
+          <StatCard icon={CheckCircle} iconColor="text-green-500" value={correctAnswers} label="Correct" />
         </div>
 
         <div className="space-y-3">
@@ -58,6 +52,6 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level,
           </button>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };

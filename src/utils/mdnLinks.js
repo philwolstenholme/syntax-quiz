@@ -47,6 +47,6 @@ export function getMdnUrl(term) {
   }
 
   // Fall back to Google search across multiple JS/TS documentation sites
-  const searchQuery = `${term} AND inurl:https://developer.mozilla.org OR inurl:https://javascript.info OR inurl:https://eloquentjavascript.net OR inurl:https://exploringjs.com OR inurl:https://www.typescriptlang.org/docs`;
+  const searchQuery = `${term} AND inurl:https://developer.mozilla.org OR inurl:https://javascript.info OR inurl:https://eloquentjavascript.net OR inurl:https://exploringjs.com OR inurl:https://www.typescriptlang.org/docs OR inurl:https://react.dev/docs`;
   return `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
 }

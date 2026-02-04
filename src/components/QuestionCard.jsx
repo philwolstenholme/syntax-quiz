@@ -17,6 +17,7 @@ export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, on
         💡 Drag an answer onto the code snippet or click an answer below
       </p>
       <div
+        data-dropzone
         className={`
           relative rounded-xl overflow-hidden transition-all duration-200
           ${isDragOver ? 'ring-4 ring-indigo-500 scale-[1.02]' : ''}

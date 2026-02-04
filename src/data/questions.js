@@ -29,14 +29,14 @@ greet('Alice');`,
   },
   {
     code: `const numbers = [1, 2, 3, 4, 5];`,
-    highlight: { start: 16, end: 17 },
+    highlight: { start: 16, end: 31 },
     question: "What are these symbols called?",
     correct: "square brackets",
     options: ["square brackets", "curly braces", "parentheses", "angle brackets"]
   },
   {
     code: `const person = { name: 'Alice', age: 30 };`,
-    highlight: { start: 15, end: 16 },
+    highlight: { start: 15, end: 41 },
     question: "What are these symbols called?",
     correct: "curly braces",
     options: ["curly braces", "square brackets", "parentheses", "angle brackets"]
@@ -45,14 +45,14 @@ greet('Alice');`,
     code: `function add(a: number, b: number): number {
   return a + b;
 }`,
-    highlight: { start: 13, end: 33 },
+    highlight: { start: 12, end: 34 },
     question: "What are these symbols called?",
     correct: "parentheses",
     options: ["parentheses", "curly braces", "square brackets", "angle brackets"]
   },
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
-    highlight: { start: 19, end: 32 },
+    highlight: { start: 15, end: 28 },
     question: "What is the highlighted part called?",
     correct: "generic",
     options: ["generic", "type parameter", "template", "type annotation"]
@@ -77,7 +77,7 @@ greet('Alice');`,
   {
     code: `const fruits = ['apple', 'banana', 'orange'];
 console.log(fruits[0]);`,
-    highlight: { start: 58, end: 61 },
+    highlight: { start: 64, end: 67 },
     question: "What is the highlighted part called?",
     correct: "index",
     options: ["index", "key", "position", "offset"]
@@ -86,7 +86,7 @@ console.log(fruits[0]);`,
     code: `function getName(): string {
   return 'Alice';
 }`,
-    highlight: { start: 16, end: 26 },
+    highlight: { start: 18, end: 26 },
     question: "What is the highlighted part called?",
     correct: "return type",
     options: ["return type", "type annotation", "type hint", "output type"]
@@ -94,7 +94,7 @@ console.log(fruits[0]);`,
   {
     code: `const user = { name: 'Alice', age: 30, city: 'NYC' };
 const { name, age } = user;`,
-    highlight: { start: 60, end: 75 },
+    highlight: { start: 60, end: 73 },
     question: "What is this syntax called?",
     correct: "destructuring",
     options: ["destructuring", "unpacking", "pattern matching", "extraction"]
@@ -102,7 +102,7 @@ const { name, age } = user;`,
   {
     code: `const oldArr = [1, 2, 3];
 const newArr = [...oldArr, 4, 5];`,
-    highlight: { start: 42, end: 45 },
+    highlight: { start: 41, end: 44 },
     question: "What is this operator called?",
     correct: "spread operator",
     options: ["spread operator", "rest operator", "destructuring", "expansion"]
@@ -110,7 +110,7 @@ const newArr = [...oldArr, 4, 5];`,
   {
     code: `const isActive = true;
 const message = isActive ? 'yes' : 'no';`,
-    highlight: { start: 46, end: 64 },
+    highlight: { start: 39, end: 62 },
     question: "What is this operator called?",
     correct: "ternary operator",
     options: ["ternary operator", "conditional operator", "inline if", "expression"]
@@ -118,7 +118,7 @@ const message = isActive ? 'yes' : 'no';`,
   {
     code: `const user = { profile: { name: 'Alice' } };
 const name = user?.profile?.name;`,
-    highlight: { start: 58, end: 60 },
+    highlight: { start: 62, end: 64 },
     question: "What is this operator called?",
     correct: "optional chaining",
     options: ["optional chaining", "safe navigation", "null check", "elvis operator"]
@@ -127,7 +127,7 @@ const name = user?.profile?.name;`,
     code: `function getValue(input?: string) {
   return input ?? 'default';
 }`,
-    highlight: { start: 48, end: 50 },
+    highlight: { start: 51, end: 53 },
     question: "What is this operator called?",
     correct: "nullish coalescing",
     options: ["nullish coalescing", "default operator", "fallback operator", "or operator"]
@@ -165,7 +165,7 @@ const name = user?.profile?.name;`,
   readonly x: number;
   readonly y: number;
 }`,
-    highlight: { start: 20, end: 37 },
+    highlight: { start: 20, end: 28 },
     question: "What is the highlighted part called?",
     correct: "readonly",
     options: ["readonly", "immutable", "const", "final"]
@@ -181,7 +181,7 @@ const name = user?.profile?.name;`,
     code: `function log(message: string): void {
   console.log(message);
 }`,
-    highlight: { start: 27, end: 33 },
+    highlight: { start: 31, end: 35 },
     question: "What does this type represent?",
     correct: "void",
     options: ["void", "null", "undefined", "empty"]
@@ -207,7 +207,7 @@ const name = user?.profile?.name;`,
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,
-    highlight: { start: 47, end: 58 },
+    highlight: { start: 47, end: 62 },
     question: "What is this syntax called?",
     correct: "type assertion",
     options: ["type assertion", "type cast", "type conversion", "type coercion"]
@@ -237,7 +237,7 @@ const str = value as string;`,
   },
   {
     code: `const doubled = numbers.map(n => n * 2);`,
-    highlight: { start: 28, end: 39 },
+    highlight: { start: 28, end: 38 },
     question: "What is the function passed to map called?",
     correct: "callback",
     options: ["callback", "lambda", "handler", "delegate"]
@@ -268,7 +268,7 @@ const str = value as string;`,
     code: `interface StringMap {
   [key: string]: any;
 }`,
-    highlight: { start: 24, end: 43 },
+    highlight: { start: 23, end: 41 },
     question: "What is this syntax called?",
     correct: "index signature",
     options: ["index signature", "indexer", "dynamic property", "computed property"]

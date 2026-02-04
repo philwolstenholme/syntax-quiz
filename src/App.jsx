@@ -162,6 +162,7 @@ function App() {
           options={currentQuestion.options}
           onAnswer={handleAnswer}
           disabled={isAnswering}
+          onDragOverChange={setIsDragOver}
         />
 
         <div className="mt-8 text-center">

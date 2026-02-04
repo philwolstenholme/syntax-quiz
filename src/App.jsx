@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
-import { vibrateCorrect, vibrateIncorrect } from './utils/vibrate';
-import { playCorrectSound, playIncorrectSound } from './utils/sounds';
+import { BASE_SCORE_POINTS, FEEDBACK_DELAY_MS } from './constants';
+import { feedbackCorrect, feedbackIncorrect } from './utils/feedback';
 import { useViewTransition } from './hooks/useViewTransition';
+import { PageLayout } from './components/PageLayout';
 import { QuizHeader } from './components/QuizHeader';
 import { FeedbackBanner } from './components/FeedbackBanner';
 import { QuestionCard } from './components/QuestionCard';
@@ -51,15 +52,12 @@ function App() {
     const correct = answer === currentQuestion.correct;
 
     if (correct) {
-      vibrateCorrect();
-      playCorrectSound();
-      const points = 10 * (streak + 1);
-      setScore((prev) => prev + points);
+      feedbackCorrect();
+      setScore((prev) => prev + BASE_SCORE_POINTS * (streak + 1));
       setStreak((prev) => prev + 1);
       setCorrectAnswers((prev) => prev + 1);
     } else {
-      vibrateIncorrect();
-      playIncorrectSound();
+      feedbackIncorrect();
       setStreak(0);
     }
 
@@ -80,7 +78,7 @@ function App() {
           setQuizComplete(true);
         });
       }
-    }, 1500);
+    }, FEEDBACK_DELAY_MS);
   };
 
   const handleDragOver = (e) => {
@@ -136,7 +134,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <PageLayout>
       <div className="max-w-4xl mx-auto">
         <QuizHeader
           score={score}
@@ -176,7 +174,7 @@ function App() {
           </a>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -36,7 +36,7 @@ export const FeedbackBanner = ({ lastAnswer }) => {
           <XCircle size={24} />
           <span>
             Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
-            <MdnLink term={lastAnswer.userAnswer} className="text-red-800" />
+            {lastAnswer.userAnswer}
           </span>
         </>
       )}

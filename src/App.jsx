@@ -163,6 +163,17 @@ function App() {
           onAnswer={handleAnswer}
           disabled={isAnswering}
         />
+
+        <div className="mt-4 text-center">
+          <a
+            href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+          >
+            Report an issue with this question
+          </a>
+        </div>
       </div>
     </div>
   );

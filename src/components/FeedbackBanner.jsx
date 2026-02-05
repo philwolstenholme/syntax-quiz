@@ -22,7 +22,6 @@ export const FeedbackBanner = ({ lastAnswer }) => {
           ? 'bg-green-50 text-green-700 border-2 border-green-500'
           : 'bg-red-50 text-red-700 border-2 border-red-500'
       }`}
-      style={{ viewTransitionName: 'feedback-banner' }}
     >
       {lastAnswer.correct ? (
         <>

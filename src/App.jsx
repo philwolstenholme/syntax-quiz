@@ -108,6 +108,8 @@ function App() {
 
   const handleDragEnd = (event) => {
     setActiveId(null);
+    if (isAnswering) return;
+    
     const { active, over } = event;
     
     if (over && over.id === 'dropzone' && active.data.current?.answer) {

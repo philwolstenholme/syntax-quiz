@@ -1,7 +1,1 @@
 @import "tailwindcss";
-
-.dragging {
-  user-select: none;
-  -webkit-user-select: none;
-}
-

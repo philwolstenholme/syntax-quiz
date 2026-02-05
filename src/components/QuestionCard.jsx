@@ -8,7 +8,6 @@ export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, on
   return (
     <div
       className="bg-white rounded-3xl shadow-xl p-8 mb-6"
-      style={{ viewTransitionName: 'question-card' }}
     >
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
         {question.question}

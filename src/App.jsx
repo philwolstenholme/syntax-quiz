@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
+import { motion, AnimatePresence } from 'motion/react';
 import { BASE_SCORE_POINTS, FEEDBACK_DELAY_MS } from './constants';
 import { feedbackCorrect, feedbackIncorrect } from './utils/feedback';
-import { useViewTransition } from './hooks/useViewTransition';
 import { PageLayout } from './components/PageLayout';
 import { QuizHeader } from './components/QuizHeader';
 import { FeedbackBanner } from './components/FeedbackBanner';
@@ -11,9 +11,14 @@ import { AnswerOptions } from './components/AnswerOptions';
 import { CompletionScreen } from './components/CompletionScreen';
 import { LevelSelect } from './components/LevelSelect';
 
-function App() {
-  const withTransition = useViewTransition();
+const pageTransition = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.3 }
+};
 
+function App() {
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -33,16 +38,14 @@ function App() {
       options: shuffle(q.options)
     }));
 
-    withTransition(() => {
-      setSelectedLevel(level);
-      setQuestions(shuffledQuestions);
-      setCurrentQuestionIndex(0);
-      setScore(0);
-      setStreak(0);
-      setCorrectAnswers(0);
-      setLastAnswer(null);
-      setQuizComplete(false);
-    });
+    setSelectedLevel(level);
+    setQuestions(shuffledQuestions);
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setStreak(0);
+    setCorrectAnswers(0);
+    setLastAnswer(null);
+    setQuizComplete(false);
   };
 
   const handleAnswer = (answer) => {
@@ -69,14 +72,10 @@ function App() {
 
     setTimeout(() => {
       if (currentQuestionIndex < questions.length - 1) {
-        withTransition(() => {
-          setCurrentQuestionIndex((prev) => prev + 1);
-          setIsAnswering(false);
-        });
+        setCurrentQuestionIndex((prev) => prev + 1);
+        setIsAnswering(false);
       } else {
-        withTransition(() => {
-          setQuizComplete(true);
-        });
+        setQuizComplete(true);
       }
     }, FEEDBACK_DELAY_MS);
   };
@@ -108,73 +107,97 @@ function App() {
   };
 
   const handleBackToLevels = () => {
-    withTransition(() => {
-      setSelectedLevel(null);
-      setQuestions([]);
-      setQuizComplete(false);
-    });
+    setSelectedLevel(null);
+    setQuestions([]);
+    setQuizComplete(false);
   };
 
-  // Show level selection if no level is selected
-  if (!selectedLevel) {
-    return <LevelSelect onSelectLevel={handleSelectLevel} />;
-  }
-
-  if (quizComplete) {
-    return (
-      <CompletionScreen
-        score={score}
-        correctAnswers={correctAnswers}
-        totalQuestions={questions.length}
-        level={selectedLevel}
-        onRestart={handleRestart}
-        onBackToLevels={handleBackToLevels}
-      />
-    );
-  }
-
   return (
-    <PageLayout>
-      <div className="max-w-4xl mx-auto">
-        <QuizHeader
-          score={score}
-          streak={streak}
-          currentQuestion={currentQuestionIndex}
-          totalQuestions={questions.length}
-          level={selectedLevel}
-        />
+    <AnimatePresence mode="wait">
+      {!selectedLevel && (
+        <motion.div key="levels" {...pageTransition}>
+          <LevelSelect onSelectLevel={handleSelectLevel} />
+        </motion.div>
+      )}
 
-        {lastAnswer && currentQuestionIndex > 0 && (
-          <FeedbackBanner lastAnswer={lastAnswer} />
-        )}
+      {selectedLevel && !quizComplete && (
+        <motion.div key="quiz" {...pageTransition}>
+          <PageLayout>
+            <div className="max-w-4xl mx-auto">
+              <QuizHeader
+                score={score}
+                streak={streak}
+                currentQuestion={currentQuestionIndex}
+                totalQuestions={questions.length}
+                level={selectedLevel}
+              />
 
-        <QuestionCard
-          question={currentQuestion}
-          isDragOver={isDragOver}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        />
+              <AnimatePresence>
+                {lastAnswer && currentQuestionIndex > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+                    transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
+                  >
+                    <FeedbackBanner lastAnswer={lastAnswer} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-        <AnswerOptions
-          options={currentQuestion.options}
-          onAnswer={handleAnswer}
-          disabled={isAnswering}
-          onDragOverChange={setIsDragOver}
-        />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuestionIndex}
+                  initial={{ x: 30, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+                  transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+                >
+                  <QuestionCard
+                    question={currentQuestion}
+                    isDragOver={isDragOver}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  />
 
-        <div className="mt-8 text-center">
-          <a
-            href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
-          >
-            Report an issue with this question
-          </a>
-        </div>
-      </div>
-    </PageLayout>
+                  <AnswerOptions
+                    options={currentQuestion.options}
+                    onAnswer={handleAnswer}
+                    disabled={isAnswering}
+                    onDragOverChange={setIsDragOver}
+                  />
+
+                  <div className="mt-8 text-center">
+                    <a
+                      href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+                    >
+                      Report an issue with this question
+                    </a>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </PageLayout>
+        </motion.div>
+      )}
+
+      {selectedLevel && quizComplete && (
+        <motion.div key="complete" {...pageTransition}>
+          <CompletionScreen
+            score={score}
+            correctAnswers={correctAnswers}
+            totalQuestions={questions.length}
+            level={selectedLevel}
+            onRestart={handleRestart}
+            onBackToLevels={handleBackToLevels}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

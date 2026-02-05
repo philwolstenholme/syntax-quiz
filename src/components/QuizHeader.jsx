@@ -1,7 +1,7 @@
 import { Flame, Star } from 'lucide-react';
 
-export const QuizHeader = ({ score, streak, currentQuestion, totalQuestions, level }) => {
-  const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level }) => {
+  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -20,7 +20,7 @@ export const QuizHeader = ({ score, streak, currentQuestion, totalQuestions, lev
           </div>
         </div>
         <div className="text-gray-600 font-semibold">
-          {currentQuestion + 1} / {totalQuestions}
+          {currentQuestionIndex + 1} / {totalQuestions}
         </div>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">

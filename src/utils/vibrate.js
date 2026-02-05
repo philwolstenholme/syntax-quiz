@@ -1,11 +1,8 @@
-export const vibrateCorrect = () => {
+const vibrate = (pattern) => {
   if ('vibrate' in navigator) {
-    navigator.vibrate(50);
+    navigator.vibrate(pattern);
   }
 };
 
-export const vibrateIncorrect = () => {
-  if ('vibrate' in navigator) {
-    navigator.vibrate([100, 50, 100]);
-  }
-};
+export const vibrateCorrect = () => vibrate(50);
+export const vibrateIncorrect = () => vibrate([100, 50, 100]);

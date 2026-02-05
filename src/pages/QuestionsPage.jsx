@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { shuffle } from 'es-toolkit';
 import { motion, AnimatePresence } from 'motion/react';
@@ -63,20 +63,27 @@ export const QuestionsPage = () => {
   const quizComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
 
   // Redirect to home if invalid level
-  if (!level) {
-    setLocation('/');
-    return null;
-  }
+  useEffect(() => {
+    if (!level) {
+      setLocation('/');
+    }
+  }, [level, setLocation]);
 
   // Navigate to score page when quiz is complete
-  if (quizComplete) {
-    const searchParams = new URLSearchParams({
-      completed: 'true',
-      score: score.toString(),
-      correct: correctAnswers.toString(),
-      total: questions.length.toString()
-    });
-    setLocation(`/syntax-quiz/level/${levelId}/score?${searchParams.toString()}`);
+  useEffect(() => {
+    if (quizComplete && level) {
+      const searchParams = new URLSearchParams({
+        completed: 'true',
+        score: score.toString(),
+        correct: correctAnswers.toString(),
+        total: questions.length.toString()
+      });
+      setLocation(`/syntax-quiz/level/${levelId}/score?${searchParams.toString()}`);
+    }
+  }, [quizComplete, level, levelId, score, correctAnswers, questions.length, setLocation]);
+
+  // Show nothing while redirecting
+  if (!level || quizComplete) {
     return null;
   }
 

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useLocation, useSearch, Link } from 'wouter';
 import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { PageLayout } from '../components/PageLayout';
@@ -21,8 +22,14 @@ export const ScorePage = () => {
   const isValidAccess = completed === 'true' && totalQuestions > 0 && level;
 
   // Redirect to home if invalid access
+  useEffect(() => {
+    if (!isValidAccess) {
+      setLocation('/');
+    }
+  }, [isValidAccess, setLocation]);
+
+  // Show nothing while redirecting
   if (!isValidAccess) {
-    setLocation('/');
     return null;
   }
 

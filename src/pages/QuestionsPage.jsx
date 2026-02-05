@@ -2,6 +2,15 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { shuffle } from 'es-toolkit';
 import { motion, AnimatePresence } from 'motion/react';
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core';
+import { GripVertical } from 'lucide-react';
 import { playCorrectSound, playIncorrectSound } from '../utils/sounds';
 import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
 import { PageLayout } from '../components/PageLayout';
@@ -35,8 +44,21 @@ export const QuestionsPage = () => {
   const [streak, setStreak] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [lastAnswer, setLastAnswer] = useState(null);
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
+  const [activeId, setActiveId] = useState(null);
+
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8,
+    },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 100,
+      tolerance: 5,
+    },
+  });
+  const sensors = useSensors(pointerSensor, touchSensor);
 
   // Redirect to home if level not found
   useEffect(() => {
@@ -87,25 +109,18 @@ export const QuestionsPage = () => {
     }, FEEDBACK_DELAY_MS);
   };
 
-  const handleDragOver = (e) => {
-    if (isAnswering) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setIsDragOver(true);
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
   };
 
-  const handleDragLeave = () => {
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragOver(false);
+  const handleDragEnd = (event) => {
+    setActiveId(null);
     if (isAnswering) return;
-
-    const answer = e.dataTransfer.getData('text/plain');
-    if (answer) {
-      handleAnswer(answer);
+    
+    const { active, over } = event;
+    
+    if (over && over.id === 'dropzone' && active.data.current?.answer) {
+      handleAnswer(active.data.current.answer);
     }
   };
 
@@ -114,65 +129,72 @@ export const QuestionsPage = () => {
   }
 
   return (
-    <PageLayout>
-      <div className="max-w-4xl mx-auto">
-        <QuizHeader
-          score={score}
-          streak={streak}
-          currentQuestionIndex={currentQuestionIndex}
-          totalQuestions={questions.length}
-          level={level}
-        />
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <PageLayout>
+        <div className="max-w-4xl mx-auto">
+          <QuizHeader
+            score={score}
+            streak={streak}
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            level={level}
+          />
 
-        <AnimatePresence>
-          {lastAnswer && currentQuestionIndex > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-              transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
-            >
-              <FeedbackBanner lastAnswer={lastAnswer} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentQuestionIndex}
-            initial={{ x: 30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-            transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-          >
-            <QuestionCard
-              question={currentQuestion}
-              isDragOver={isDragOver}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            />
-
-            <AnswerOptions
-              options={currentQuestion.options}
-              onAnswer={handleAnswer}
-              disabled={isAnswering}
-              onDragOverChange={setIsDragOver}
-            />
-
-            <div className="mt-8 text-center">
-              <a
-                href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+          <AnimatePresence>
+            {lastAnswer && currentQuestionIndex > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+                transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
               >
-                Report an issue with this question
-              </a>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </PageLayout>
+                <FeedbackBanner lastAnswer={lastAnswer} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentQuestionIndex}
+              initial={{ x: 30, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+              transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+            >
+              <QuestionCard question={currentQuestion} />
+
+              <AnswerOptions
+                options={currentQuestion.options}
+                onAnswer={handleAnswer}
+                disabled={isAnswering}
+              />
+
+              <div className="mt-8 text-center">
+                <a
+                  href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+                >
+                  Report an issue with this question
+                </a>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </PageLayout>
+      <DragOverlay>
+        {activeId ? (
+          <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-indigo-500 bg-white text-gray-800 font-semibold text-lg shadow-xl cursor-move">
+            <GripVertical className="text-gray-400 flex-shrink-0" size={20} />
+            <span className="flex-1 text-left">{activeId}</span>
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 };

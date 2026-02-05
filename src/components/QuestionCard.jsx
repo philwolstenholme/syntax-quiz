@@ -1,5 +1,10 @@
-export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, onDrop }) => {
+import { useDroppable } from '@dnd-kit/core';
+
+export const QuestionCard = ({ question }) => {
   const { code, highlight } = question;
+  const { isOver, setNodeRef } = useDroppable({
+    id: 'dropzone',
+  });
 
   const before = code.substring(0, highlight.start);
   const highlighted = code.substring(highlight.start, highlight.end);
@@ -16,16 +21,14 @@ export const QuestionCard = ({ question, isDragOver, onDragOver, onDragLeave, on
         💡 Drag an answer onto the code snippet or click an answer below
       </p>
       <div
+        ref={setNodeRef}
         data-dropzone
         className={`
           relative rounded-xl overflow-hidden transition-all duration-200
-          ${isDragOver ? 'ring-4 ring-indigo-500 scale-[1.02]' : ''}
+          ${isOver ? 'ring-4 ring-indigo-500 scale-[1.02]' : ''}
         `}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
       >
-        {isDragOver && (
+        {isOver && (
           <div className="absolute inset-0 bg-indigo-500 bg-opacity-10 flex items-center justify-center z-10">
             <span className="text-2xl font-bold text-indigo-600">
               Drop here! 🎯

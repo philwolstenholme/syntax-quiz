@@ -16,13 +16,11 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level,
           Quiz Complete!
         </h1>
 
-        {level && (
-          <div className="mb-6">
-            <span className={`inline-block text-sm font-medium px-3 py-1 rounded-full bg-gradient-to-r ${level.color} text-white`}>
-              {level.name} - {level.subtitle}
-            </span>
-          </div>
-        )}
+        <div className="mb-6">
+          <span className={`inline-block text-sm font-medium px-3 py-1 rounded-full bg-gradient-to-r ${level.color} text-white`}>
+            {level.name} - {level.subtitle}
+          </span>
+        </div>
 
         <div className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl p-8 mb-8">
           <div className="text-5xl font-bold mb-2">{score}</div>

@@ -4,7 +4,6 @@ import { GripVertical } from 'lucide-react';
 export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange }) => {
   const [draggingOption, setDraggingOption] = useState(null);
 
-  // Refs for touch drag state (avoids stale closures in document-level listeners)
   const ghostRef = useRef(null);
   const draggingOptionRef = useRef(null);
   const onAnswerRef = useRef(onAnswer);
@@ -16,8 +15,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
 
   onAnswerRef.current = onAnswer;
   onDragOverChangeRef.current = onDragOverChange;
-
-  // --- Desktop HTML5 drag handlers (unchanged) ---
 
   const handleDragStart = (e, option) => {
     if (disabled) return;
@@ -32,30 +29,21 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
     document.body.classList.remove('dragging');
   };
 
-  // --- Touch drag handlers ---
-  // Attached to document in handleTouchStart so they keep firing
-  // even after the finger leaves the original button.
-  // touchmove is added with { passive: false } so preventDefault()
-  // actually stops the page from scrolling mid-drag.
-
   const handleTouchMove = useCallback((e) => {
     e.preventDefault();
     if (!ghostRef.current) return;
 
     const touch = e.touches[0];
 
-    // Determine whether the finger has moved enough to count as a drag
     const dx = touch.clientX - touchStartRef.current.x;
     const dy = touch.clientY - touchStartRef.current.y;
     if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
       hasDraggedRef.current = true;
     }
 
-    // Move ghost, preserving the original finger-to-element offset
     ghostRef.current.style.left = touch.clientX - touchOffsetRef.current.x + 'px';
     ghostRef.current.style.top = touch.clientY - touchOffsetRef.current.y + 'px';
 
-    // Ghost has pointer-events: none, so elementFromPoint sees through it
     const target = document.elementFromPoint(touch.clientX, touch.clientY);
     const isOverDropzone = !!target?.closest?.('[data-dropzone]');
     if (isOverDropzone !== wasOverDropzoneRef.current) {
@@ -72,7 +60,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
       ghostRef.current = null;
     }
 
-    // Only treat as a drop if the finger actually moved
     if (hasDraggedRef.current) {
       const target = document.elementFromPoint(touch.clientX, touch.clientY);
       if (target?.closest?.('[data-dropzone]') && draggingOptionRef.current) {
@@ -80,7 +67,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
       }
     }
 
-    // Reset everything
     wasOverDropzoneRef.current = false;
     onDragOverChangeRef.current?.(false);
     draggingOptionRef.current = null;
@@ -101,8 +87,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
     touchOffsetRef.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
     hasDraggedRef.current = false;
 
-    // Clone the button as a visual "ghost" that follows the finger.
-    // pointer-events: none lets elementFromPoint see elements behind it.
     const ghost = e.currentTarget.cloneNode(true);
     ghost.style.position = 'fixed';
     ghost.style.zIndex = '9999';
@@ -125,8 +109,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
     document.addEventListener('touchend', handleTouchEnd);
   };
 
-  // Click handles the tap-to-answer path.  Suppress it if the finger
-  // moved (the touch-drag path already called onAnswer if appropriate).
   const handleClick = (option) => {
     if (hasDraggedRef.current) return;
     if (!disabled) {
@@ -134,7 +116,6 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
     }
   };
 
-  // Clean up if the component unmounts mid-drag (e.g. quiz advances)
   useEffect(() => {
     return () => {
       if (ghostRef.current) {
@@ -162,9 +143,8 @@ export const AnswerOptions = ({ options, onAnswer, disabled, onDragOverChange })
             flex items-center gap-3 p-4 rounded-xl border-2 border-gray-300
             bg-white text-gray-800 font-semibold text-lg
             transition-all duration-200
-            ${!disabled ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg cursor-pointer' : 'opacity-50 cursor-not-allowed'}
+            ${!disabled ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg cursor-move' : 'opacity-50 cursor-not-allowed'}
             ${draggingOption === option ? 'opacity-40' : ''}
-            ${!disabled ? 'cursor-move' : ''}
           `}
         >
           <GripVertical className="text-gray-400 flex-shrink-0" size={20} />

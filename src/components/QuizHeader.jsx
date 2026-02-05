@@ -7,11 +7,9 @@ export const QuizHeader = ({ score, streak, currentQuestion, totalQuestions, lev
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
       <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
         <div className="flex items-center gap-2 sm:gap-4">
-          {level && (
-            <span className={`flex items-center h-9 text-sm font-medium px-3 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
-              {level.name}
-            </span>
-          )}
+          <span className={`flex items-center h-9 text-sm px-3 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
+            {level.name}
+          </span>
           <div className="flex items-center gap-2 h-9 bg-orange-500 text-white px-3 sm:px-4 rounded-xl font-bold">
             <Flame size={20} />
             <span>{streak}</span>

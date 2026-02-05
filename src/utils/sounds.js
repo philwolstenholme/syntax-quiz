@@ -17,9 +17,7 @@ const playSound = (audio) => {
     const clone = audio.cloneNode();
     clone.volume = 0.5;
     clone.play().catch(() => {});
-  } catch {
-    // silently fail if audio is not supported
-  }
+  } catch { /* audio unsupported */ }
 };
 
 export const playCorrectSound = () => playSound(correctSound);

@@ -35,7 +35,7 @@ export const ScorePage = () => {
   }, [isValidAccess, setLocation]);
 
   // Don't render if access is not valid
-  if (!isValidAccess || !level) {
+  if (!isValidAccess) {
     return null;
   }
 

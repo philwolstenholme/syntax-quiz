@@ -46,6 +46,8 @@ export const QuestionsPage = () => {
   }, [level, setLocation]);
 
   const currentQuestion = questions[currentQuestionIndex];
+  // Note: questions.length > 0 is needed to prevent false positive when questions haven't loaded yet
+  // (0 >= 0 is true, which would incorrectly mark quiz as complete)
   const quizComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
 
   useEffect(() => {

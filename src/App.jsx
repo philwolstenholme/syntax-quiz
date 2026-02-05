@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
 import { motion, AnimatePresence } from 'motion/react';
-import { BASE_SCORE_POINTS, FEEDBACK_DELAY_MS } from './constants';
 import { playCorrectSound, playIncorrectSound } from './utils/sounds';
 import { vibrateCorrect, vibrateIncorrect } from './utils/vibrate';
 import { PageLayout } from './components/PageLayout';
@@ -11,6 +10,9 @@ import { QuestionCard } from './components/QuestionCard';
 import { AnswerOptions } from './components/AnswerOptions';
 import { CompletionScreen } from './components/CompletionScreen';
 import { LevelSelect } from './components/LevelSelect';
+
+const BASE_SCORE_POINTS = 10;
+const FEEDBACK_DELAY_MS = 1500;
 
 const pageTransition = {
   initial: { opacity: 0 },
@@ -27,11 +29,11 @@ function App() {
   const [streak, setStreak] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [lastAnswer, setLastAnswer] = useState(null);
-  const [quizComplete, setQuizComplete] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
+  const quizComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
 
   const handleSelectLevel = (level) => {
     const shuffledQuestions = shuffle(level.questions).map((q) => ({
@@ -46,7 +48,6 @@ function App() {
     setStreak(0);
     setCorrectAnswers(0);
     setLastAnswer(null);
-    setQuizComplete(false);
   };
 
   const handleAnswer = (answer) => {
@@ -74,12 +75,8 @@ function App() {
     });
 
     setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex((prev) => prev + 1);
-        setIsAnswering(false);
-      } else {
-        setQuizComplete(true);
-      }
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setIsAnswering(false);
     }, FEEDBACK_DELAY_MS);
   };
 
@@ -112,7 +109,6 @@ function App() {
   const handleBackToLevels = () => {
     setSelectedLevel(null);
     setQuestions([]);
-    setQuizComplete(false);
   };
 
   return (
@@ -130,7 +126,7 @@ function App() {
               <QuizHeader
                 score={score}
                 streak={streak}
-                currentQuestion={currentQuestionIndex}
+                currentQuestionIndex={currentQuestionIndex}
                 totalQuestions={questions.length}
                 level={selectedLevel}
               />

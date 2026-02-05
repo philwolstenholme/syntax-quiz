@@ -1,4 +1,3 @@
-// Level 1 - Easy: Basic syntax concepts that beginners should know
 export const level1Questions = [
   {
     code: `function greet(name: string) {
@@ -9,7 +8,6 @@ export const level1Questions = [
     correct: "parameter",
     options: ["parameter", "argument", "property", "variable"]
   },
-  // New Level 1 questions from glossaries
   {
     code: `const greeting = \`Hello, \${name}!\`;`,
     highlight: { start: 17, end: 34 },
@@ -180,7 +178,6 @@ console.log(fruits[0]);`,
   }
 ];
 
-// Level 2 - Medium: Intermediate TypeScript/JavaScript concepts
 export const level2Questions = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
@@ -271,7 +268,6 @@ const name = user?.profile?.name;`,
     correct: "tuple",
     options: ["tuple", "array", "pair", "vector"]
   },
-  // New Level 2 questions from glossaries
   {
     code: `function outer() {
   const x = 10;
@@ -412,7 +408,6 @@ const numbers = [1, 2, 3].map(double);`,
   }
 ];
 
-// Level 3 - Hard: Advanced TypeScript concepts
 export const level3Questions = [
   {
     code: `const value: unknown = getValue();
@@ -488,7 +483,6 @@ export function fetchData() { }`,
     correct: "named export",
     options: ["named export", "explicit export", "public export", "module export"]
   },
-  // New Level 3 questions from glossaries
   {
     code: `type Partial<T> = {
   [P in keyof T]?: T[P];
@@ -612,10 +606,6 @@ inputRef.current?.focus();`,
   }
 ];
 
-// Combined questions for backwards compatibility
-export const questions = [...level1Questions, ...level2Questions, ...level3Questions];
-
-// Level metadata
 export const levels = [
   {
     id: 1,

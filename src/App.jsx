@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
 import { motion, AnimatePresence } from 'motion/react';
 import { BASE_SCORE_POINTS, FEEDBACK_DELAY_MS } from './constants';
-import { feedbackCorrect, feedbackIncorrect } from './utils/feedback';
+import { playCorrectSound, playIncorrectSound } from './utils/sounds';
+import { vibrateCorrect, vibrateIncorrect } from './utils/vibrate';
 import { PageLayout } from './components/PageLayout';
 import { QuizHeader } from './components/QuizHeader';
 import { FeedbackBanner } from './components/FeedbackBanner';
@@ -55,12 +56,14 @@ function App() {
     const correct = answer === currentQuestion.correct;
 
     if (correct) {
-      feedbackCorrect();
+      vibrateCorrect();
+      playCorrectSound();
       setScore((prev) => prev + BASE_SCORE_POINTS * (streak + 1));
       setStreak((prev) => prev + 1);
       setCorrectAnswers((prev) => prev + 1);
     } else {
-      feedbackIncorrect();
+      vibrateIncorrect();
+      playIncorrectSound();
       setStreak(0);
     }
 

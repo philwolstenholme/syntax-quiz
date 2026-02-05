@@ -1,8 +1,9 @@
 import { Code2, ChevronRight } from 'lucide-react';
+import { Link } from 'wouter';
 import { levels } from '../data/questions';
 import { PageLayout } from './PageLayout';
 
-export const LevelSelect = ({ onSelectLevel }) => {
+export const LevelSelect = () => {
   return (
     <PageLayout>
       <div className="max-w-2xl mx-auto">
@@ -20,10 +21,10 @@ export const LevelSelect = ({ onSelectLevel }) => {
 
         <div className="space-y-4">
           {levels.map((level) => (
-            <button
+            <Link
               key={level.id}
-              onClick={() => onSelectLevel(level)}
-              className="w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] p-6 text-left group"
+              to={`/syntax-quiz/level/${level.id}/questions`}
+              className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] p-6 text-left group"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -49,7 +50,7 @@ export const LevelSelect = ({ onSelectLevel }) => {
                 </div>
                 <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
               </div>
-            </button>
+            </Link>
           ))}
         </div>
 

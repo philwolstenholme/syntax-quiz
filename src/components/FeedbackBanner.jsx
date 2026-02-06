@@ -1,4 +1,5 @@
 import { CheckCircle, XCircle } from 'lucide-react';
+import { motion } from 'motion/react';
 import { getMdnUrl } from '../utils/mdnLinks';
 
 const MdnLink = ({ term, className }) => (
@@ -16,7 +17,15 @@ export const FeedbackBanner = ({ lastAnswer }) => {
   if (!lastAnswer) return null;
 
   return (
-    <div
+    <motion.div
+      initial={{ x: 0 }}
+      animate={{
+        x: lastAnswer.correct ? 0 : [-10, 10, -10, 10, 0],
+      }}
+      transition={{
+        duration: lastAnswer.correct ? 0 : 0.5,
+        ease: 'easeInOut',
+      }}
       className={`rounded-2xl p-4 mb-6 flex items-center gap-3 font-bold text-lg ${
         lastAnswer.correct
           ? 'bg-green-50 text-green-700 border-2 border-green-500'
@@ -39,6 +48,6 @@ export const FeedbackBanner = ({ lastAnswer }) => {
           </span>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };

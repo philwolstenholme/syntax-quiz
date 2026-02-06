@@ -2,7 +2,18 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getMdnUrl } from '../utils/mdnLinks';
 
-const MdnLink = ({ term, className }) => (
+export interface AnswerFeedback {
+  correct: boolean;
+  term: string;
+  userAnswer: string | null;
+}
+
+interface MdnLinkProps {
+  term: string;
+  className: string;
+}
+
+const MdnLink = ({ term, className }: MdnLinkProps) => (
   <a
     href={getMdnUrl(term)}
     target="_blank"
@@ -13,7 +24,11 @@ const MdnLink = ({ term, className }) => (
   </a>
 );
 
-export const FeedbackBanner = ({ lastAnswer }) => {
+interface FeedbackBannerProps {
+  lastAnswer: AnswerFeedback | null;
+}
+
+export const FeedbackBanner = ({ lastAnswer }: FeedbackBannerProps) => {
   if (!lastAnswer) return null;
 
   return (

@@ -23,7 +23,7 @@ export const LevelSelect = () => {
           {levels.map((level) => (
             <Link
               key={level.id}
-              to={`/syntax-quiz/level/${level.id}/questions`}
+              to={`/level/${level.id}/questions`}
               className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] p-6 text-left group"
             >
               <div className="flex items-center justify-between">

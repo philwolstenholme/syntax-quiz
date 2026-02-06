@@ -19,8 +19,8 @@ function App() {
       <motion.div key={location} {...pageTransition}>
         <Switch>
           <Route path="/" component={LevelSelect} />
-          <Route path="/syntax-quiz/level/:levelId/questions" component={QuestionsPage} />
-          <Route path="/syntax-quiz/level/:levelId/score" component={ScorePage} />
+          <Route path="/level/:levelId/questions" component={QuestionsPage} />
+          <Route path="/level/:levelId/score" component={ScorePage} />
           <Route><LevelSelect /></Route>
         </Switch>
       </motion.div>

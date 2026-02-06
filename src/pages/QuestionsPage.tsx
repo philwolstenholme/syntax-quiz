@@ -81,7 +81,7 @@ export const QuestionsPage = () => {
         correct: correctAnswers.toString(),
         total: questions.length.toString()
       });
-      setLocation(`/syntax-quiz/level/${levelId}/score?${searchParams.toString()}`);
+      setLocation(`/level/${levelId}/score?${searchParams.toString()}`);
     }
   }, [quizComplete, level, levelId, score, correctAnswers, questions.length, setLocation]);
 

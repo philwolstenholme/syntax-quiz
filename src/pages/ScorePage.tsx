@@ -64,7 +64,7 @@ export const ScorePage = () => {
 
         <div className="space-y-3">
           <Link
-            to={`/syntax-quiz/level/${levelId}/questions`}
+            to={`/level/${levelId}/questions`}
             className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xl px-8 py-4 rounded-xl hover:scale-105 transition-transform duration-200 shadow-lg flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />

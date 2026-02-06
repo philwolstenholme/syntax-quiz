@@ -39,14 +39,6 @@ export const level1Questions = [
     options: ["method chaining", "pipeline", "fluent interface", "cascade"]
   },
   {
-    code: `const name = 'Alice';
-const user = { name };`,
-    highlight: { start: 35, end: 43 },
-    question: "What is this object syntax called?",
-    correct: "shorthand property",
-    options: ["shorthand property", "property assignment", "destructuring", "object literal"]
-  },
-  {
     code: `function greet(name = 'World') {
   return \`Hello, \${name}!\`;
 }`,

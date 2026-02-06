@@ -45,6 +45,7 @@ export const QuestionsPage = () => {
   const [lastAnswer, setLastAnswer] = useState(null);
   const [isAnswering, setIsAnswering] = useState(false);
   const [activeId, setActiveId] = useState(null);
+  const [shouldShake, setShouldShake] = useState(false);
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
@@ -103,6 +104,8 @@ export const QuestionsPage = () => {
       vibrateIncorrect();
       playIncorrectSound();
       setStreak(0);
+      setShouldShake(true);
+      setTimeout(() => setShouldShake(false), 500);
     }
 
     setLastAnswer({
@@ -169,9 +172,15 @@ export const QuestionsPage = () => {
             <motion.div
               key={currentQuestionIndex}
               initial={{ x: 30, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
+              animate={{
+                x: shouldShake ? [-10, 10, -10, 10, 0] : 0,
+                opacity: 1,
+              }}
               exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-              transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+              transition={{
+                duration: shouldShake ? 0.5 : 0.25,
+                ease: shouldShake ? 'easeInOut' : [0, 0, 0.2, 1],
+              }}
             >
               <QuestionCard question={currentQuestion} />
 

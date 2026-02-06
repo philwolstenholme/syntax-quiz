@@ -10,15 +10,18 @@ import {
   useSensors,
   DragOverlay,
 } from '@dnd-kit/core';
+import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { playCorrectSound, playIncorrectSound } from '../utils/sounds';
 import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
 import { PageLayout } from '../components/PageLayout';
 import { QuizHeader } from '../components/QuizHeader';
 import { FeedbackBanner } from '../components/FeedbackBanner';
+import type { AnswerFeedback } from '../components/FeedbackBanner';
 import { QuestionCard } from '../components/QuestionCard';
 import { AnswerOptions } from '../components/AnswerOptions';
 import { levels } from '../data/questions';
+import type { Question } from '../data/questions';
 
 const BASE_SCORE_POINTS = 10;
 const FEEDBACK_DELAY_MS = 1500;
@@ -26,7 +29,7 @@ const FEEDBACK_DELAY_MS = 1500;
 export const QuestionsPage = () => {
   const params = useParams();
   const [, setLocation] = useLocation();
-  const levelId = parseInt(params.levelId, 10);
+  const levelId = parseInt(params.levelId ?? '0', 10);
   const level = levels.find((l) => l.id === levelId);
 
   const initialQuestions = useMemo(() => {
@@ -37,14 +40,14 @@ export const QuestionsPage = () => {
     }));
   }, [level]);
 
-  const [questions] = useState(initialQuestions);
+  const [questions] = useState<Question[]>(initialQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [lastAnswer, setLastAnswer] = useState(null);
+  const [lastAnswer, setLastAnswer] = useState<AnswerFeedback | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
@@ -87,8 +90,8 @@ export const QuestionsPage = () => {
     return null;
   }
 
-  const handleAnswer = (answer) => {
-    if (isAnswering) return;
+  const handleAnswer = (answer: string): void => {
+    if (isAnswering || !currentQuestion) return;
     setIsAnswering(true);
 
     const correct = answer === currentQuestion.correct;
@@ -117,11 +120,11 @@ export const QuestionsPage = () => {
     }, FEEDBACK_DELAY_MS);
   };
 
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent): void => {
+    setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent): void => {
     setActiveId(null);
     if (isAnswering) return;
     

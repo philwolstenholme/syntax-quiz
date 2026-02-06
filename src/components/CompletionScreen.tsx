@@ -1,8 +1,18 @@
 import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { PageLayout } from './PageLayout';
 import { StatCard } from './StatCard';
+import type { Level } from '../data/questions';
 
-export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level, onRestart, onBackToLevels }) => {
+interface CompletionScreenProps {
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  level: Level;
+  onRestart: () => void;
+  onBackToLevels: () => void;
+}
+
+export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level, onRestart, onBackToLevels }: CompletionScreenProps) => {
   const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
 
   return (

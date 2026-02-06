@@ -1,6 +1,6 @@
 const mdnBaseUrl = 'https://developer.mozilla.org/en-US';
 
-const mdnPages = {
+const mdnPages: Record<string, string> = {
   parameter: '/docs/Glossary/Parameter',
   argument: '/docs/Glossary/Argument',
   property: '/docs/Glossary/property/JavaScript',
@@ -26,7 +26,7 @@ const mdnPages = {
   void: '/docs/Web/JavaScript/Reference/Operators/void',
 };
 
-export function getMdnUrl(term) {
+export function getMdnUrl(term: string): string {
   const normalizedTerm = term.toLowerCase();
 
   if (mdnPages[normalizedTerm]) {

@@ -11,7 +11,7 @@ export const ScorePage = () => {
   const searchString = useSearch();
   const searchParams = new URLSearchParams(searchString);
 
-  const levelId = parseInt(params.levelId, 10);
+  const levelId = parseInt(params.levelId ?? '0', 10);
   const level = levels.find((l) => l.id === levelId);
 
   const completed = searchParams.get('completed');

@@ -1,4 +1,26 @@
-export const level1Questions = [
+export interface Highlight {
+  start: number;
+  end: number;
+}
+
+export interface Question {
+  code: string;
+  highlight: Highlight;
+  question: string;
+  correct: string;
+  options: string[];
+}
+
+export interface Level {
+  id: number;
+  name: string;
+  subtitle: string;
+  description: string;
+  questions: Question[];
+  color: string;
+}
+
+export const level1Questions: Question[] = [
   {
     code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
@@ -170,7 +192,7 @@ console.log(fruits[0]);`,
   }
 ];
 
-export const level2Questions = [
+export const level2Questions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
     highlight: { start: 15, end: 28 },
@@ -400,7 +422,7 @@ const numbers = [1, 2, 3].map(double);`,
   }
 ];
 
-export const level3Questions = [
+export const level3Questions: Question[] = [
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,
@@ -598,7 +620,7 @@ inputRef.current?.focus();`,
   }
 ];
 
-export const levels = [
+export const levels: Level[] = [
   {
     id: 1,
     name: "Level 1",

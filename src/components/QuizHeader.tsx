@@ -1,6 +1,15 @@
 import { Flame, Star } from 'lucide-react';
+import type { Level } from '../data/questions';
 
-export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level }) => {
+interface QuizHeaderProps {
+  score: number;
+  streak: number;
+  currentQuestionIndex: number;
+  totalQuestions: number;
+  level: Level;
+}
+
+export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level }: QuizHeaderProps) => {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (

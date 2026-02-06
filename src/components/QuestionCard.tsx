@@ -1,6 +1,11 @@
 import { useDroppable } from '@dnd-kit/core';
+import type { Question } from '../data/questions';
 
-export const QuestionCard = ({ question }) => {
+interface QuestionCardProps {
+  question: Question;
+}
+
+export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
   const { isOver, setNodeRef } = useDroppable({
     id: 'dropzone',

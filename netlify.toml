@@ -1,13 +1,7 @@
 # Netlify configuration for syntax-quiz SPA
-#
-# Note: This app is configured with a base path of /syntax-quiz/ for GitHub Pages.
-# When deployed to Netlify, the app will work but URLs will include /syntax-quiz/.
-# This is intentional to maintain compatibility with the GitHub Pages deployment.
 
 [build]
-  # Directory with the production build
   publish = "dist"
-  # Build command
   command = "npm run build"
 
 # Redirect all requests to index.html for client-side routing

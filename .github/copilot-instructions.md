@@ -26,12 +26,12 @@ A React-based quiz application for testing syntax knowledge. The project is buil
 - Use function components exclusively (no class components)
 - Use named exports for components (e.g., `export const ComponentName`)
 - Place component interfaces/types immediately before the component definition
-- Use `type` for props interfaces (e.g., `interface ComponentNameProps`)
+- Use `interface` for component props (e.g., `interface ComponentNameProps`)
 - Import React types explicitly (e.g., `import type { ReactNode }`)
 
 ### TypeScript Practices
 - Always use explicit types for function parameters
-- Prefer `interface` for object shapes and `type` for unions/intersections
+- Prefer `interface` for object shapes (including component props) and `type` for unions/intersections
 - Use type imports with `import type` when only importing types
 - Handle null/undefined cases explicitly due to `noUncheckedIndexedAccess`
 

@@ -2,11 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { Question } from '../data/questions';
 
-interface QuestionCardProps {
-  question: Question;
-}
-
-export const QuestionCard = ({ question }: QuestionCardProps) => {
+export const QuestionCard = ({ question }: { question: Question }) => {
   const { code, highlight } = question;
   const { isOver, setNodeRef } = useDroppable({
     id: 'dropzone',

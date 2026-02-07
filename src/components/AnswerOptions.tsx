@@ -3,13 +3,15 @@ import { GripVertical } from 'lucide-react';
 import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
 
-interface DraggableOptionProps {
+const DraggableOption = ({
+  option,
+  disabled,
+  onAnswer,
+}: {
   option: string;
   disabled: boolean;
   onAnswer: (answer: string) => void;
-}
-
-const DraggableOption = ({ option, disabled, onAnswer }: DraggableOptionProps) => {
+}) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: option,
     data: { answer: option },
@@ -48,13 +50,15 @@ const DraggableOption = ({ option, disabled, onAnswer }: DraggableOptionProps) =
   );
 };
 
-interface AnswerOptionsProps {
+export const AnswerOptions = ({
+  options,
+  onAnswer,
+  disabled,
+}: {
   options: string[];
   onAnswer: (answer: string) => void;
   disabled: boolean;
-}
-
-export const AnswerOptions = ({ options, onAnswer, disabled }: AnswerOptionsProps) => {
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {options.map((option, index) => (

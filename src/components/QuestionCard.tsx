@@ -1,4 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
+import clsx from 'clsx';
 import type { Question } from '../data/questions';
 
 export const QuestionCard = ({ question }: { question: Question }) => {
@@ -24,10 +25,10 @@ export const QuestionCard = ({ question }: { question: Question }) => {
       <div
         ref={setNodeRef}
         data-dropzone
-        className={`
-          relative rounded-xl overflow-hidden transition-all duration-200
-          ${isOver ? 'ring-4 ring-indigo-500 scale-[1.02]' : ''}
-        `}
+        className={clsx(
+          'relative rounded-xl overflow-hidden transition-all duration-200',
+          isOver && 'ring-4 ring-indigo-500 scale-[1.02]',
+        )}
       >
         {isOver && (
           <div className="absolute inset-0 bg-indigo-500 bg-opacity-10 flex items-center justify-center z-10">

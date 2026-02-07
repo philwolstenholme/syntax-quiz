@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react';
 import { GripVertical } from 'lucide-react';
+import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
 
 const DraggableOption = ({
@@ -33,13 +34,15 @@ const DraggableOption = ({
       disabled={disabled}
       onClick={handleClick}
       style={!disabled ? { touchAction: 'none' } : undefined}
-      className={`
-        flex items-center gap-3 p-4 rounded-xl border-2 border-gray-300
-        bg-white text-gray-800 font-semibold text-lg
-        transition-all duration-200
-        ${!disabled ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg cursor-move' : 'opacity-50 cursor-not-allowed'}
-        ${isDragging ? 'opacity-40' : ''}
-      `}
+      className={clsx(
+        'flex items-center gap-3 p-4 rounded-xl border-2 border-gray-300',
+        'bg-white text-gray-800 font-semibold text-lg',
+        'transition-all duration-200',
+        !disabled
+          ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg cursor-move'
+          : 'opacity-50 cursor-not-allowed',
+        isDragging && 'opacity-40',
+      )}
     >
       <GripVertical className="text-gray-400 flex-shrink-0" size={20} />
       <span className="flex-1 text-left">{option}</span>

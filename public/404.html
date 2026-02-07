@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>syntax-quiz</title>
+    <script type="text/javascript">
+      var location = window.location;
+      var pathSegmentsToKeep = 1;
+      var redirect =
+        location.protocol +
+        '//' +
+        location.hostname +
+        (location.port ? ':' + location.port : '') +
+        location.pathname.split('/').slice(0, pathSegmentsToKeep + 1).join('/') +
+        '/?/' +
+        location.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/') +
+        (location.search ? '&' + location.search.slice(1).replace(/&/g, '~and~') : '') +
+        location.hash;
+      location.replace(redirect);
+    </script>
+  </head>
+  <body></body>
+</html>

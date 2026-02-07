@@ -8,12 +8,7 @@ export interface AnswerFeedback {
   userAnswer: string | null;
 }
 
-interface MdnLinkProps {
-  term: string;
-  className: string;
-}
-
-const MdnLink = ({ term, className }: MdnLinkProps) => (
+const MdnLink = ({ term, className }: { term: string; className: string }) => (
   <a
     href={getMdnUrl(term)}
     target="_blank"
@@ -24,11 +19,7 @@ const MdnLink = ({ term, className }: MdnLinkProps) => (
   </a>
 );
 
-interface FeedbackBannerProps {
-  lastAnswer: AnswerFeedback | null;
-}
-
-export const FeedbackBanner = ({ lastAnswer }: FeedbackBannerProps) => {
+export const FeedbackBanner = ({ lastAnswer }: { lastAnswer: AnswerFeedback | null }) => {
   if (!lastAnswer) return null;
 
   return (

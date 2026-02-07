@@ -8,6 +8,7 @@
     <script type="text/javascript">
       (function (location) {
         if (location.search[1] === '/') {
+          var basePath = location.pathname.replace(/\/$/, '');
           var decoded = location.search
             .slice(1)
             .split('&')
@@ -15,7 +16,7 @@
               return segment.replace(/~and~/g, '&');
             })
             .join('?');
-          window.history.replaceState(null, '', location.pathname.slice(0, -1) + decoded + location.hash);
+          window.history.replaceState(null, '', basePath + decoded + location.hash);
         }
       })(window.location);
     </script>

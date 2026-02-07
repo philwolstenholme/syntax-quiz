@@ -8,8 +8,8 @@
     <script type="text/javascript">
       (function (location) {
         if (location.search[1] === '/') {
-          var basePath = location.pathname.replace(/\/$/, '');
-          var decoded = location.search
+          const basePath = location.pathname.replace(/\/$/, '');
+          const decoded = location.search
             .slice(1)
             .split('&')
             .map(function (segment) {

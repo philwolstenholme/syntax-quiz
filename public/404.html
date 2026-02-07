@@ -7,14 +7,18 @@
       const currentLocation = window.location;
       // Keep the repo name segment for GitHub Pages project sites.
       const basePathSegments = 1;
+      const pathSegments = currentLocation.pathname.split('/').filter(Boolean);
+      const baseSegments = Math.min(basePathSegments, pathSegments.length);
+      const basePath = baseSegments ? '/' + pathSegments.slice(0, baseSegments).join('/') : '';
+      const restPath = pathSegments.slice(baseSegments).join('/');
       const redirect =
         currentLocation.protocol +
         '//' +
         currentLocation.hostname +
         (currentLocation.port ? ':' + currentLocation.port : '') +
-        currentLocation.pathname.split('/').slice(0, basePathSegments + 1).join('/') +
+        basePath +
         '/?/' +
-        currentLocation.pathname.slice(1).split('/').slice(basePathSegments).join('/') +
+        restPath +
         (currentLocation.search ? '&' + currentLocation.search.slice(1).replace(/&/g, '~and~') : '') +
         currentLocation.hash;
       currentLocation.replace(redirect);

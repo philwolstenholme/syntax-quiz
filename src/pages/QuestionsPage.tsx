@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { shuffle } from 'es-toolkit';
 import { motion, AnimatePresence } from 'motion/react';
@@ -25,7 +25,7 @@ import { levels } from '../data/questions';
 import type { Question } from '../data/questions';
 
 const BASE_SCORE_POINTS = 10;
-const FEEDBACK_DELAY_MS = 1500;
+const FEEDBACK_DELAY_MS = 4000;
 const HINT_SCORE_PENALTY = 0.5;
 
 export const QuestionsPage = () => {
@@ -117,16 +117,17 @@ export const QuestionsPage = () => {
     setLastAnswer({
       correct,
       term: currentQuestion.correct,
-      userAnswer: correct ? null : answer
+      userAnswer: correct ? null : answer,
+      explanation: currentQuestion.explanation
     });
-
-    setTimeout(() => {
-      setCurrentQuestionIndex((prev) => prev + 1);
-      setIsAnswering(false);
-      setHintsUsed(0);
-      setEliminatedOptions([]);
-    }, FEEDBACK_DELAY_MS);
   };
+
+  const handleFeedbackComplete = useCallback(() => {
+    setCurrentQuestionIndex((prev) => prev + 1);
+    setIsAnswering(false);
+    setHintsUsed(0);
+    setEliminatedOptions([]);
+  }, []);
 
   const handleUseHint = (): void => {
     if (isAnswering || !currentQuestion) return;
@@ -180,14 +181,18 @@ export const QuestionsPage = () => {
           />
 
           <AnimatePresence>
-            {lastAnswer && currentQuestionIndex > 0 && (
+            {lastAnswer && isAnswering && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
                 transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
               >
-                <FeedbackBanner lastAnswer={lastAnswer} />
+                <FeedbackBanner
+                  lastAnswer={lastAnswer}
+                  durationMs={FEEDBACK_DELAY_MS}
+                  onCountdownComplete={handleFeedbackComplete}
+                />
               </motion.div>
             )}
           </AnimatePresence>

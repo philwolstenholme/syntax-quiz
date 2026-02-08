@@ -7,6 +7,7 @@ export interface AnswerFeedback {
   correct: boolean;
   term: string;
   userAnswer: string | null;
+  explanation: string;
 }
 
 const MdnLink = ({ term, className }: { term: string; className: string }) => (
@@ -34,27 +35,37 @@ export const FeedbackBanner = ({ lastAnswer }: { lastAnswer: AnswerFeedback | nu
         ease: 'easeInOut',
       }}
       className={clsx(
-        'rounded-2xl p-4 mb-6 flex items-center gap-3 font-bold text-lg',
+        'rounded-2xl p-4 mb-6 border-2',
         lastAnswer.correct
-          ? 'bg-green-50 text-green-700 border-2 border-green-500'
-          : 'bg-red-50 text-red-700 border-2 border-red-500',
+          ? 'bg-green-50 text-green-700 border-green-500'
+          : 'bg-red-50 text-red-700 border-red-500',
       )}
     >
-      {lastAnswer.correct ? (
-        <>
-          <CheckCircle size={24} />
-          <span>
-            Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
-          </span>
-        </>
-      ) : (
-        <>
-          <XCircle size={24} />
-          <span>
-            Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
-            {lastAnswer.userAnswer}
-          </span>
-        </>
+      <div className="flex items-center gap-3 font-bold text-lg">
+        {lastAnswer.correct ? (
+          <>
+            <CheckCircle size={24} className="flex-shrink-0" />
+            <span>
+              Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+            </span>
+          </>
+        ) : (
+          <>
+            <XCircle size={24} className="flex-shrink-0" />
+            <span>
+              Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+              {lastAnswer.userAnswer}
+            </span>
+          </>
+        )}
+      </div>
+      {lastAnswer.explanation && (
+        <p className={clsx(
+          'mt-2 ml-9 text-sm font-normal leading-relaxed',
+          lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+        )}>
+          {lastAnswer.explanation}
+        </p>
       )}
     </motion.div>
   );

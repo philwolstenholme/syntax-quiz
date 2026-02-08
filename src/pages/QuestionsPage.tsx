@@ -25,7 +25,7 @@ import { levels } from '../data/questions';
 import type { Question } from '../data/questions';
 
 const BASE_SCORE_POINTS = 10;
-const FEEDBACK_DELAY_MS = 1500;
+const FEEDBACK_DELAY_MS = 4000;
 const HINT_SCORE_PENALTY = 0.5;
 
 export const QuestionsPage = () => {
@@ -117,7 +117,8 @@ export const QuestionsPage = () => {
     setLastAnswer({
       correct,
       term: currentQuestion.correct,
-      userAnswer: correct ? null : answer
+      userAnswer: correct ? null : answer,
+      explanation: currentQuestion.explanation
     });
 
     setTimeout(() => {

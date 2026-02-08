@@ -47,7 +47,7 @@ export const level1Questions: Question[] = [
   {
     code: `import { useState } from 'react';`,
     highlight: { start: 9, end: 17 },
-    question: "What is being imported here?",
+    question: "What type of import is this?",
     correct: "named import",
     options: ["named import", "default import", "namespace import", "side effect import"]
   },
@@ -228,9 +228,9 @@ const { name, age } = user;`,
     code: `const oldArr = [1, 2, 3];
 const newArr = [...oldArr, 4, 5];`,
     highlight: { start: 41, end: 44 },
-    question: "What is this operator called?",
-    correct: "spread operator",
-    options: ["spread operator", "rest operator", "destructuring", "expansion"]
+    question: "What is this syntax called?",
+    correct: "spread syntax",
+    options: ["spread syntax", "rest syntax", "destructuring", "expansion"]
   },
   {
     code: `const isActive = true;
@@ -238,7 +238,7 @@ const message = isActive ? 'yes' : 'no';`,
     highlight: { start: 39, end: 62 },
     question: "What is this operator called?",
     correct: "ternary operator",
-    options: ["ternary operator", "conditional operator", "inline if", "expression"]
+    options: ["ternary operator", "comparison operator", "inline if", "expression"]
   },
   {
     code: `const user = { profile: { name: 'Alice' } };
@@ -403,8 +403,8 @@ const numbers = [1, 2, 3].map(double);`,
 ))}`,
     highlight: { start: 27, end: 41 },
     question: "What is this attribute used for in React?",
-    correct: "list reconciliation",
-    options: ["list reconciliation", "identification", "indexing", "sorting"]
+    correct: "identifying list items",
+    options: ["identifying list items", "styling elements", "indexing", "sorting"]
   },
   {
     code: `type AdminUser = User & Admin;`,
@@ -436,9 +436,9 @@ const str = value as string;`,
   return typeof value === 'string';
 }`,
     highlight: { start: 35, end: 50 },
-    question: "What is this syntax called?",
-    correct: "type guard",
-    options: ["type guard", "type predicate", "type check", "type assertion"]
+    question: "What is this return type syntax called?",
+    correct: "type predicate",
+    options: ["type predicate", "type narrowing", "type check", "type assertion"]
   },
   {
     code: `class User {
@@ -520,7 +520,7 @@ export function fetchData() { }`,
     highlight: { start: 19, end: 23 },
     question: "What property enables discriminated unions?",
     correct: "discriminant",
-    options: ["discriminant", "tag", "identifier", "selector"]
+    options: ["discriminant", "enumerator", "identifier", "selector"]
   },
   {
     code: `function process<T extends { id: number }>(item: T) {

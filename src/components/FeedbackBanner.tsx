@@ -63,7 +63,7 @@ interface SkipButtonProps {
 const SkipButton = ({ onSkip }: SkipButtonProps) => (
   <button
     onClick={onSkip}
-    className="relative w-9 h-9 flex-shrink-0 rounded-full hover:bg-black/5 transition-colors"
+    className="relative w-9 h-9 flex-shrink-0 rounded-full text-current hover:bg-black/5 transition-colors"
     aria-label="Skip feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">

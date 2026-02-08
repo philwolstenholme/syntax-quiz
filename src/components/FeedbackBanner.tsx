@@ -70,6 +70,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const rafRef = useRef<number>(undefined);
   const completedRef = useRef(false);
   const lastAnswerRef = useRef<AnswerFeedback | null>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
   const onCompleteRef = useRef(onCountdownComplete);
   onCompleteRef.current = onCountdownComplete;
 
@@ -82,6 +83,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       elapsedRef.current = 0;
       completedRef.current = false;
       startTimeRef.current = performance.now();
+      bannerRef.current?.focus();
     }
   }, [lastAnswer, durationMs]);
 
@@ -130,6 +132,8 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
 
   return (
     <motion.div
+      ref={bannerRef}
+      tabIndex={-1}
       initial={{ x: 0 }}
       animate={{
         x: lastAnswer.correct ? 0 : [-10, 10, -10, 10, 0],
@@ -139,7 +143,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
         ease: 'easeInOut',
       }}
       className={clsx(
-        'rounded-2xl p-4 mb-6 border-2',
+        'rounded-2xl p-4 mb-6 border-2 outline-none',
         lastAnswer.correct
           ? 'bg-green-50 text-green-700 border-green-500'
           : 'bg-red-50 text-red-700 border-red-500',

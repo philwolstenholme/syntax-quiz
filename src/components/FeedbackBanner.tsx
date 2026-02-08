@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CheckCircle, XCircle, Play, Pause } from 'lucide-react';
+import { CheckCircle, XCircle, Play, Pause, FastForward } from 'lucide-react';
 import clsx from 'clsx';
 import { motion } from 'motion/react';
 import { getMdnUrl } from '../utils/mdnLinks';
@@ -56,6 +56,22 @@ const CountdownButton = ({
   );
 };
 
+interface SkipButtonProps {
+  onSkip: () => void;
+}
+
+const SkipButton = ({ onSkip }: SkipButtonProps) => (
+  <button
+    onClick={onSkip}
+    className="relative w-9 h-9 flex-shrink-0 rounded-full text-current hover:bg-black/5 transition-colors"
+    aria-label="Skip feedback"
+  >
+    <div className="absolute inset-0 flex items-center justify-center">
+      <FastForward size={14} />
+    </div>
+  </button>
+);
+
 interface FeedbackBannerProps {
   lastAnswer: AnswerFeedback | null;
   durationMs?: number;
@@ -73,6 +89,16 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const bannerRef = useRef<HTMLDivElement>(null);
   const onCompleteRef = useRef(onCountdownComplete);
   onCompleteRef.current = onCountdownComplete;
+
+  const completeFeedback = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = undefined;
+    setProgress(1);
+    setPaused(false);
+    onCompleteRef.current?.();
+  }, []);
 
   // Reset timer when lastAnswer changes
   useEffect(() => {
@@ -100,8 +126,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       setProgress(p);
 
       if (p >= 1) {
-        completedRef.current = true;
-        onCompleteRef.current?.();
+        completeFeedback();
         return;
       }
 
@@ -113,7 +138,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [lastAnswer, durationMs, paused]);
+  }, [lastAnswer, durationMs, paused, completeFeedback]);
 
   const togglePause = useCallback(() => {
     if (completedRef.current) return;
@@ -179,12 +204,15 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           )}
         </div>
         {timerActive && (
-          <CountdownButton
-            progress={progress}
-            paused={paused}
-            onToggle={togglePause}
-            color={ringColor}
-          />
+          <div className="flex items-center gap-2">
+            <CountdownButton
+              progress={progress}
+              paused={paused}
+              onToggle={togglePause}
+              color={ringColor}
+            />
+            <SkipButton onSkip={completeFeedback} />
+          </div>
         )}
       </div>
     </motion.div>

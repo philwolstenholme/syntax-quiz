@@ -33,8 +33,7 @@ const CountdownButton = ({
   onToggle: () => void;
   color: string;
 }) => {
-  const remaining = 1 - progress;
-  const degrees = remaining * 360;
+  const degrees = progress * 360;
 
   return (
     <button

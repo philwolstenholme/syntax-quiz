@@ -12,7 +12,7 @@ interface HintButtonProps {
 export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonProps) => {
   const maxHints = 2;
   const showEliminate = hintsUsed === 0;
-  const showHintText = hintsUsed >= 1;
+  const showHintText = hintsUsed >= 2;
   const allUsed = hintsUsed >= maxHints;
 
   return (

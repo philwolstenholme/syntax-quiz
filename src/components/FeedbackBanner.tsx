@@ -151,7 +151,6 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completedRef.current;
-  const buttonPaused = paused;
   const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
 
   return (
@@ -205,7 +204,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
         {timerActive && (
           <CountdownButton
             progress={progress}
-            paused={buttonPaused}
+            paused={paused}
             onToggle={togglePause}
             onFocus={pauseOnFocus}
             onBlur={resumeOnBlur}

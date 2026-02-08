@@ -90,6 +90,16 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const onCompleteRef = useRef(onCountdownComplete);
   onCompleteRef.current = onCountdownComplete;
 
+  const completeFeedback = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = undefined;
+    setProgress(1);
+    setPaused(false);
+    onCompleteRef.current?.();
+  }, []);
+
   // Reset timer when lastAnswer changes
   useEffect(() => {
     if (lastAnswer && lastAnswer !== lastAnswerRef.current && durationMs) {
@@ -116,8 +126,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       setProgress(p);
 
       if (p >= 1) {
-        completedRef.current = true;
-        onCompleteRef.current?.();
+        completeFeedback();
         return;
       }
 
@@ -129,7 +138,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [lastAnswer, durationMs, paused]);
+  }, [lastAnswer, durationMs, paused, completeFeedback]);
 
   const togglePause = useCallback(() => {
     if (completedRef.current) return;
@@ -140,15 +149,6 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       setPaused(true);
     }
   }, [paused]);
-
-  const skipFeedback = useCallback(() => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    setProgress(1);
-    setPaused(false);
-    onCompleteRef.current?.();
-  }, []);
 
   if (!lastAnswer) return null;
 
@@ -211,7 +211,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               onToggle={togglePause}
               color={ringColor}
             />
-            <SkipButton onSkip={skipFeedback} />
+            <SkipButton onSkip={completeFeedback} />
           </div>
         )}
       </div>

@@ -20,11 +20,13 @@ import { FeedbackBanner } from '../components/FeedbackBanner';
 import type { AnswerFeedback } from '../components/FeedbackBanner';
 import { QuestionCard } from '../components/QuestionCard';
 import { AnswerOptions } from '../components/AnswerOptions';
+import { HintButton } from '../components/HintButton';
 import { levels } from '../data/questions';
 import type { Question } from '../data/questions';
 
 const BASE_SCORE_POINTS = 10;
 const FEEDBACK_DELAY_MS = 1500;
+const HINT_SCORE_PENALTY = 0.5;
 
 export const QuestionsPage = () => {
   const params = useParams();
@@ -48,6 +50,8 @@ export const QuestionsPage = () => {
   const [lastAnswer, setLastAnswer] = useState<AnswerFeedback | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [eliminatedOptions, setEliminatedOptions] = useState<string[]>([]);
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
@@ -99,7 +103,9 @@ export const QuestionsPage = () => {
     if (correct) {
       vibrateCorrect();
       playCorrectSound();
-      setScore((prev) => prev + BASE_SCORE_POINTS * (streak + 1));
+      const penalty = Math.pow(HINT_SCORE_PENALTY, hintsUsed);
+      const points = Math.round(BASE_SCORE_POINTS * (streak + 1) * penalty);
+      setScore((prev) => prev + points);
       setStreak((prev) => prev + 1);
       setCorrectAnswers((prev) => prev + 1);
     } else {
@@ -117,7 +123,25 @@ export const QuestionsPage = () => {
     setTimeout(() => {
       setCurrentQuestionIndex((prev) => prev + 1);
       setIsAnswering(false);
+      setHintsUsed(0);
+      setEliminatedOptions([]);
     }, FEEDBACK_DELAY_MS);
+  };
+
+  const handleUseHint = (): void => {
+    if (isAnswering || !currentQuestion) return;
+    if (hintsUsed === 0) {
+      // First hint: eliminate two wrong answers
+      const wrongOptions = currentQuestion.options.filter(
+        (opt: string) => opt !== currentQuestion.correct
+      );
+      const shuffledWrong = shuffle(wrongOptions);
+      setEliminatedOptions(shuffledWrong.slice(0, 2));
+      setHintsUsed(1);
+    } else if (hintsUsed === 1) {
+      // Second hint: show the text hint (state change triggers display)
+      setHintsUsed(2);
+    }
   };
 
   const handleDragStart = (event: DragStartEvent): void => {
@@ -178,10 +202,18 @@ export const QuestionsPage = () => {
             >
               <QuestionCard question={currentQuestion} />
 
+              <HintButton
+                hint={currentQuestion.hint}
+                hintsUsed={hintsUsed}
+                onUseHint={handleUseHint}
+                disabled={isAnswering}
+              />
+
               <AnswerOptions
                 options={currentQuestion.options}
                 onAnswer={handleAnswer}
                 disabled={isAnswering}
+                eliminatedOptions={eliminatedOptions}
               />
 
               <div className="mt-8 text-center">

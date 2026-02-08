@@ -6,22 +6,25 @@ import { useDraggable } from '@dnd-kit/core';
 const DraggableOption = ({
   option,
   disabled,
+  eliminated,
   onAnswer,
 }: {
   option: string;
   disabled: boolean;
+  eliminated: boolean;
   onAnswer: (answer: string) => void;
 }) => {
+  const isDisabled = disabled || eliminated;
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: option,
     data: { answer: option },
-    disabled,
+    disabled: isDisabled,
   });
 
   const handleClick = (e: MouseEvent) => {
     // Prevent click from triggering after drag
     if (e.defaultPrevented) return;
-    if (!disabled) {
+    if (!isDisabled) {
       onAnswer(option);
     }
   };
@@ -30,15 +33,16 @@ const DraggableOption = ({
     <button
       ref={setNodeRef}
       {...attributes}
-      disabled={disabled}
+      disabled={isDisabled}
       onClick={handleClick}
       className={clsx(
         'flex items-center gap-3 p-4 rounded-xl border-2 border-gray-300',
         'bg-white text-gray-800 font-semibold text-lg',
         'transition-all duration-200',
-        !disabled
+        eliminated && 'opacity-30 line-through cursor-not-allowed scale-95',
+        !isDisabled
           ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg'
-          : 'opacity-50 cursor-not-allowed',
+          : !eliminated && 'opacity-50 cursor-not-allowed',
         isDragging && 'opacity-40',
       )}
     >
@@ -48,7 +52,7 @@ const DraggableOption = ({
           'relative flex-shrink-0 cursor-move',
           "after:content-[''] after:absolute after:-inset-4",
         )}
-        style={!disabled ? { touchAction: 'none' } : undefined}
+        style={!isDisabled ? { touchAction: 'none' } : undefined}
       >
         <GripVertical className="text-gray-400" size={20} />
       </span>
@@ -61,10 +65,12 @@ export const AnswerOptions = ({
   options,
   onAnswer,
   disabled,
+  eliminatedOptions = [],
 }: {
   options: string[];
   onAnswer: (answer: string) => void;
   disabled: boolean;
+  eliminatedOptions?: string[];
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,6 +79,7 @@ export const AnswerOptions = ({
           key={index}
           option={option}
           disabled={disabled}
+          eliminated={eliminatedOptions.includes(option)}
           onAnswer={onAnswer}
         />
       ))}

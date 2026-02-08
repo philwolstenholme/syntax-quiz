@@ -26,11 +26,15 @@ const CountdownButton = ({
   progress,
   paused,
   onToggle,
+  onFocus,
+  onBlur,
   color,
 }: {
   progress: number;
   paused: boolean;
   onToggle: () => void;
+  onFocus: () => void;
+  onBlur: () => void;
   color: string;
 }) => {
   const degrees = progress * 360;
@@ -38,6 +42,8 @@ const CountdownButton = ({
   return (
     <button
       onClick={onToggle}
+      onFocus={onFocus}
+      onBlur={onBlur}
       className="relative w-9 h-9 flex-shrink-0 cursor-pointer"
       aria-label={paused ? 'Resume timer' : 'Pause timer'}
     >
@@ -65,6 +71,7 @@ interface FeedbackBannerProps {
 export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: FeedbackBannerProps) => {
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [focusPaused, setFocusPaused] = useState(false);
   const startTimeRef = useRef(0);
   const elapsedRef = useRef(0);
   const rafRef = useRef<number>(undefined);
@@ -80,6 +87,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       lastAnswerRef.current = lastAnswer;
       setProgress(0);
       setPaused(false);
+      setFocusPaused(false);
       elapsedRef.current = 0;
       completedRef.current = false;
       startTimeRef.current = performance.now();
@@ -87,9 +95,11 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     }
   }, [lastAnswer, durationMs]);
 
+  const isPaused = paused || focusPaused;
+
   // Animation loop
   useEffect(() => {
-    if (!lastAnswer || !durationMs || paused || completedRef.current) return;
+    if (!lastAnswer || !durationMs || isPaused || completedRef.current) return;
 
     startTimeRef.current = performance.now();
 
@@ -113,21 +123,35 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [lastAnswer, durationMs, paused]);
+  }, [lastAnswer, durationMs, isPaused]);
 
   const togglePause = useCallback(() => {
     if (completedRef.current) return;
     if (paused) {
       setPaused(false);
-    } else {
-      elapsedRef.current += performance.now() - startTimeRef.current;
-      setPaused(true);
+      return;
     }
-  }, [paused]);
+    if (!focusPaused) {
+      elapsedRef.current += performance.now() - startTimeRef.current;
+    }
+    setPaused(true);
+  }, [paused, focusPaused]);
+
+  const pauseOnFocus = useCallback(() => {
+    if (completedRef.current || paused || focusPaused) return;
+    elapsedRef.current += performance.now() - startTimeRef.current;
+    setFocusPaused(true);
+  }, [paused, focusPaused]);
+
+  const resumeOnBlur = useCallback(() => {
+    if (!focusPaused) return;
+    setFocusPaused(false);
+  }, [focusPaused]);
 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completedRef.current;
+  const buttonPaused = paused;
   const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
 
   return (
@@ -181,8 +205,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
         {timerActive && (
           <CountdownButton
             progress={progress}
-            paused={paused}
+            paused={buttonPaused}
             onToggle={togglePause}
+            onFocus={pauseOnFocus}
+            onBlur={resumeOnBlur}
             color={ringColor}
           />
         )}

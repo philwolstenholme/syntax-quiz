@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CheckCircle, XCircle, Play, Pause } from 'lucide-react';
+import { CheckCircle, XCircle, Play, Pause, SkipForward } from 'lucide-react';
 import clsx from 'clsx';
 import { motion } from 'motion/react';
 import { getMdnUrl } from '../utils/mdnLinks';
@@ -125,6 +125,13 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     }
   }, [paused]);
 
+  const handleSkip = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    onCompleteRef.current?.();
+  }, []);
+
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completedRef.current;
@@ -179,12 +186,21 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           )}
         </div>
         {timerActive && (
-          <CountdownButton
-            progress={progress}
-            paused={paused}
-            onToggle={togglePause}
-            color={ringColor}
-          />
+          <div className="flex items-center gap-1">
+            <CountdownButton
+              progress={progress}
+              paused={paused}
+              onToggle={togglePause}
+              color={ringColor}
+            />
+            <button
+              onClick={handleSkip}
+              className="w-9 h-9 flex-shrink-0 flex items-center justify-center opacity-30 hover:opacity-60 transition-opacity cursor-pointer"
+              aria-label="Skip feedback"
+            >
+              <SkipForward size={14} />
+            </button>
+          </div>
         )}
       </div>
     </motion.div>

@@ -45,7 +45,7 @@ export const level1Questions: Question[] = [
   },
   {
     code: `const greeting = \`Hello, \${name}!\`;`,
-    highlight: { start: 25, end: 33 },
+    highlight: { start: 25, end: 32 },
     question: "What is the highlighted syntax called?",
     correct: "string interpolation",
     options: ["string interpolation", "variable injection", "placeholder", "expression slot"],
@@ -110,7 +110,7 @@ const last = colors.pop();`,
     question: "What does this method do?",
     correct: "removes the last element",
     options: ["removes the last element", "adds an element", "returns the length", "finds an element"],
-    hint: "Think about what 'pop' means — like popping something off the top of a stack.",
+    hint: "Sometimes people use a stack of spring-loaded plates as a cafeteria as the analogy here. What makes those plates 'pop' upwards?.",
     explanation: "Array.pop() removes and returns the last element of the array, mutating the original array. It's the opposite of push(), which adds to the end."
   },
   {
@@ -120,7 +120,7 @@ numbers.push(4);`,
     question: "What does this method do?",
     correct: "adds to the end",
     options: ["adds to the end", "adds to the start", "removes from end", "removes from start"],
-    hint: "Think about pushing something onto the end of a line.",
+    hint: "Sometimes people use a stack of spring-loaded plates as a cafeteria as the analogy here. What makes those plates 'push' downwards?.",
     explanation: "Array.push() adds one or more elements to the end of an array and returns the new length. It mutates the original array, unlike concat() which creates a new one."
   },
   {
@@ -138,7 +138,7 @@ const upper = text.toUpperCase();`,
   return \`Hello, \${name}!\`;
 }
 greet('Alice');`,
-    highlight: { start: 66, end: 73 },
+    highlight: { start: 67, end: 74 },
     question: "What is the highlighted part called?",
     correct: "argument",
     options: ["argument", "parameter", "property", "value"],
@@ -289,7 +289,7 @@ export const level2Questions: Question[] = [
     highlight: { start: 18, end: 26 },
     question: "What is the highlighted part called?",
     correct: "return type",
-    options: ["return type", "type annotation", "type hint", "output type"],
+    options: ["return type", "output signature", "type hint", "output type"],
     hint: "This annotation after the () declares what type the function gives back.",
     explanation: "A return type annotation after the parentheses declares what type a function will return. It helps TypeScript verify that all code paths return the expected type."
   },
@@ -306,7 +306,7 @@ const { name, age } = user;`,
   {
     code: `const oldArr = [1, 2, 3];
 const newArr = [...oldArr, 4, 5];`,
-    highlight: { start: 41, end: 44 },
+    highlight: { start: 42, end: 45 },
     question: "What is this syntax called?",
     correct: "spread syntax",
     options: ["spread syntax", "rest syntax", "destructuring", "expansion"],
@@ -340,7 +340,7 @@ const name = user?.profile?.name;`,
     highlight: { start: 51, end: 53 },
     question: "What is this operator called?",
     correct: "nullish coalescing",
-    options: ["nullish coalescing", "default operator", "fallback operator", "or operator"],
+    options: ["nullish coalescing", "default operator", "fallback operator", "NaN operator"],
     hint: "The ?? operator provides a fallback only for null or undefined values.",
     explanation: "The nullish coalescing operator (??) returns the right operand only when the left is null or undefined. Unlike || (logical OR), it doesn't trigger on falsy values like 0 or empty string."
   },
@@ -382,7 +382,7 @@ const name = user?.profile?.name;`,
     return x;
   };
 }`,
-    highlight: { start: 0, end: 75 },
+    highlight: { start: 0, end: 83 },
     question: "What JavaScript concept is demonstrated here?",
     correct: "closure",
     options: ["closure", "scope", "hoisting", "recursion"],
@@ -403,7 +403,7 @@ var x = 5;`,
     code: `const promise = new Promise((resolve, reject) => {
   setTimeout(() => resolve('done'), 1000);
 });`,
-    highlight: { start: 16, end: 93 },
+    highlight: { start: 16, end: 96 },
     question: "What is this object called?",
     correct: "Promise",
     options: ["Promise", "Future", "Deferred", "Observable"],
@@ -478,7 +478,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `useEffect(() => {
   document.title = 'Hello';
 }, []);`,
-    highlight: { start: 0, end: 50 },
+    highlight: { start: 0, end: 52 },
     question: "What is this React hook used for?",
     correct: "side effects",
     options: ["side effects", "state management", "memoization", "context"],
@@ -489,7 +489,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `useEffect(() => {
   fetchData();
 }, [userId]);`,
-    highlight: { start: 33, end: 41 },
+    highlight: { start: 36, end: 44 },
     question: "What is this array called in useEffect?",
     correct: "dependency array",
     options: ["dependency array", "watch list", "trigger array", "effect list"],
@@ -500,7 +500,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `function Button({ onClick, children }) {
   return <button onClick={onClick}>{children}</button>;
 }`,
-    highlight: { start: 16, end: 38 },
+    highlight: { start: 16, end: 37 },
     question: "What is this pattern called in React?",
     correct: "props destructuring",
     options: ["props destructuring", "parameter spread", "object unpacking", "property access"],
@@ -522,7 +522,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `{items.map(item => (
   <li key={item.id}>{item.name}</li>
 ))}`,
-    highlight: { start: 27, end: 41 },
+    highlight: { start: 27, end: 40 },
     question: "What is this attribute used for in React?",
     correct: "identifying list items",
     options: ["identifying list items", "styling elements", "indexing", "sorting"],
@@ -684,7 +684,7 @@ export function fetchData() { }`,
   },
   {
     code: `type NonNullable<T> = T extends null | undefined ? never : T;`,
-    highlight: { start: 49, end: 54 },
+    highlight: { start: 51, end: 56 },
     question: "What type represents an impossible value?",
     correct: "never",
     options: ["never", "void", "null", "undefined"],

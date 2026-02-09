@@ -87,12 +87,18 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const completedRef = useRef(false);
   const lastAnswerRef = useRef<AnswerFeedback | null>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
+  const [completed, setCompleted] = useState(false);
+  const [processedAnswer, setProcessedAnswer] = useState<AnswerFeedback | null>(null);
   const onCompleteRef = useRef(onCountdownComplete);
-  onCompleteRef.current = onCountdownComplete;
+
+  useEffect(() => {
+    onCompleteRef.current = onCountdownComplete;
+  });
 
   const completeFeedback = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
+    setCompleted(true);
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = undefined;
     setProgress(1);
@@ -100,12 +106,18 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     onCompleteRef.current?.();
   }, []);
 
-  // Reset timer when lastAnswer changes
+  // Reset state when lastAnswer changes (render-time pattern)
+  if (lastAnswer && lastAnswer !== processedAnswer && durationMs) {
+    setProcessedAnswer(lastAnswer);
+    setProgress(0);
+    setPaused(false);
+    setCompleted(false);
+  }
+
+  // Reset refs and focus when lastAnswer changes
   useEffect(() => {
     if (lastAnswer && lastAnswer !== lastAnswerRef.current && durationMs) {
       lastAnswerRef.current = lastAnswer;
-      setProgress(0);
-      setPaused(false);
       elapsedRef.current = 0;
       completedRef.current = false;
       startTimeRef.current = performance.now();
@@ -152,7 +164,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
 
   if (!lastAnswer) return null;
 
-  const timerActive = durationMs && !completedRef.current;
+  const timerActive = durationMs && !completed;
   const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
 
   return (

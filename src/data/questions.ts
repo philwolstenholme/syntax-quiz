@@ -235,7 +235,7 @@ console.log(fruits[0]);`,
     explanation: "A callback is a function passed as an argument to another function, to be called later. Here, the arrow function n => n * 2 is passed to map() which 'calls it back' for each element."
   },
   {
-    code: `const user_first_name = 'Alice';`,
+    code: `const USER_FIRST_NAME = 'Alice';`,
     highlight: { start: 6, end: 21 },
     question: "What naming convention is used here?",
     correct: "snake case",
@@ -249,7 +249,7 @@ console.log(fruits[0]);`,
     question: "What naming convention is used here?",
     correct: "camel case",
     options: ["camel case", "snake case", "pascal case", "kebab case"],
-    hint: "Each new word starts with an uppercase letter, forming 'humps' like a camel.",
+    hint: "Each new word starts with an uppercase letter, forming 'humps'…",
     explanation: "Camel case joins words with no separator, capitalizing each word after the first (userFirstName). It's the standard convention for variables and functions in JavaScript and TypeScript."
   },
   {

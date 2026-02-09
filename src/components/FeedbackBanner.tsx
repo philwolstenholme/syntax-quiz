@@ -96,6 +96,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   }, [lastAnswer, durationMs]);
 
   const isPaused = paused || focusPaused;
+  const completeFeedback = useCallback((): void => {
+    completedRef.current = true;
+    onCompleteRef.current?.();
+  }, []);
 
   // Animation loop
   useEffect(() => {
@@ -110,8 +114,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       setProgress(p);
 
       if (p >= 1) {
-        completedRef.current = true;
-        onCompleteRef.current?.();
+        completeFeedback();
         return;
       }
 
@@ -123,7 +126,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [lastAnswer, durationMs, isPaused]);
+  }, [lastAnswer, durationMs, isPaused, completeFeedback]);
 
   const togglePause = useCallback(() => {
     if (completedRef.current) return;

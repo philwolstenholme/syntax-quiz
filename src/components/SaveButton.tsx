@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Save, Check, Copy, Link } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -11,6 +11,7 @@ interface SaveButtonProps {
 export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps) => {
   const [saveUrl, setSaveUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const confirmationRef = useRef<HTMLDivElement>(null);
 
   // Dismiss the save confirmation when the question changes
   useEffect(() => {
@@ -23,6 +24,13 @@ export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps)
     setSaveUrl(url);
     setCopied(false);
   };
+
+  // Focus the confirmation element when it becomes visible
+  useEffect(() => {
+    if (saveUrl) {
+      confirmationRef.current?.focus();
+    }
+  }, [saveUrl]);
 
   const handleCopy = async () => {
     if (!saveUrl) return;
@@ -56,11 +64,13 @@ export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps)
       <AnimatePresence>
         {saveUrl && (
           <motion.div
+            ref={confirmationRef}
+            tabIndex={-1}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="mt-3 p-4 rounded-xl bg-green-50 border border-green-200"
+            className="mt-3 p-4 rounded-xl bg-green-50 border border-green-200 outline-none"
           >
             <div className="flex items-center gap-2 text-green-700 font-semibold mb-2">
               <Check size={18} />

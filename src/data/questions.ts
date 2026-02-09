@@ -233,6 +233,33 @@ console.log(fruits[0]);`,
     options: ["callback", "lambda", "handler", "delegate"],
     hint: "A function passed as an argument to another function, to be 'called back' later.",
     explanation: "A callback is a function passed as an argument to another function, to be called later. Here, the arrow function n => n * 2 is passed to map() which 'calls it back' for each element."
+  },
+  {
+    code: `const user_first_name = 'Alice';`,
+    highlight: { start: 6, end: 21 },
+    question: "What naming convention is used here?",
+    correct: "snake case",
+    options: ["snake case", "camel case", "kebab case", "pascal case"],
+    hint: "The words are separated by underscores, which look like they're crawling on the ground.",
+    explanation: "Snake case uses underscores to separate words (user_first_name). It's the standard convention in Python and Ruby, and is also commonly used for database column names and environment variables."
+  },
+  {
+    code: `const userFirstName = 'Alice';`,
+    highlight: { start: 6, end: 19 },
+    question: "What naming convention is used here?",
+    correct: "camel case",
+    options: ["camel case", "snake case", "pascal case", "kebab case"],
+    hint: "Each new word starts with an uppercase letter, forming 'humps' like a camel.",
+    explanation: "Camel case joins words with no separator, capitalizing each word after the first (userFirstName). It's the standard convention for variables and functions in JavaScript and TypeScript."
+  },
+  {
+    code: `<div class="user-profile-card">Hello</div>`,
+    highlight: { start: 12, end: 29 },
+    question: "What naming convention is used in this CSS class?",
+    correct: "kebab case",
+    options: ["kebab case", "snake case", "camel case", "train case"],
+    hint: "The words are separated by hyphens, like items on a skewer.",
+    explanation: "Kebab case uses hyphens to separate words (user-profile-card). It's the standard convention for CSS class names, HTML attributes, and URL slugs. It's called 'kebab case' because the hyphens look like a skewer."
   }
 ];
 

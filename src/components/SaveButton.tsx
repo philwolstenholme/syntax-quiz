@@ -23,11 +23,14 @@ export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps)
     const url = onSave();
     setSaveUrl(url);
     setCopied(false);
-    // Focus the confirmation element after state update
-    setTimeout(() => {
-      confirmationRef.current?.focus();
-    }, 0);
   };
+
+  // Focus the confirmation element when it becomes visible
+  useEffect(() => {
+    if (saveUrl) {
+      confirmationRef.current?.focus();
+    }
+  }, [saveUrl]);
 
   const handleCopy = async () => {
     if (!saveUrl) return;

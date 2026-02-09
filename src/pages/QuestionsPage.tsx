@@ -128,6 +128,38 @@ export const QuestionsPage = () => {
     }
   }, [quizComplete, level, levelId, score, correctAnswers, totalLevelQuestions, setLocation]);
 
+  const handleFeedbackComplete = useCallback(() => {
+    setCurrentQuestionIndex((prev) => prev + 1);
+    setIsAnswering(false);
+    setHintsUsed(0);
+    setEliminatedOptions([]);
+  }, []);
+
+  const handleSave = useCallback((): string => {
+    const remainingIndices = questions
+      .slice(currentQuestionIndex)
+      .map(q => q.originalIndex);
+
+    const state: SaveState = {
+      v: 1,
+      l: levelId,
+      s: score,
+      k: streak,
+      c: correctAnswers,
+      h: hintsUsed,
+      r: remainingIndices,
+      e: eliminatedOptions
+    };
+
+    const encoded = encodeSaveState(state);
+    const path = `/syntax-quiz/level/${levelId}/questions?s=${encoded}`;
+    const url = `${window.location.origin}${path}`;
+
+    window.history.replaceState({}, '', path);
+
+    return url;
+  }, [questions, currentQuestionIndex, levelId, score, streak, correctAnswers, hintsUsed, eliminatedOptions]);
+
   // Show nothing while redirecting
   if (!level || quizComplete) {
     return null;
@@ -161,13 +193,6 @@ export const QuestionsPage = () => {
     });
   };
 
-  const handleFeedbackComplete = useCallback(() => {
-    setCurrentQuestionIndex((prev) => prev + 1);
-    setIsAnswering(false);
-    setHintsUsed(0);
-    setEliminatedOptions([]);
-  }, []);
-
   const handleUseHint = (): void => {
     if (isAnswering || !currentQuestion) return;
     if (hintsUsed === 0) {
@@ -183,31 +208,6 @@ export const QuestionsPage = () => {
       setHintsUsed(2);
     }
   };
-
-  const handleSave = useCallback((): string => {
-    const remainingIndices = questions
-      .slice(currentQuestionIndex)
-      .map(q => q.originalIndex);
-
-    const state: SaveState = {
-      v: 1,
-      l: levelId,
-      s: score,
-      k: streak,
-      c: correctAnswers,
-      h: hintsUsed,
-      r: remainingIndices,
-      e: eliminatedOptions
-    };
-
-    const encoded = encodeSaveState(state);
-    const path = `/syntax-quiz/level/${levelId}/questions?s=${encoded}`;
-    const url = `${window.location.origin}${path}`;
-
-    window.history.replaceState({}, '', path);
-
-    return url;
-  }, [questions, currentQuestionIndex, levelId, score, streak, correctAnswers, hintsUsed, eliminatedOptions]);
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);

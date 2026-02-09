@@ -11,13 +11,15 @@ interface SaveButtonProps {
 export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps) => {
   const [saveUrl, setSaveUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [prevQuestionIndex, setPrevQuestionIndex] = useState(questionIndex);
   const confirmationRef = useRef<HTMLDivElement>(null);
 
   // Dismiss the save confirmation when the question changes
-  useEffect(() => {
+  if (prevQuestionIndex !== questionIndex) {
+    setPrevQuestionIndex(questionIndex);
     setSaveUrl(null);
     setCopied(false);
-  }, [questionIndex]);
+  }
 
   const handleSave = () => {
     const url = onSave();

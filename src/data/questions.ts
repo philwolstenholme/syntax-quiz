@@ -249,7 +249,7 @@ console.log(fruits[0]);`,
     question: "What naming convention is used here?",
     correct: "camel case",
     options: ["camel case", "snake case", "pascal case", "kebab case"],
-    hint: "Each new word starts with an uppercase letter, forming 'humps' like a camel.",
+    hint: "Each new word starts with an uppercase letter, forming 'humps'…",
     explanation: "Camel case joins words with no separator, capitalizing each word after the first (userFirstName). It's the standard convention for variables and functions in JavaScript and TypeScript."
   },
   {

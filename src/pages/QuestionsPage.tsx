@@ -28,7 +28,7 @@ import { levels } from '../data/questions';
 import type { Question } from '../data/questions';
 
 const BASE_SCORE_POINTS = 10;
-const FEEDBACK_DELAY_MS = 4000;
+const FEEDBACK_DELAY_MS = 8000;
 const HINT_SCORE_PENALTY = 0.5;
 
 type QuestionWithIndex = Question & { originalIndex: number };

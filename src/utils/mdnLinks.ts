@@ -33,6 +33,6 @@ export function getMdnUrl(term: string): string {
     return `${mdnBaseUrl}${mdnPages[normalizedTerm]}`;
   }
 
-  const searchQuery = `${term} AND inurl:https://developer.mozilla.org OR inurl:https://javascript.info OR inurl:https://eloquentjavascript.net OR inurl:https://exploringjs.com OR inurl:https://www.typescriptlang.org/docs OR inurl:https://react.dev/docs`;
+  const searchQuery = `${term} AND inurl:https://developer.mozilla.org OR inurl:https://javascript.info OR inurl:https://eloquentjavascript.net OR inurl:https://exploringjs.com OR inurl:https://www.typescriptlang.org/docs OR inurl:https://react.dev/docs OR inurl:https://learntypescript.dev`;
   return `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
 }

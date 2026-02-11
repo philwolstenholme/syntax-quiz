@@ -260,6 +260,83 @@ console.log(fruits[0]);`,
     options: ["kebab case", "snake case", "camel case", "train case"],
     hint: "The words are separated by hyphens, like items on a skewer.",
     explanation: "Kebab case uses hyphens to separate words (user-profile-card). It's the standard convention for CSS class names, HTML attributes, and URL slugs. It's called 'kebab case' because the hyphens look like a skewer."
+  },
+  {
+    code: `let count: number = 0;`,
+    highlight: { start: 9, end: 17 },
+    question: "What is the highlighted part called?",
+    correct: "type annotation",
+    options: ["type annotation", "type assertion", "type cast", "type declaration"],
+    hint: "The ': number' syntax after the variable name tells TypeScript what type it is.",
+    explanation: "A type annotation uses : Type syntax to explicitly declare a variable's type. TypeScript can often infer types, but annotations provide explicit documentation and enforce type checking."
+  },
+  {
+    code: `function log(msg: string): void {
+  console.log(msg);
+}`,
+    highlight: { start: 27, end: 31 },
+    question: "What does this return type mean?",
+    correct: "returns nothing",
+    options: ["returns nothing", "returns null", "returns undefined", "returns any"],
+    hint: "This keyword means the function doesn't give back a meaningful value.",
+    explanation: "The void type indicates a function does not return a value. It's different from undefined — void means the return value should not be used, while undefined is an actual value."
+  },
+  {
+    code: `interface User {
+  name: string;
+  age: number;
+}`,
+    highlight: { start: 0, end: 9 },
+    question: "What keyword is used to define this structure?",
+    correct: "interface",
+    options: ["interface", "type", "class", "struct"],
+    hint: "This keyword defines the shape of an object without creating an actual value.",
+    explanation: "The interface keyword defines a contract that describes the shape of an object — what properties it has and their types. Unlike classes, interfaces exist only at compile time and generate no JavaScript code."
+  },
+  {
+    code: `interface User {
+  name: string;
+  age?: number;
+}`,
+    highlight: { start: 35, end: 39 },
+    question: "What does the ? symbol mean in this property?",
+    correct: "optional property",
+    options: ["optional property", "nullable property", "default property", "conditional property"],
+    hint: "The question mark after the property name means it doesn't have to be provided.",
+    explanation: "The ? after a property name makes it optional — objects of this type may or may not include it. An optional property can be omitted entirely, unlike a required property which must always be present."
+  },
+  {
+    code: `async function fetchData() {
+  const data = await fetch("/api");
+  return data.json();
+}`,
+    highlight: { start: 0, end: 5 },
+    question: "What does this keyword do to a function?",
+    correct: "makes it return a Promise",
+    options: ["makes it return a Promise", "makes it run faster", "makes it run in parallel", "makes it synchronous"],
+    hint: "This keyword enables the use of 'await' inside the function.",
+    explanation: "The async keyword makes a function always return a Promise and enables the use of await inside it. It allows asynchronous code to be written in a synchronous-looking style."
+  },
+  {
+    code: `async function fetchData() {
+  const data = await fetch("/api");
+  return data.json();
+}`,
+    highlight: { start: 44, end: 49 },
+    question: "What does this keyword do?",
+    correct: "pauses until the Promise resolves",
+    options: ["pauses until the Promise resolves", "creates a new Promise", "cancels the operation", "runs code in parallel"],
+    hint: "This keyword waits for an asynchronous operation to complete before continuing.",
+    explanation: "The await keyword pauses execution of an async function until the Promise it's given resolves, then returns the resolved value. It makes asynchronous code read like synchronous code."
+  },
+  {
+    code: `const names: string[] = ["Alice", "Bob"];`,
+    highlight: { start: 13, end: 21 },
+    question: "What does this type annotation mean?",
+    correct: "array of strings",
+    options: ["array of strings", "single string", "string or array", "tuple of strings"],
+    hint: "The [] after the type name means a collection of that type.",
+    explanation: "string[] is TypeScript's shorthand syntax for an array of strings. It's equivalent to Array<string>. The square brackets after any type name indicate an array of that type."
   }
 ];
 
@@ -546,6 +623,93 @@ const numbers = [1, 2, 3].map(double);`,
     options: ["pipe", "ampersand", "or", "plus"],
     hint: "This | symbol means a type can be ONE of the combined types.",
     explanation: "The pipe (|) creates a union type, meaning a value can be any ONE of the listed types. string | number accepts either a string or a number, but not both at once."
+  },
+  {
+    code: `enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}`,
+    highlight: { start: 0, end: 4 },
+    question: "What keyword defines this set of named constants?",
+    correct: "enum",
+    options: ["enum", "union", "const", "type"],
+    hint: "This keyword creates a set of named values that represent a fixed group of choices.",
+    explanation: "An enum (enumeration) defines a set of named constants. By default, enum members are auto-incremented numbers starting from 0, but they can also be string-valued. Enums exist at both compile time and runtime."
+  },
+  {
+    code: `type UserKeys = keyof User;`,
+    highlight: { start: 16, end: 21 },
+    question: "What operator extracts the property names of a type?",
+    correct: "keyof",
+    options: ["keyof", "typeof", "nameof", "keys"],
+    hint: "This operator produces a union of all property name types from an object type.",
+    explanation: "The keyof operator takes an object type and produces a union of its property names as string literal types. For example, if User has name and age, keyof User is 'name' | 'age'."
+  },
+  {
+    code: `const colors = ["red", "green", "blue"] as const;`,
+    highlight: { start: 40, end: 48 },
+    question: "What does this assertion do?",
+    correct: "makes values readonly and literal",
+    options: ["makes values readonly and literal", "converts to constant variable", "freezes the object at runtime", "creates an immutable copy"],
+    hint: "This tells TypeScript to infer the narrowest possible types and make everything readonly.",
+    explanation: "The 'as const' assertion tells TypeScript to infer literal types instead of general ones and mark everything as readonly. ['red', 'green'] becomes readonly ['red', 'green'] with literal string types, not just string[]."
+  },
+  {
+    code: `class Dog implements Animal {
+  speak() { return "Woof"; }
+}`,
+    highlight: { start: 10, end: 20 },
+    question: "What does this keyword do?",
+    correct: "enforces a class satisfies an interface",
+    options: ["enforces a class satisfies an interface", "inherits from another class", "creates a mixin", "copies methods from another class"],
+    hint: "Unlike 'extends', this keyword checks that a class follows a contract without inheriting code.",
+    explanation: "The implements keyword declares that a class must satisfy the contract defined by an interface. Unlike extends, it doesn't inherit any implementation — the class must provide its own implementations for all required members."
+  },
+  {
+    code: `function parse(input: unknown) {
+  if (typeof input === "string") {
+    return input.toUpperCase();
+  }
+}`,
+    highlight: { start: 22, end: 29 },
+    question: "What is this type called?",
+    correct: "unknown",
+    options: ["unknown", "any", "never", "void"],
+    hint: "This type-safe alternative to 'any' requires you to check the type before using the value.",
+    explanation: "The unknown type is the type-safe counterpart of any. While any lets you do anything without checks, unknown requires type narrowing (like typeof checks) before you can use the value. It's preferred over any when the type is truly not known."
+  },
+  {
+    code: `const input = document.getElementById("app")!;`,
+    highlight: { start: 44, end: 45 },
+    question: "What is this operator called?",
+    correct: "non-null assertion",
+    options: ["non-null assertion", "logical not", "optional chaining", "nullish operator"],
+    hint: "This postfix ! tells TypeScript the value is definitely not null or undefined.",
+    explanation: "The non-null assertion operator (!) tells TypeScript that a value is not null or undefined, even though the type system thinks it might be. Use it carefully — it bypasses type safety and can cause runtime errors if wrong."
+  },
+  {
+    code: `const user = { name: "Alice", age: 30 };
+type UserType = typeof user;`,
+    highlight: { start: 57, end: 63 },
+    question: "What does typeof do in a type context?",
+    correct: "extracts the type of a value",
+    options: ["extracts the type of a value", "checks the type at runtime", "creates a type guard", "converts a value to a type"],
+    hint: "Unlike runtime typeof which returns a string, this typeof is used in type positions to get a variable's type.",
+    explanation: "In a type context, typeof extracts the TypeScript type of a variable or property. This is different from runtime typeof which returns a string like 'number'. Here, typeof user produces { name: string; age: number }."
+  },
+  {
+    code: `interface Config {
+  readonly apiUrl: string;
+  readonly timeout: number;
+}`,
+    highlight: { start: 21, end: 29 },
+    question: "What does this modifier prevent?",
+    correct: "reassignment of the property",
+    options: ["reassignment of the property", "reading the property", "deleting the property", "accessing the property"],
+    hint: "After initialization, this modifier makes a property immutable.",
+    explanation: "The readonly modifier prevents a property from being reassigned after initialization. It's a compile-time check only — at runtime, the property can still technically be changed, but TypeScript will flag it as an error."
   }
 ];
 
@@ -790,6 +954,83 @@ inputRef.current?.focus();`,
     options: ["Awaited", "Unwrap", "Resolve", "PromiseResult"],
     hint: "It extracts the resolved value type, like what you get after using await.",
     explanation: "Awaited<T> recursively unwraps Promise types to get the resolved value type. Awaited<Promise<string>> gives string, and it even handles nested promises like Promise<Promise<number>> giving number."
+  },
+  {
+    code: `declare const API_URL: string;`,
+    highlight: { start: 0, end: 7 },
+    question: "What is this keyword used for?",
+    correct: "ambient declaration",
+    options: ["ambient declaration", "variable declaration", "type assertion", "module import"],
+    hint: "This tells TypeScript that a variable exists at runtime without providing an implementation.",
+    explanation: "The declare keyword creates an ambient declaration — it tells the TypeScript compiler that a variable, function, or class exists at runtime (e.g., from a script tag or global library) without emitting any JavaScript code."
+  },
+  {
+    code: `type Getters<T> = {
+  [K in keyof T as \`get\${Capitalize<string & K>}\`]: () => T[K];
+};`,
+    highlight: { start: 36, end: 69 },
+    question: "What is this mapped type technique called?",
+    correct: "key remapping",
+    options: ["key remapping", "key filtering", "key aliasing", "property renaming"],
+    hint: "The 'as' keyword inside a mapped type transforms the property keys into new names.",
+    explanation: "Key remapping uses the 'as' clause inside a mapped type to transform property keys. Here, each key K is remapped to a template literal like 'getName' or 'getAge', creating getter-style property names from the original keys."
+  },
+  {
+    code: `type ToArray<T> = T extends any ? T[] : never;`,
+    highlight: { start: 18, end: 45 },
+    question: "Why does ToArray<string | number> produce string[] | number[]?",
+    correct: "distributive conditional type",
+    options: ["distributive conditional type", "union expansion", "type inference", "generic constraint"],
+    hint: "When a naked type parameter appears in a conditional type, it distributes over union members.",
+    explanation: "A distributive conditional type automatically distributes over union members when the checked type is a naked type parameter. ToArray<string | number> becomes ToArray<string> | ToArray<number>, which is string[] | number[]."
+  },
+  {
+    code: `type Concat<A extends unknown[], B extends unknown[]> = [...A, ...B];`,
+    highlight: { start: 56, end: 68 },
+    question: "What TypeScript feature allows spreads in tuple types?",
+    correct: "variadic tuple type",
+    options: ["variadic tuple type", "spread type", "rest tuple", "generic array"],
+    hint: "This feature lets tuple types use spread elements to create variable-length type patterns.",
+    explanation: "Variadic tuple types allow spread elements (...) in tuple type positions. [...A, ...B] creates a new tuple type by concatenating two tuple types. This enables type-safe operations like function composition and array concatenation at the type level."
+  },
+  {
+    code: `type T = Extract<"a" | "b" | "c", "a" | "c">;`,
+    highlight: { start: 9, end: 44 },
+    question: "What utility type keeps only matching union members?",
+    correct: "Extract",
+    options: ["Extract", "Pick", "Filter", "Include"],
+    hint: "This utility type pulls out union members that are assignable to a given type.",
+    explanation: "Extract<T, U> constructs a type by extracting from T all union members that are assignable to U. Extract<'a' | 'b' | 'c', 'a' | 'c'> produces 'a' | 'c'. Its counterpart Exclude removes matching members instead."
+  },
+  {
+    code: `type Result = ReturnType<typeof fetchUser>;`,
+    highlight: { start: 14, end: 42 },
+    question: "What utility type extracts a function's return type?",
+    correct: "ReturnType",
+    options: ["ReturnType", "Awaited", "InstanceType", "ThisType"],
+    hint: "This built-in utility type uses 'infer' internally to extract what a function gives back.",
+    explanation: "ReturnType<T> extracts the return type of a function type T. Combined with typeof, you can get the return type of any function value. Internally, it uses a conditional type with infer to capture the return type."
+  },
+  {
+    code: `const config = {
+  width: 100,
+  color: "red"
+} satisfies Record<string, string | number>;`,
+    highlight: { start: 48, end: 57 },
+    question: "What operator validates a type without widening it?",
+    correct: "satisfies",
+    options: ["satisfies", "as", "implements", "extends"],
+    hint: "This operator checks that a value matches a type while preserving the original inferred type.",
+    explanation: "The satisfies operator (TypeScript 4.9+) validates that an expression matches a type without changing the inferred type. Unlike 'as', it keeps the narrow literal types while still ensuring the value conforms to the expected shape."
+  },
+  {
+    code: `type Shouted = Uppercase<"hello">;`,
+    highlight: { start: 15, end: 33 },
+    question: "What kind of built-in type is Uppercase?",
+    correct: "intrinsic type",
+    options: ["intrinsic type", "utility type", "conditional type", "mapped type"],
+    hint: "Unlike Partial or Record, this type is implemented directly inside the TypeScript compiler.",
+    explanation: "Intrinsic types (Uppercase, Lowercase, Capitalize, Uncapitalize) are special types implemented directly by the TypeScript compiler rather than in TypeScript code. They transform string literal types at the type level — Uppercase<'hello'> produces 'HELLO'."
   }
 ];
 

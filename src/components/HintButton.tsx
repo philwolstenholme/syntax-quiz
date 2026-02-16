@@ -1,6 +1,7 @@
 import { Lightbulb } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { MAX_HINTS } from '../constants';
 
 interface HintButtonProps {
   hint: string;
@@ -10,10 +11,9 @@ interface HintButtonProps {
 }
 
 export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonProps) => {
-  const maxHints = 2;
   const showEliminate = hintsUsed === 0;
-  const showHintText = hintsUsed >= 2;
-  const allUsed = hintsUsed >= maxHints;
+  const showHintText = hintsUsed >= MAX_HINTS;
+  const allUsed = hintsUsed >= MAX_HINTS;
 
   return (
     <div className="mb-6">
@@ -47,7 +47,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           <Lightbulb size={16} />
           {showEliminate ? 'Eliminate two answers (−50% pts)' : 'Show hint (−50% pts)'}
           <span className="ml-1 text-xs opacity-70">
-            {hintsUsed}/{maxHints}
+            {hintsUsed}/{MAX_HINTS}
           </span>
         </button>
       )}

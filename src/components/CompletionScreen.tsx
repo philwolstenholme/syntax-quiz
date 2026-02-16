@@ -1,18 +1,18 @@
 import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Link } from 'wouter';
 import { PageLayout } from './PageLayout';
 import { StatCard } from './StatCard';
 import type { Level } from '../data/questions';
+import { ROUTES } from '../routes';
 
 interface CompletionScreenProps {
   score: number;
   correctAnswers: number;
   totalQuestions: number;
   level: Level;
-  onRestart: () => void;
-  onBackToLevels: () => void;
 }
 
-export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level, onRestart, onBackToLevels }: CompletionScreenProps) => {
+export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level }: CompletionScreenProps) => {
   const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
 
   return (
@@ -43,21 +43,21 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level,
         </div>
 
         <div className="space-y-3">
-          <button
-            onClick={onRestart}
+          <Link
+            to={ROUTES.questions(level.id)}
             className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xl px-8 py-4 rounded-xl hover:scale-105 transition-transform duration-200 shadow-lg flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
             Try Again
-          </button>
+          </Link>
 
-          <button
-            onClick={onBackToLevels}
+          <Link
+            to={ROUTES.home}
             className="w-full bg-gray-100 text-gray-700 font-bold text-lg px-8 py-4 rounded-xl hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
             Choose Another Level
-          </button>
+          </Link>
         </div>
       </div>
     </PageLayout>

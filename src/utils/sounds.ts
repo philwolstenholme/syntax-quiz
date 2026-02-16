@@ -14,9 +14,10 @@ const incorrectSound = createAudio(SOUND_URLS.incorrect);
 
 const playSound = (audio: HTMLAudioElement): void => {
   try {
-    const clone = audio.cloneNode() as HTMLAudioElement;
-    clone.volume = 0.5;
-    clone.play().catch(() => {});
+    // Reset and reuse the element instead of cloning (avoids orphaned DOM nodes)
+    audio.currentTime = 0;
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
   } catch { /* audio unsupported */ }
 };
 

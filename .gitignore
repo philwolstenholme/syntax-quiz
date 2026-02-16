@@ -9,9 +9,6 @@ lerna-debug.log*
 
 node_modules
 dist
-
-# Generated at build time by scripts/tokenize.ts
-src/data/tokens.json
 dist-ssr
 *.local
 

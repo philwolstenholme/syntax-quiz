@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { Question } from '../data/questions';
-import tokenMap from '../data/tokens.json';
+import tokenMap from 'virtual:tokens';
 
 interface Token {
   content: string;

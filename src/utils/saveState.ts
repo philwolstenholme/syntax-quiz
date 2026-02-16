@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4/mini';
 
 const SaveStateSchema = z.object({
   v: z.literal(1),

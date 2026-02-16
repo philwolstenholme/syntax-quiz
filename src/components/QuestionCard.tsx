@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { ThemedToken } from 'shiki';
 import type { Question } from '../data/questions';
-import { useShiki } from '../hooks/useShiki';
+import { highlighter } from '../hooks/useShiki';
 
 interface QuestionCardProps {
   question: Question;
@@ -86,37 +86,18 @@ function renderTokensWithHighlight(
   return elements;
 }
 
-/** Plain-text fallback used while shiki is loading */
-function renderPlainHighlight(
-  code: string,
-  highlight: { start: number; end: number },
-): React.ReactNode {
-  const before = code.substring(0, highlight.start);
-  const highlighted = code.substring(highlight.start, highlight.end);
-  const after = code.substring(highlight.end);
-  return (
-    <code className="font-mono text-gray-300">
-      {before}
-      <span className="bg-yellow-300 text-gray-900 px-1 rounded font-bold">
-        {highlighted}
-      </span>
-      {after}
-    </code>
-  );
-}
-
 export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
   const { isOver, setNodeRef } = useDroppable({ id: 'dropzone' });
-  const highlighter = useShiki();
 
-  const tokenLines = useMemo(() => {
-    if (!highlighter) return null;
-    return highlighter.codeToTokens(code, {
-      lang: 'tsx',
-      theme: 'github-dark',
-    }).tokens;
-  }, [highlighter, code]);
+  const tokenLines = useMemo(
+    () =>
+      highlighter.codeToTokens(code, {
+        lang: 'tsx',
+        theme: 'github-dark',
+      }).tokens,
+    [code],
+  );
 
   return (
     <div className="bg-white rounded-3xl shadow-xl p-8 mb-6">
@@ -142,13 +123,9 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
           </div>
         )}
         <pre className="bg-gray-900 p-6 rounded-xl overflow-x-auto text-base leading-relaxed">
-          {tokenLines ? (
-            <code className="font-mono">
-              {renderTokensWithHighlight(tokenLines, highlight)}
-            </code>
-          ) : (
-            renderPlainHighlight(code, highlight)
-          )}
+          <code className="font-mono">
+            {renderTokensWithHighlight(tokenLines, highlight)}
+          </code>
         </pre>
       </div>
     </div>

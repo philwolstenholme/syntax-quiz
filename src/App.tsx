@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { LevelSelect } from './components/LevelSelect';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
+import { ROUTES, ROUTE_PATTERNS } from './routes';
 
 const pageTransition = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration: 0.3 }
+  transition: { duration: 0.3 },
 };
 
 function App() {
@@ -18,9 +19,9 @@ function App() {
     <AnimatePresence mode="wait">
       <motion.div key={location} {...pageTransition}>
         <Switch>
-          <Route path="/" component={LevelSelect} />
-          <Route path="/syntax-quiz/level/:levelId/questions" component={QuestionsPage} />
-          <Route path="/syntax-quiz/level/:levelId/score" component={ScorePage} />
+          <Route path={ROUTES.home} component={LevelSelect} />
+          <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
+          <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
           <Route><LevelSelect /></Route>
         </Switch>
       </motion.div>

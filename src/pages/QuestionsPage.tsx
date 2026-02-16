@@ -1,6 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useParams, useLocation } from 'wouter';
-import { shuffle } from 'es-toolkit';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   DndContext,
@@ -12,202 +10,49 @@ import {
 } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
-import { playCorrectSound, playIncorrectSound } from '../utils/sounds';
-import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
-import { encodeSaveState, decodeSaveState } from '../utils/saveState';
-import type { SaveState } from '../utils/saveState';
 import { PageLayout } from '../components/PageLayout';
 import { QuizHeader } from '../components/QuizHeader';
 import { FeedbackBanner } from '../components/FeedbackBanner';
-import type { AnswerFeedback } from '../components/FeedbackBanner';
 import { QuestionCard } from '../components/QuestionCard';
 import { AnswerOptions } from '../components/AnswerOptions';
 import { HintButton } from '../components/HintButton';
 import { SaveButton } from '../components/SaveButton';
-import { levels } from '../data/questions';
-import type { Question } from '../data/questions';
-
-const BASE_SCORE_POINTS = 10;
-const FEEDBACK_DELAY_MS = 8000;
-const HINT_SCORE_PENALTY = 0.5;
-
-type QuestionWithIndex = Question & { originalIndex: number };
+import { FEEDBACK_DELAY_MS } from '../constants';
+import { useQuiz } from '../hooks/useQuiz';
 
 export const QuestionsPage = () => {
-  const params = useParams();
-  const [, setLocation] = useLocation();
-  const levelId = parseInt(params.levelId ?? '0', 10);
-  const level = levels.find((l) => l.id === levelId);
+  const {
+    level,
+    currentQuestion,
+    currentQuestionIndex,
+    totalLevelQuestions,
+    answeredSoFar,
+    score,
+    streak,
+    lastAnswer,
+    isAnswering,
+    hintsUsed,
+    eliminatedOptions,
+    quizComplete,
+    handleAnswer,
+    handleUseHint,
+    handleFeedbackComplete,
+    handleSave,
+  } = useQuiz();
 
-  // Check for save state in URL
-  const saveState = useMemo((): SaveState | null => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const saveParam = searchParams.get('s');
-    if (!saveParam || !level) return null;
-    const state = decodeSaveState(saveParam);
-    if (!state || state.l !== levelId) return null;
-    if (state.r.some(i => i < 0 || i >= level.questions.length)) return null;
-    return state;
-  }, [level, levelId]);
-
-  const initialQuestions = useMemo((): QuestionWithIndex[] => {
-    if (!level) return [];
-    if (saveState) {
-      return saveState.r.flatMap(originalIndex => {
-        const q = level.questions[originalIndex];
-        if (!q) return [];
-        return [{
-          ...q,
-          originalIndex,
-          options: shuffle(q.options)
-        }];
-      });
-    }
-    return shuffle(
-      level.questions.map((q, i) => ({ ...q, originalIndex: i }))
-    ).map(q => ({
-      ...q,
-      options: shuffle(q.options)
-    }));
-  }, [level, saveState]);
-
-  const [questions] = useState<QuestionWithIndex[]>(initialQuestions);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(saveState?.s ?? 0);
-  const [streak, setStreak] = useState(saveState?.k ?? 0);
-  const [correctAnswers, setCorrectAnswers] = useState(saveState?.c ?? 0);
-  const [lastAnswer, setLastAnswer] = useState<AnswerFeedback | null>(null);
-  const [isAnswering, setIsAnswering] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [hintsUsed, setHintsUsed] = useState(saveState?.h ?? 0);
-  const [eliminatedOptions, setEliminatedOptions] = useState<string[]>(saveState?.e ?? []);
-
-  const totalLevelQuestions = level?.questions.length ?? 0;
-  const answeredSoFar = totalLevelQuestions - questions.length;
 
   const pointerSensor = useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 8,
-    },
+    activationConstraint: { distance: 8 },
   });
   const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: {
-      delay: 100,
-      tolerance: 5,
-    },
+    activationConstraint: { delay: 100, tolerance: 5 },
   });
   const sensors = useSensors(pointerSensor, touchSensor);
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const quizComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
-
-  // Redirect to home if invalid level
-  useEffect(() => {
-    if (!level) {
-      setLocation('/');
-    }
-  }, [level, setLocation]);
-
-  // Replace URL to remove save param on mount
-  useEffect(() => {
-    if (saveState) {
-      window.history.replaceState({}, '', `/syntax-quiz/level/${levelId}/questions`);
-    }
-  }, [saveState, levelId]);
-
-  // Navigate to score page when quiz is complete
-  useEffect(() => {
-    if (quizComplete && level) {
-      const searchParams = new URLSearchParams({
-        completed: 'true',
-        score: score.toString(),
-        correct: correctAnswers.toString(),
-        total: totalLevelQuestions.toString()
-      });
-      setLocation(`/syntax-quiz/level/${levelId}/score?${searchParams.toString()}`);
-    }
-  }, [quizComplete, level, levelId, score, correctAnswers, totalLevelQuestions, setLocation]);
-
-  const handleFeedbackComplete = useCallback(() => {
-    setCurrentQuestionIndex((prev) => prev + 1);
-    setIsAnswering(false);
-    setHintsUsed(0);
-    setEliminatedOptions([]);
-  }, []);
-
-  const handleSave = useCallback((): string => {
-    const remainingIndices = questions
-      .slice(currentQuestionIndex)
-      .map(q => q.originalIndex);
-
-    const state: SaveState = {
-      v: 1,
-      l: levelId,
-      s: score,
-      k: streak,
-      c: correctAnswers,
-      h: hintsUsed,
-      r: remainingIndices,
-      e: eliminatedOptions
-    };
-
-    const encoded = encodeSaveState(state);
-    const path = `/syntax-quiz/level/${levelId}/questions?s=${encoded}`;
-    const url = `${window.location.origin}${path}`;
-
-    window.history.replaceState({}, '', path);
-
-    return url;
-  }, [questions, currentQuestionIndex, levelId, score, streak, correctAnswers, hintsUsed, eliminatedOptions]);
-
-  // Show nothing while redirecting
-  if (!level || quizComplete) {
+  if (!level || quizComplete || !currentQuestion) {
     return null;
   }
-
-  const handleAnswer = (answer: string): void => {
-    if (isAnswering || !currentQuestion) return;
-    setIsAnswering(true);
-
-    const correct = answer === currentQuestion.correct;
-
-    if (correct) {
-      vibrateCorrect();
-      playCorrectSound();
-      const penalty = Math.pow(HINT_SCORE_PENALTY, hintsUsed);
-      const points = Math.round(BASE_SCORE_POINTS * (streak + 1) * penalty);
-      setScore((prev) => prev + points);
-      setStreak((prev) => prev + 1);
-      setCorrectAnswers((prev) => prev + 1);
-    } else {
-      vibrateIncorrect();
-      playIncorrectSound();
-      setStreak(0);
-    }
-
-    setLastAnswer({
-      correct,
-      term: currentQuestion.correct,
-      userAnswer: correct ? null : answer,
-      explanation: currentQuestion.explanation
-    });
-  };
-
-  const handleUseHint = (): void => {
-    if (isAnswering || !currentQuestion) return;
-    if (hintsUsed === 0) {
-      // First hint: eliminate two wrong answers
-      const wrongOptions = currentQuestion.options.filter(
-        (opt: string) => opt !== currentQuestion.correct
-      );
-      const shuffledWrong = shuffle(wrongOptions);
-      setEliminatedOptions(shuffledWrong.slice(0, 2));
-      setHintsUsed(1);
-    } else if (hintsUsed === 1) {
-      // Second hint: show the text hint (state change triggers display)
-      setHintsUsed(2);
-    }
-  };
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);
@@ -218,15 +63,10 @@ export const QuestionsPage = () => {
     if (isAnswering) return;
 
     const { active, over } = event;
-
     if (over && over.id === 'dropzone' && active.data.current?.answer) {
       handleAnswer(active.data.current.answer);
     }
   };
-
-  if (!currentQuestion) {
-    return null;
-  }
 
   return (
     <DndContext

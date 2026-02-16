@@ -2,6 +2,7 @@ import { Code2, ChevronRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { levels } from '../data/questions';
 import { PageLayout } from './PageLayout';
+import { ROUTES } from '../routes';
 
 export const LevelSelect = () => {
   return (
@@ -23,7 +24,7 @@ export const LevelSelect = () => {
           {levels.map((level) => (
             <Link
               key={level.id}
-              to={`/syntax-quiz/level/${level.id}/questions`}
+              to={ROUTES.questions(level.id)}
               className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] p-6 text-left group"
             >
               <div className="flex items-center justify-between">

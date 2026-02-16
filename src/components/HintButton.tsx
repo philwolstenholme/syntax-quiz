@@ -1,6 +1,6 @@
 import { Lightbulb } from 'lucide-react';
 import clsx from 'clsx';
-import { motion, AnimatePresence } from 'motion/react';
+import { Transition } from '@headlessui/react';
 import { MAX_HINTS } from '../constants';
 
 interface HintButtonProps {
@@ -17,21 +17,20 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
 
   return (
     <div className="mb-6">
-      <AnimatePresence mode="wait">
-        {showHintText && (
-          <motion.div
-            key="hint-text"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-3 flex items-start gap-3"
-          >
-            <Lightbulb className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
-            <p className="text-amber-800 font-medium">{hint}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Transition
+        show={showHintText}
+        enter="transition duration-200 ease-out"
+        enterFrom="opacity-0 -translate-y-2"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition duration-200 ease-in"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-3 flex items-start gap-3">
+          <Lightbulb className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
+          <p className="text-amber-800 font-medium">{hint}</p>
+        </div>
+      </Transition>
 
       {!allUsed && (
         <button

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, Play, Pause, FastForward } from 'lucide-react';
 import clsx from 'clsx';
-import { motion } from 'motion/react';
 import { getMdnUrl } from '../utils/mdnLinks';
 
 export interface AnswerFeedback {
@@ -90,6 +89,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const [completed, setCompleted] = useState(false);
   const [processedAnswer, setProcessedAnswer] = useState<AnswerFeedback | null>(null);
   const onCompleteRef = useRef(onCountdownComplete);
+  const [shaking, setShaking] = useState(false);
 
   useEffect(() => {
     onCompleteRef.current = onCountdownComplete;
@@ -114,7 +114,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     setCompleted(false);
   }
 
-  // Reset refs and focus when lastAnswer changes
+  // Reset refs, focus, and trigger shake when lastAnswer changes
   useEffect(() => {
     if (lastAnswer && lastAnswer !== lastAnswerRef.current && durationMs) {
       lastAnswerRef.current = lastAnswer;
@@ -122,6 +122,12 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       completedRef.current = false;
       startTimeRef.current = performance.now();
       bannerRef.current?.focus();
+
+      if (!lastAnswer.correct) {
+        setShaking(true);
+        const timer = setTimeout(() => setShaking(false), 500);
+        return () => clearTimeout(timer);
+      }
     }
   }, [lastAnswer, durationMs]);
 
@@ -168,22 +174,15 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
 
   return (
-    <motion.div
+    <div
       ref={bannerRef}
       tabIndex={-1}
-      initial={{ x: 0 }}
-      animate={{
-        x: lastAnswer.correct ? 0 : [-10, 10, -10, 10, 0],
-      }}
-      transition={{
-        duration: lastAnswer.correct ? 0 : 0.5,
-        ease: 'easeInOut',
-      }}
       className={clsx(
         'rounded-2xl p-4 mb-6 border-2 outline-none',
         lastAnswer.correct
           ? 'bg-green-50 text-green-700 border-green-500'
           : 'bg-red-50 text-red-700 border-red-500',
+        shaking && 'animate-shake',
       )}
     >
       <div className="flex items-start gap-3">
@@ -227,6 +226,6 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };

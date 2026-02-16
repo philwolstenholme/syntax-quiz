@@ -1,22 +1,29 @@
 import { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
-import type { ThemedToken } from 'shiki';
 import type { Question } from '../data/questions';
-import { highlighter } from '../hooks/useShiki';
+import tokenMap from '../data/tokens.json';
+
+interface Token {
+  content: string;
+  color?: string;
+  offset: number;
+}
 
 interface QuestionCardProps {
   question: Question;
 }
 
+const typedTokenMap = tokenMap as Record<string, Token[][]>;
+
 /**
- * Renders shiki tokens with a quiz highlight overlay.
+ * Renders pre-computed tokens with a quiz highlight overlay.
  * Tokens that overlap the highlight range are split so the highlighted
  * portion gets a yellow background with dark text, while the rest
  * keeps its syntax color.
  */
 function renderTokensWithHighlight(
-  tokenLines: ThemedToken[][],
+  tokenLines: Token[][],
   highlight: { start: number; end: number },
 ): React.ReactNode[] {
   const elements: React.ReactNode[] = [];
@@ -90,14 +97,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
   const { isOver, setNodeRef } = useDroppable({ id: 'dropzone' });
 
-  const tokenLines = useMemo(
-    () =>
-      highlighter.codeToTokens(code, {
-        lang: 'tsx',
-        theme: 'github-dark',
-      }).tokens,
-    [code],
-  );
+  const tokenLines = useMemo(() => typedTokenMap[code] ?? [], [code]);
 
   return (
     <div className="bg-white rounded-3xl shadow-xl p-8 mb-6">

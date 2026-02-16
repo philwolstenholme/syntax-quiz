@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useRef, useEffect } from 'react';
+import { Transition } from '@headlessui/react';
 import {
   DndContext,
   PointerSensor,
@@ -41,6 +41,26 @@ export const QuestionsPage = () => {
   } = useQuiz();
 
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Question slide transition state
+  const [displayedIndex, setDisplayedIndex] = useState(currentQuestionIndex);
+  const [showQuestion, setShowQuestion] = useState(true);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (currentQuestionIndex !== displayedIndex) {
+      setShowQuestion(false);
+    }
+  }, [currentQuestionIndex, displayedIndex]);
+
+  const handleQuestionLeave = () => {
+    setDisplayedIndex(currentQuestionIndex);
+    setShowQuestion(true);
+  };
 
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 8 },
@@ -84,31 +104,34 @@ export const QuestionsPage = () => {
             level={level}
           />
 
-          <AnimatePresence>
-            {lastAnswer && isAnswering && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-                transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
-              >
-                <FeedbackBanner
-                  lastAnswer={lastAnswer}
-                  durationMs={FEEDBACK_DELAY_MS}
-                  onCountdownComplete={handleFeedbackComplete}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <Transition
+            show={!!lastAnswer && isAnswering}
+            enter="transition duration-210 ease-[cubic-bezier(0,0,0.2,1)]"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition duration-180 ease-[cubic-bezier(0.4,0,1,1)]"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <FeedbackBanner
+              lastAnswer={lastAnswer}
+              durationMs={FEEDBACK_DELAY_MS}
+              onCountdownComplete={handleFeedbackComplete}
+            />
+          </Transition>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentQuestionIndex}
-              initial={{ x: 30, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-              transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-            >
+          <Transition
+            show={showQuestion}
+            appear
+            enter="transition duration-250 ease-[cubic-bezier(0,0,0.2,1)]"
+            enterFrom="opacity-0 translate-x-[30px]"
+            enterTo="opacity-100 translate-x-0"
+            leave="transition duration-180 ease-[cubic-bezier(0.4,0,1,1)]"
+            leaveFrom="opacity-100 translate-x-0"
+            leaveTo="opacity-0 -translate-x-[30px]"
+            afterLeave={handleQuestionLeave}
+          >
+            <div>
               <QuestionCard question={currentQuestion} />
 
               <HintButton
@@ -135,8 +158,8 @@ export const QuestionsPage = () => {
                   Report an issue with this question
                 </a>
               </div>
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          </Transition>
 
           <SaveButton
             onSave={handleSave}

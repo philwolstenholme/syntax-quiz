@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   DndContext,
   PointerSensor,
@@ -40,6 +40,7 @@ export const QuestionsPage = () => {
     handleSave,
   } = useQuiz();
 
+  const prefersReducedMotion = useReducedMotion();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const pointerSensor = useSensor(PointerSensor, {
@@ -56,10 +57,12 @@ export const QuestionsPage = () => {
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);
+    document.body.style.userSelect = 'none';
   };
 
   const handleDragEnd = (event: DragEndEvent): void => {
     setActiveId(null);
+    document.body.style.userSelect = '';
     if (isAnswering) return;
 
     const { active, over } = event;
@@ -73,9 +76,14 @@ export const QuestionsPage = () => {
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={() => {
+        setActiveId(null);
+        document.body.style.userSelect = '';
+      }}
     >
       <PageLayout>
         <div className="max-w-4xl mx-auto">
+          <h1 className="sr-only">Syntax Quiz — {level.name}</h1>
           <QuizHeader
             score={score}
             streak={streak}
@@ -87,10 +95,10 @@ export const QuestionsPage = () => {
           <AnimatePresence>
             {lastAnswer && isAnswering && (
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0, height: 0, overflow: 'hidden', transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
-                transition={{ duration: 0.21, ease: [0, 0, 0.2, 1] }}
+                exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.21, ease: [0, 0, 0.2, 1] }}
               >
                 <FeedbackBanner
                   lastAnswer={lastAnswer}
@@ -104,10 +112,10 @@ export const QuestionsPage = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestionIndex}
-              initial={{ x: 30, opacity: 0 }}
+              initial={{ x: prefersReducedMotion ? 0 : 30, opacity: prefersReducedMotion ? 1 : 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
-              transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+              exit={prefersReducedMotion ? { x: 0, opacity: 1 } : { x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: [0, 0, 0.2, 1] }}
             >
               <QuestionCard question={currentQuestion} />
 
@@ -130,7 +138,7 @@ export const QuestionsPage = () => {
                   href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+                  className="text-sm text-gray-400 hover:text-indigo-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50 rounded-md px-1 py-0.5 touch-manipulation"
                 >
                   Report an issue with this question
                 </a>
@@ -148,7 +156,7 @@ export const QuestionsPage = () => {
       <DragOverlay>
         {activeId ? (
           <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-indigo-500 bg-white text-gray-800 font-semibold text-lg shadow-xl cursor-move">
-            <GripVertical className="text-gray-400 flex-shrink-0" size={20} />
+            <GripVertical className="text-gray-400 flex-shrink-0" size={20} aria-hidden="true" />
             <span className="flex-1 text-left">{activeId}</span>
           </div>
         ) : null}

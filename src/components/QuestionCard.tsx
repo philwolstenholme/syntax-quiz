@@ -20,17 +20,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     <div
       className="bg-white rounded-3xl shadow-xl p-8 mb-6"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 text-balance">
         {question.question}
       </h2>
-      <p className="text-gray-600 mb-6 text-lg">
+      <p id="question-instructions" className="text-gray-600 mb-6 text-lg">
         💡 Drag an answer onto the code snippet or click an answer below
       </p>
       <div
         ref={setNodeRef}
         data-dropzone
+        role="region"
+        aria-label="Answer dropzone"
+        aria-describedby="question-instructions"
         className={clsx(
-          'relative rounded-xl overflow-hidden transition-all duration-200',
+          'relative rounded-xl overflow-hidden transition-transform transition-shadow duration-200',
           isOver && 'ring-4 ring-indigo-500 scale-[1.02]',
         )}
       >

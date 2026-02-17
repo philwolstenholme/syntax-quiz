@@ -1,19 +1,26 @@
 import { Route, Switch, useLocation } from 'wouter';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { LevelSelect } from './components/LevelSelect';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
 import { ROUTES, ROUTE_PATTERNS } from './routes';
 
-const pageTransition = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.3 },
-};
-
 function App() {
   const [location] = useLocation();
+  const prefersReducedMotion = useReducedMotion();
+  const pageTransition = prefersReducedMotion
+    ? {
+      initial: { opacity: 1 },
+      animate: { opacity: 1 },
+      exit: { opacity: 1 },
+      transition: { duration: 0 },
+    }
+    : {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.3 },
+    };
 
   return (
     <AnimatePresence mode="wait">

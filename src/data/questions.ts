@@ -260,6 +260,72 @@ console.log(fruits[0]);`,
     options: ["kebab case", "snake case", "camel case", "train case"],
     hint: "The words are separated by hyphens, like items on a skewer.",
     explanation: "Kebab case uses hyphens to separate words (user-profile-card). It's the standard convention for CSS class names, HTML attributes, and URL slugs. It's called 'kebab case' because the hyphens look like a skewer."
+  },
+  {
+    code: `const isActive = true;
+const message = isActive ? 'yes' : 'no';`,
+    highlight: { start: 39, end: 62 },
+    question: "What is this operator called?",
+    correct: "ternary operator",
+    options: ["ternary operator", "comparison operator", "inline if", "expression"],
+    hint: "This condition ? valueIfTrue : valueIfFalse operator has three parts.",
+    explanation: "The ternary operator (condition ? a : b) is the only JavaScript operator that takes three operands. It's a concise alternative to if/else for simple conditional expressions."
+  },
+  {
+    code: `const nums = [1, 2, 3].map(n => n * 2);`,
+    highlight: { start: 13, end: 38 },
+    question: "What does map() return?",
+    correct: "new array",
+    options: ["new array", "modified array", "undefined", "boolean"],
+    hint: "map() does not mutate the original — it creates something fresh.",
+    explanation: "Array.map() always returns a new array of the same length, with each element transformed by the callback. It never mutates the original array \u2014 this immutability is a key principle of functional programming."
+  },
+  {
+    code: `const found = [1, 2, 3, 4].find(n => n > 2);`,
+    highlight: { start: 14, end: 43 },
+    question: "What does find() return?",
+    correct: "first matching element",
+    options: ["first matching element", "all matches", "boolean", "index"],
+    hint: "It stops searching as soon as it finds one element that passes the test.",
+    explanation: "Array.find() returns the first element that satisfies the test function, then stops iterating. If no element matches, it returns undefined. Use filter() to get all matches instead."
+  },
+  {
+    code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
+    highlight: { start: 16, end: 48 },
+    question: "What does some() return?",
+    correct: "boolean",
+    options: ["boolean", "array", "number", "element"],
+    hint: "It answers a yes/no question: does at least one element pass the test?",
+    explanation: "Array.some() returns true if at least one element passes the test, false otherwise. It short-circuits: once it finds a passing element, it stops checking the rest."
+  },
+  {
+    code: `const allPositive = [1, 2, 3].every(n => n > 0);`,
+    highlight: { start: 20, end: 47 },
+    question: "What does every() return?",
+    correct: "boolean",
+    options: ["boolean", "array", "number", "element"],
+    hint: "It answers a yes/no question: do ALL elements pass the test?",
+    explanation: "Array.every() returns true only if all elements pass the test. It short-circuits on the first failure \u2014 as soon as one element fails, it returns false without checking the rest."
+  },
+  {
+    code: `const [count, setCount] = useState(0);`,
+    highlight: { start: 0, end: 37 },
+    question: "What React feature is being used here?",
+    correct: "hook",
+    options: ["hook", "component", "prop", "context"],
+    hint: "Functions starting with 'use' that let you 'hook into' React features.",
+    explanation: "React hooks are functions starting with 'use' that let functional components manage state, effects, and other React features. useState, useEffect, useContext are all built-in hooks."
+  },
+  {
+    code: `<button onClick={() => setCount(count + 1)}>
+  Click me
+</button>`,
+    highlight: { start: 8, end: 43 },
+    question: "What is this attribute called in React?",
+    correct: "event handler",
+    options: ["event handler", "callback prop", "action", "listener"],
+    hint: "This function responds to a user interaction like a click.",
+    explanation: "An event handler is a function assigned to respond to user interactions like clicks, keypresses, or form submissions. In React, they use camelCase naming like onClick instead of HTML's onclick."
   }
 ];
 

@@ -1,5 +1,6 @@
 import { Flame, Star } from 'lucide-react';
 import type { Level } from '../data/questions';
+import { formatNumber } from '../utils/format';
 
 interface QuizHeaderProps {
   score: number;
@@ -19,22 +20,28 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
           <span className={`flex items-center h-9 text-sm px-3 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
             {level.name}
           </span>
-          <div className="flex items-center gap-2 h-9 bg-orange-500 text-white px-3 sm:px-4 rounded-xl font-bold">
-            <Flame size={20} />
-            <span>{streak}</span>
+          <div className="flex items-center gap-2 h-9 bg-orange-500 text-white px-3 sm:px-4 rounded-xl font-bold tabular-nums">
+            <Flame size={20} aria-hidden="true" />
+            <span>{formatNumber(streak)}</span>
           </div>
-          <div className="flex items-center gap-2 h-9 bg-yellow-500 text-white px-3 sm:px-4 rounded-xl font-bold">
-            <Star size={20} />
-            <span>{score}</span>
+          <div className="flex items-center gap-2 h-9 bg-yellow-500 text-white px-3 sm:px-4 rounded-xl font-bold tabular-nums">
+            <Star size={20} aria-hidden="true" />
+            <span>{formatNumber(score)}</span>
           </div>
         </div>
-        <div className="text-gray-600 font-semibold">
-          {currentQuestionIndex + 1} / {totalQuestions}
+        <div className="text-gray-600 font-semibold tabular-nums">
+          {formatNumber(currentQuestionIndex + 1)} / {formatNumber(totalQuestions)}
         </div>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div
+        className="w-full bg-gray-200 rounded-full h-3 overflow-hidden"
+        role="progressbar"
+        aria-valuenow={currentQuestionIndex + 1}
+        aria-valuemin={1}
+        aria-valuemax={totalQuestions}
+      >
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-[width] duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>

@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { levels } from '../data/questions';
 import { PageLayout } from './PageLayout';
 import { ROUTES } from '../routes';
+import { formatNumber } from '../utils/format';
 
 export const LevelSelect = () => {
   return (
@@ -10,9 +11,9 @@ export const LevelSelect = () => {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl mb-6 shadow-lg">
-            <Code2 className="w-10 h-10 text-white" />
+            <Code2 className="w-10 h-10 text-white" aria-hidden="true" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
+          <h1 className="text-4xl font-bold text-gray-800 mb-3 text-balance">
             Syntax Quiz
           </h1>
           <p className="text-gray-600 text-lg">
@@ -25,7 +26,7 @@ export const LevelSelect = () => {
             <Link
               key={level.id}
               to={ROUTES.questions(level.id)}
-              className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] p-6 text-left group"
+              className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-transform transition-shadow duration-200 hover:scale-[1.02] p-6 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50 touch-manipulation"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -34,7 +35,7 @@ export const LevelSelect = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-bold text-gray-800">
+                      <h2 className="text-xl font-bold text-gray-800 text-balance">
                         {level.name}
                       </h2>
                       <span className={`text-sm font-medium px-2 py-0.5 rounded-full bg-gradient-to-r ${level.color} text-white`}>
@@ -45,11 +46,11 @@ export const LevelSelect = () => {
                       {level.description}
                     </p>
                     <p className="text-sm text-gray-400 mt-1">
-                      {level.questions.length} questions
+                      {formatNumber(level.questions.length)} questions
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-colors transition-transform" aria-hidden="true" />
               </div>
             </Link>
           ))}

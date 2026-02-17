@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Route, Switch, useLocation } from 'wouter';
-import { Transition } from '@headlessui/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { LevelSelect } from './components/LevelSelect';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
@@ -8,40 +7,32 @@ import { ROUTES, ROUTE_PATTERNS } from './routes';
 
 function App() {
   const [location] = useLocation();
-  const [show, setShow] = useState(true);
-  const [displayedLocation, setDisplayedLocation] = useState(location);
-
-  useEffect(() => {
-    if (location !== displayedLocation) {
-      setShow(false);
+  const prefersReducedMotion = useReducedMotion();
+  const pageTransition = prefersReducedMotion
+    ? {
+      initial: { opacity: 1 },
+      animate: { opacity: 1 },
+      exit: { opacity: 1 },
+      transition: { duration: 0 },
     }
-  }, [location, displayedLocation]);
-
-  const handleAfterLeave = () => {
-    setDisplayedLocation(location);
-    setShow(true);
-  };
+    : {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.3 },
+    };
 
   return (
-    <Transition
-      as="div"
-      show={show}
-      appear
-      enter="transition-opacity duration-300"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-300"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-      afterLeave={handleAfterLeave}
-    >
-      <Switch location={displayedLocation}>
-        <Route path={ROUTES.home} component={LevelSelect} />
-        <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
-        <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
-        <Route><LevelSelect /></Route>
-      </Switch>
-    </Transition>
+    <AnimatePresence mode="wait">
+      <motion.div key={location} {...pageTransition}>
+        <Switch>
+          <Route path={ROUTES.home} component={LevelSelect} />
+          <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
+          <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
+          <Route><LevelSelect /></Route>
+        </Switch>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

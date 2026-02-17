@@ -400,15 +400,16 @@ var x = 5;`,
     explanation: "Hoisting moves var declarations (but not their assignments) to the top of their scope during compilation. So var x exists when console.log runs, but its value hasn't been assigned yet, resulting in undefined."
   },
   {
-    code: `const promise = new Promise((resolve, reject) => {
-  setTimeout(() => resolve('done'), 1000);
-});`,
-    highlight: { start: 16, end: 96 },
-    question: "What is this object called?",
+    code: `async function loadUser(id: number) {
+  const data = await fetchUser(id);
+  return data;
+}`,
+    highlight: { start: 52, end: 57 },
+    question: "What does the `await` keyword pause execution for?",
     correct: "Promise",
-    options: ["Promise", "Future", "Deferred", "Observable"],
+    options: ["Promise", "Callback", "Observable", "Event"],
     hint: "This object represents a value that may not be available yet but will resolve later.",
-    explanation: "A Promise represents an asynchronous operation that will eventually resolve with a value or reject with an error. It has three states: pending, fulfilled, or rejected."
+    explanation: "The await keyword pauses an async function until a Promise settles. A Promise represents an asynchronous operation that will eventually resolve with a value or reject with an error — it has three states: pending, fulfilled, or rejected."
   },
   {
     code: `const double = (x) => x * 2;

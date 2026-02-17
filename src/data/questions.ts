@@ -262,81 +262,70 @@ console.log(fruits[0]);`,
     explanation: "Kebab case uses hyphens to separate words (user-profile-card). It's the standard convention for CSS class names, HTML attributes, and URL slugs. It's called 'kebab case' because the hyphens look like a skewer."
   },
   {
-    code: `let count: number = 0;`,
-    highlight: { start: 9, end: 17 },
-    question: "What is the highlighted part called?",
-    correct: "type annotation",
-    options: ["type annotation", "type assertion", "type cast", "type declaration"],
-    hint: "The ': number' syntax after the variable name tells TypeScript what type it is.",
-    explanation: "A type annotation uses : Type syntax to explicitly declare a variable's type. TypeScript can often infer types, but annotations provide explicit documentation and enforce type checking."
+    code: `const isActive = true;
+const message = isActive ? 'yes' : 'no';`,
+    highlight: { start: 39, end: 62 },
+    question: "What is this operator called?",
+    correct: "ternary operator",
+    options: ["ternary operator", "comparison operator", "inline if", "expression"],
+    hint: "This condition ? valueIfTrue : valueIfFalse operator has three parts.",
+    explanation: "The ternary operator (condition ? a : b) is the only JavaScript operator that takes three operands. It's a concise alternative to if/else for simple conditional expressions."
   },
   {
-    code: `function log(msg: string): void {
-  console.log(msg);
-}`,
-    highlight: { start: 27, end: 31 },
-    question: "What does this return type mean?",
-    correct: "returns nothing",
-    options: ["returns nothing", "returns null", "returns undefined", "returns any"],
-    hint: "This keyword means the function doesn't give back a meaningful value.",
-    explanation: "The void type indicates a function does not return a value. It's different from undefined — void means the return value should not be used, while undefined is an actual value."
+    code: `const nums = [1, 2, 3].map(n => n * 2);`,
+    highlight: { start: 13, end: 38 },
+    question: "What does map() return?",
+    correct: "new array",
+    options: ["new array", "modified array", "undefined", "boolean"],
+    hint: "map() does not mutate the original — it creates something fresh.",
+    explanation: "Array.map() always returns a new array of the same length, with each element transformed by the callback. It never mutates the original array \u2014 this immutability is a key principle of functional programming."
   },
   {
-    code: `interface User {
-  name: string;
-  age: number;
-}`,
-    highlight: { start: 0, end: 9 },
-    question: "What keyword is used to define this structure?",
-    correct: "interface",
-    options: ["interface", "type", "class", "struct"],
-    hint: "This keyword defines the shape of an object without creating an actual value.",
-    explanation: "The interface keyword defines a contract that describes the shape of an object — what properties it has and their types. Unlike classes, interfaces exist only at compile time and generate no JavaScript code."
+    code: `const found = [1, 2, 3, 4].find(n => n > 2);`,
+    highlight: { start: 14, end: 43 },
+    question: "What does find() return?",
+    correct: "first matching element",
+    options: ["first matching element", "all matches", "boolean", "index"],
+    hint: "It stops searching as soon as it finds one element that passes the test.",
+    explanation: "Array.find() returns the first element that satisfies the test function, then stops iterating. If no element matches, it returns undefined. Use filter() to get all matches instead."
   },
   {
-    code: `interface User {
-  name: string;
-  age?: number;
-}`,
-    highlight: { start: 35, end: 39 },
-    question: "What does the ? symbol mean in this property?",
-    correct: "optional property",
-    options: ["optional property", "nullable property", "default property", "conditional property"],
-    hint: "The question mark after the property name means it doesn't have to be provided.",
-    explanation: "The ? after a property name makes it optional — objects of this type may or may not include it. An optional property can be omitted entirely, unlike a required property which must always be present."
+    code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
+    highlight: { start: 16, end: 48 },
+    question: "What does some() return?",
+    correct: "boolean",
+    options: ["boolean", "array", "number", "element"],
+    hint: "It answers a yes/no question: does at least one element pass the test?",
+    explanation: "Array.some() returns true if at least one element passes the test, false otherwise. It short-circuits: once it finds a passing element, it stops checking the rest."
   },
   {
-    code: `async function fetchData() {
-  const data = await fetch("/api");
-  return data.json();
-}`,
-    highlight: { start: 0, end: 5 },
-    question: "What does this keyword do to a function?",
-    correct: "makes it return a Promise",
-    options: ["makes it return a Promise", "makes it run faster", "makes it run in parallel", "makes it synchronous"],
-    hint: "This keyword enables the use of 'await' inside the function.",
-    explanation: "The async keyword makes a function always return a Promise and enables the use of await inside it. It allows asynchronous code to be written in a synchronous-looking style."
+    code: `const allPositive = [1, 2, 3].every(n => n > 0);`,
+    highlight: { start: 20, end: 47 },
+    question: "What does every() return?",
+    correct: "boolean",
+    options: ["boolean", "array", "number", "element"],
+    hint: "It answers a yes/no question: do ALL elements pass the test?",
+    explanation: "Array.every() returns true only if all elements pass the test. It short-circuits on the first failure \u2014 as soon as one element fails, it returns false without checking the rest."
   },
   {
-    code: `async function fetchData() {
-  const data = await fetch("/api");
-  return data.json();
-}`,
-    highlight: { start: 44, end: 49 },
-    question: "What does this keyword do?",
-    correct: "pauses until the Promise resolves",
-    options: ["pauses until the Promise resolves", "creates a new Promise", "cancels the operation", "runs code in parallel"],
-    hint: "This keyword waits for an asynchronous operation to complete before continuing.",
-    explanation: "The await keyword pauses execution of an async function until the Promise it's given resolves, then returns the resolved value. It makes asynchronous code read like synchronous code."
+    code: `const [count, setCount] = useState(0);`,
+    highlight: { start: 0, end: 37 },
+    question: "What React feature is being used here?",
+    correct: "hook",
+    options: ["hook", "component", "prop", "context"],
+    hint: "Functions starting with 'use' that let you 'hook into' React features.",
+    explanation: "React hooks are functions starting with 'use' that let functional components manage state, effects, and other React features. useState, useEffect, useContext are all built-in hooks."
   },
   {
-    code: `const names: string[] = ["Alice", "Bob"];`,
-    highlight: { start: 13, end: 21 },
-    question: "What does this type annotation mean?",
-    correct: "array of strings",
-    options: ["array of strings", "single string", "string or array", "tuple of strings"],
-    hint: "The [] after the type name means a collection of that type.",
-    explanation: "string[] is TypeScript's shorthand syntax for an array of strings. It's equivalent to Array<string>. The square brackets after any type name indicate an array of that type."
+    code: `<button onClick={() => setCount(count + 1)}>
+  Click me
+</button>`,
+    highlight: { start: 8, end: 43 },
+    question: "What is this attribute called in React?",
+    correct: "event handler",
+    options: ["event handler", "callback prop", "action", "listener"],
+    hint: "This function responds to a user interaction like a click.",
+    explanation: "An event handler is a function assigned to respond to user interactions like clicks, keypresses, or form submissions. In React, they use camelCase naming like onClick instead of HTML's onclick."
   }
 ];
 
@@ -389,16 +378,6 @@ const newArr = [...oldArr, 4, 5];`,
     options: ["spread syntax", "rest syntax", "destructuring", "expansion"],
     hint: "The three dots (...) expand an iterable's elements into a new array.",
     explanation: "Spread syntax (...) expands an iterable's elements in place. In [...oldArr, 4, 5], it unpacks oldArr's elements into the new array. The same ... in a function parameter is rest syntax, which does the opposite."
-  },
-  {
-    code: `const isActive = true;
-const message = isActive ? 'yes' : 'no';`,
-    highlight: { start: 39, end: 62 },
-    question: "What is this operator called?",
-    correct: "ternary operator",
-    options: ["ternary operator", "comparison operator", "inline if", "expression"],
-    hint: "This condition ? valueIfTrue : valueIfFalse operator has three parts.",
-    explanation: "The ternary operator (condition ? a : b) is the only JavaScript operator that takes three operands. It's a concise alternative to if/else for simple conditional expressions."
   },
   {
     code: `const user = { profile: { name: 'Alice' } };
@@ -477,15 +456,16 @@ var x = 5;`,
     explanation: "Hoisting moves var declarations (but not their assignments) to the top of their scope during compilation. So var x exists when console.log runs, but its value hasn't been assigned yet, resulting in undefined."
   },
   {
-    code: `const promise = new Promise((resolve, reject) => {
-  setTimeout(() => resolve('done'), 1000);
-});`,
-    highlight: { start: 16, end: 96 },
-    question: "What is this object called?",
+    code: `async function loadUser(id: number) {
+  const data = await fetchUser(id);
+  return data;
+}`,
+    highlight: { start: 52, end: 57 },
+    question: "What does the `await` keyword pause execution for?",
     correct: "Promise",
-    options: ["Promise", "Future", "Deferred", "Observable"],
+    options: ["Promise", "Callback", "Observable", "Event"],
     hint: "This object represents a value that may not be available yet but will resolve later.",
-    explanation: "A Promise represents an asynchronous operation that will eventually resolve with a value or reject with an error. It has three states: pending, fulfilled, or rejected."
+    explanation: "The await keyword pauses an async function until a Promise settles. A Promise represents an asynchronous operation that will eventually resolve with a value or reject with an error — it has three states: pending, fulfilled, or rejected."
   },
   {
     code: `const double = (x) => x * 2;
@@ -496,60 +476,6 @@ const numbers = [1, 2, 3].map(double);`,
     options: ["pure function", "impure function", "side effect", "closure"],
     hint: "It always returns the same output for the same input and has no side effects.",
     explanation: "A pure function always returns the same output for the same input and produces no side effects. double(3) always returns 6 and doesn't modify any external state."
-  },
-  {
-    code: `const nums = [1, 2, 3].map(n => n * 2);`,
-    highlight: { start: 13, end: 38 },
-    question: "What does map() return?",
-    correct: "new array",
-    options: ["new array", "modified array", "undefined", "boolean"],
-    hint: "map() does not mutate the original — it creates something fresh.",
-    explanation: "Array.map() always returns a new array of the same length, with each element transformed by the callback. It never mutates the original array \u2014 this immutability is a key principle of functional programming."
-  },
-  {
-    code: `const found = [1, 2, 3, 4].find(n => n > 2);`,
-    highlight: { start: 14, end: 43 },
-    question: "What does find() return?",
-    correct: "first matching element",
-    options: ["first matching element", "all matches", "boolean", "index"],
-    hint: "It stops searching as soon as it finds one element that passes the test.",
-    explanation: "Array.find() returns the first element that satisfies the test function, then stops iterating. If no element matches, it returns undefined. Use filter() to get all matches instead."
-  },
-  {
-    code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
-    highlight: { start: 16, end: 48 },
-    question: "What does some() return?",
-    correct: "boolean",
-    options: ["boolean", "array", "number", "element"],
-    hint: "It answers a yes/no question: does at least one element pass the test?",
-    explanation: "Array.some() returns true if at least one element passes the test, false otherwise. It short-circuits: once it finds a passing element, it stops checking the rest."
-  },
-  {
-    code: `const allPositive = [1, 2, 3].every(n => n > 0);`,
-    highlight: { start: 20, end: 47 },
-    question: "What does every() return?",
-    correct: "boolean",
-    options: ["boolean", "array", "number", "element"],
-    hint: "It answers a yes/no question: do ALL elements pass the test?",
-    explanation: "Array.every() returns true only if all elements pass the test. It short-circuits on the first failure \u2014 as soon as one element fails, it returns false without checking the rest."
-  },
-  {
-    code: `const sum = [1, 2, 3].reduce((acc, n) => acc + n, 0);`,
-    highlight: { start: 12, end: 52 },
-    question: "What array method accumulates values?",
-    correct: "reduce",
-    options: ["reduce", "accumulate", "fold", "aggregate"],
-    hint: "It takes many values and 'reduces' them down to a single accumulated result.",
-    explanation: "Array.reduce() iterates through an array, accumulating a single result by applying a callback to each element. The accumulator (acc) carries the running total between iterations."
-  },
-  {
-    code: `const [count, setCount] = useState(0);`,
-    highlight: { start: 0, end: 37 },
-    question: "What React feature is being used here?",
-    correct: "hook",
-    options: ["hook", "component", "prop", "context"],
-    hint: "Functions starting with 'use' that let you 'hook into' React features.",
-    explanation: "React hooks are functions starting with 'use' that let functional components manage state, effects, and other React features. useState, useEffect, useContext are all built-in hooks."
   },
   {
     code: `useEffect(() => {
@@ -585,17 +511,6 @@ const numbers = [1, 2, 3].map(double);`,
     explanation: "Props destructuring extracts specific properties from the props object directly in the function parameters. Instead of writing props.onClick and props.children, you get onClick and children as direct variables."
   },
   {
-    code: `<button onClick={() => setCount(count + 1)}>
-  Click me
-</button>`,
-    highlight: { start: 8, end: 43 },
-    question: "What is this attribute called in React?",
-    correct: "event handler",
-    options: ["event handler", "callback prop", "action", "listener"],
-    hint: "This function responds to a user interaction like a click.",
-    explanation: "An event handler is a function assigned to respond to user interactions like clicks, keypresses, or form submissions. In React, they use camelCase naming like onClick instead of HTML's onclick."
-  },
-  {
     code: `{items.map(item => (
   <li key={item.id}>{item.name}</li>
 ))}`,
@@ -615,102 +530,6 @@ const numbers = [1, 2, 3].map(double);`,
     hint: "This & symbol means a type must satisfy ALL of the combined types.",
     explanation: "The ampersand (&) creates an intersection type, meaning the resulting type must have ALL properties from both types. User & Admin has everything from User AND everything from Admin."
   },
-  {
-    code: `type StringOrNumber = string | number;`,
-    highlight: { start: 29, end: 30 },
-    question: "What operator creates a union type?",
-    correct: "pipe",
-    options: ["pipe", "ampersand", "or", "plus"],
-    hint: "This | symbol means a type can be ONE of the combined types.",
-    explanation: "The pipe (|) creates a union type, meaning a value can be any ONE of the listed types. string | number accepts either a string or a number, but not both at once."
-  },
-  {
-    code: `enum Direction {
-  Up,
-  Down,
-  Left,
-  Right
-}`,
-    highlight: { start: 0, end: 4 },
-    question: "What keyword defines this set of named constants?",
-    correct: "enum",
-    options: ["enum", "union", "const", "type"],
-    hint: "This keyword creates a set of named values that represent a fixed group of choices.",
-    explanation: "An enum (enumeration) defines a set of named constants. By default, enum members are auto-incremented numbers starting from 0, but they can also be string-valued. Enums exist at both compile time and runtime."
-  },
-  {
-    code: `type UserKeys = keyof User;`,
-    highlight: { start: 16, end: 21 },
-    question: "What operator extracts the property names of a type?",
-    correct: "keyof",
-    options: ["keyof", "typeof", "nameof", "keys"],
-    hint: "This operator produces a union of all property name types from an object type.",
-    explanation: "The keyof operator takes an object type and produces a union of its property names as string literal types. For example, if User has name and age, keyof User is 'name' | 'age'."
-  },
-  {
-    code: `const colors = ["red", "green", "blue"] as const;`,
-    highlight: { start: 40, end: 48 },
-    question: "What does this assertion do?",
-    correct: "makes values readonly and literal",
-    options: ["makes values readonly and literal", "converts to constant variable", "freezes the object at runtime", "creates an immutable copy"],
-    hint: "This tells TypeScript to infer the narrowest possible types and make everything readonly.",
-    explanation: "The 'as const' assertion tells TypeScript to infer literal types instead of general ones and mark everything as readonly. ['red', 'green'] becomes readonly ['red', 'green'] with literal string types, not just string[]."
-  },
-  {
-    code: `class Dog implements Animal {
-  speak() { return "Woof"; }
-}`,
-    highlight: { start: 10, end: 20 },
-    question: "What does this keyword do?",
-    correct: "enforces a class satisfies an interface",
-    options: ["enforces a class satisfies an interface", "inherits from another class", "creates a mixin", "copies methods from another class"],
-    hint: "Unlike 'extends', this keyword checks that a class follows a contract without inheriting code.",
-    explanation: "The implements keyword declares that a class must satisfy the contract defined by an interface. Unlike extends, it doesn't inherit any implementation — the class must provide its own implementations for all required members."
-  },
-  {
-    code: `function parse(input: unknown) {
-  if (typeof input === "string") {
-    return input.toUpperCase();
-  }
-}`,
-    highlight: { start: 22, end: 29 },
-    question: "What is this type called?",
-    correct: "unknown",
-    options: ["unknown", "any", "never", "void"],
-    hint: "This type-safe alternative to 'any' requires you to check the type before using the value.",
-    explanation: "The unknown type is the type-safe counterpart of any. While any lets you do anything without checks, unknown requires type narrowing (like typeof checks) before you can use the value. It's preferred over any when the type is truly not known."
-  },
-  {
-    code: `const input = document.getElementById("app")!;`,
-    highlight: { start: 44, end: 45 },
-    question: "What is this operator called?",
-    correct: "non-null assertion",
-    options: ["non-null assertion", "logical not", "optional chaining", "nullish operator"],
-    hint: "This postfix ! tells TypeScript the value is definitely not null or undefined.",
-    explanation: "The non-null assertion operator (!) tells TypeScript that a value is not null or undefined, even though the type system thinks it might be. Use it carefully — it bypasses type safety and can cause runtime errors if wrong."
-  },
-  {
-    code: `const user = { name: "Alice", age: 30 };
-type UserType = typeof user;`,
-    highlight: { start: 57, end: 63 },
-    question: "What does typeof do in a type context?",
-    correct: "extracts the type of a value",
-    options: ["extracts the type of a value", "checks the type at runtime", "creates a type guard", "converts a value to a type"],
-    hint: "Unlike runtime typeof which returns a string, this typeof is used in type positions to get a variable's type.",
-    explanation: "In a type context, typeof extracts the TypeScript type of a variable or property. This is different from runtime typeof which returns a string like 'number'. Here, typeof user produces { name: string; age: number }."
-  },
-  {
-    code: `interface Config {
-  readonly apiUrl: string;
-  readonly timeout: number;
-}`,
-    highlight: { start: 21, end: 29 },
-    question: "What does this modifier prevent?",
-    correct: "reassignment of the property",
-    options: ["reassignment of the property", "reading the property", "deleting the property", "accessing the property"],
-    hint: "After initialization, this modifier makes a property immutable.",
-    explanation: "The readonly modifier prevents a property from being reassigned after initialization. It's a compile-time check only — at runtime, the property can still technically be changed, but TypeScript will flag it as an error."
-  }
 ];
 
 export const level3Questions: Question[] = [
@@ -736,32 +555,6 @@ const str = value as string;`,
     explanation: "A type predicate (value is Type) in a return type tells TypeScript to narrow the type of the parameter when the function returns true. This enables custom type guard functions."
   },
   {
-    code: `class User {
-  private password: string;
-
-  constructor(password: string) {
-    this.password = password;
-  }
-}`,
-    highlight: { start: 15, end: 22 },
-    question: "What is this keyword called?",
-    correct: "access modifier",
-    options: ["access modifier", "visibility", "scope", "qualifier"],
-    hint: "This keyword controls who can see and use a class member (public, private, protected).",
-    explanation: "Access modifiers (public, private, protected) control the visibility of class members. private means the member can only be accessed within the class itself, not from outside or subclasses."
-  },
-  {
-    code: `abstract class Shape {
-  abstract area(): number;
-}`,
-    highlight: { start: 0, end: 21 },
-    question: "What is this type of class called?",
-    correct: "abstract class",
-    options: ["abstract class", "base class", "interface", "virtual class"],
-    hint: "This class cannot be instantiated directly — it must be extended by a subclass.",
-    explanation: "An abstract class provides a base for other classes but cannot be instantiated directly with new. It can contain abstract methods (no implementation) that subclasses must implement."
-  },
-  {
     code: `interface StringMap {
   [key: string]: any;
 }`,
@@ -780,29 +573,6 @@ const str = value as string;`,
     options: ["conditional type", "ternary type", "generic constraint", "mapped type"],
     hint: "It uses the same ? : pattern as an if/else, but at the type level.",
     explanation: "A conditional type uses T extends U ? X : Y syntax to choose between types based on a condition. It's like an if/else statement but for types, evaluated at compile time."
-  },
-  {
-    code: `export default class App {
-  render() {
-    return <div>Hello</div>;
-  }
-}`,
-    highlight: { start: 0, end: 14 },
-    question: "What is this type of export called?",
-    correct: "default export",
-    options: ["default export", "primary export", "main export", "single export"],
-    hint: "A module can only have one of these — it's what you get when importing without curly braces.",
-    explanation: "A default export (export default) is the main exported value of a module. Each module can have only one, and it can be imported without curly braces using any name the importer chooses."
-  },
-  {
-    code: `export const API_URL = 'https://api.example.com';
-export function fetchData() { }`,
-    highlight: { start: 0, end: 6 },
-    question: "What is this type of export called?",
-    correct: "named export",
-    options: ["named export", "explicit export", "public export", "module export"],
-    hint: "Each export is identified by its specific name and imported with curly braces.",
-    explanation: "Named exports use the export keyword before declarations. A module can have many named exports, and importers must use the exact name (with curly braces) or rename with 'as'."
   },
   {
     code: `type Partial<T> = {
@@ -876,65 +646,6 @@ export function fetchData() { }`,
     explanation: "A recursive type references itself in its definition, allowing it to describe nested data structures. DeepReadonly applies readonly to every level of a nested object by calling itself on each property's type."
   },
   {
-    code: `const theme = useContext(ThemeContext);`,
-    highlight: { start: 14, end: 38 },
-    question: "What React hook accesses context?",
-    correct: "useContext",
-    options: ["useContext", "useProvider", "useConsumer", "useTheme"],
-    hint: "This hook reads a value that was provided by a Context.Provider higher in the tree.",
-    explanation: "useContext reads the current value from a React Context, which is set by the nearest Context.Provider ancestor in the component tree. It avoids the need to pass props through every intermediate component."
-  },
-  {
-    code: `const memoized = useMemo(() => compute(a, b), [a, b]);`,
-    highlight: { start: 17, end: 53 },
-    question: "What React hook memoizes computed values?",
-    correct: "useMemo",
-    options: ["useMemo", "useCallback", "useRef", "useEffect"],
-    hint: "It caches the result of an expensive calculation, recomputing only when dependencies change.",
-    explanation: "useMemo caches the result of an expensive computation and only recomputes when its dependencies change. It returns the memoized value, unlike useCallback which memoizes the function itself."
-  },
-  {
-    code: `const handler = useCallback(() => {
-  onClick(id);
-}, [onClick, id]);`,
-    highlight: { start: 16, end: 66 },
-    question: "What React hook memoizes functions?",
-    correct: "useCallback",
-    options: ["useCallback", "useMemo", "useHandler", "useFunction"],
-    hint: "Like useMemo, but specifically for caching function references between renders.",
-    explanation: "useCallback returns a memoized version of a callback function that only changes when its dependencies change. It's essentially useMemo(() => fn, deps) \u2014 useful for preventing unnecessary re-renders of child components."
-  },
-  {
-    code: `const inputRef = useRef<HTMLInputElement>(null);
-inputRef.current?.focus();`,
-    highlight: { start: 17, end: 47 },
-    question: "What React hook creates a mutable reference?",
-    correct: "useRef",
-    options: ["useRef", "usePointer", "useHandle", "useMutable"],
-    hint: "It returns an object with a .current property that persists across renders.",
-    explanation: "useRef creates a mutable ref object with a .current property that persists across renders without causing re-renders when changed. It's commonly used for DOM element references and storing mutable values."
-  },
-  {
-    code: `type Pick<T, K extends keyof T> = {
-  [P in K]: T[P];
-};`,
-    highlight: { start: 0, end: 55 },
-    question: "What utility type selects specific properties?",
-    correct: "Pick",
-    options: ["Pick", "Select", "Extract", "Choose"],
-    hint: "Like picking items from a menu — you choose which properties to keep.",
-    explanation: "Pick<T, K> constructs a type by selecting a subset of properties from T. For example, Pick<User, 'name' | 'email'> creates a type with only the name and email properties from User."
-  },
-  {
-    code: `type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;`,
-    highlight: { start: 0, end: 64 },
-    question: "What utility type removes specific properties?",
-    correct: "Omit",
-    options: ["Omit", "Exclude", "Remove", "Without"],
-    hint: "The opposite of Pick — you specify which properties to leave out.",
-    explanation: "Omit<T, K> constructs a type by removing specified properties from T. It's implemented using Pick and Exclude internally, and is the inverse of Pick \u2014 useful for creating types without certain fields."
-  },
-  {
     code: `function useCustomHook(initialValue: number) {
   const [value, setValue] = useState(initialValue);
   return { value, increment: () => setValue(v => v + 1) };
@@ -946,92 +657,6 @@ inputRef.current?.focus();`,
     hint: "A reusable function starting with 'use' that composes built-in hooks.",
     explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. Unlike components, custom hooks return data and functions rather than JSX."
   },
-  {
-    code: `type Awaited<T> = T extends Promise<infer U> ? U : T;`,
-    highlight: { start: 0, end: 52 },
-    question: "What utility type unwraps Promises?",
-    correct: "Awaited",
-    options: ["Awaited", "Unwrap", "Resolve", "PromiseResult"],
-    hint: "It extracts the resolved value type, like what you get after using await.",
-    explanation: "Awaited<T> recursively unwraps Promise types to get the resolved value type. Awaited<Promise<string>> gives string, and it even handles nested promises like Promise<Promise<number>> giving number."
-  },
-  {
-    code: `declare const API_URL: string;`,
-    highlight: { start: 0, end: 7 },
-    question: "What is this keyword used for?",
-    correct: "ambient declaration",
-    options: ["ambient declaration", "variable declaration", "type assertion", "module import"],
-    hint: "This tells TypeScript that a variable exists at runtime without providing an implementation.",
-    explanation: "The declare keyword creates an ambient declaration — it tells the TypeScript compiler that a variable, function, or class exists at runtime (e.g., from a script tag or global library) without emitting any JavaScript code."
-  },
-  {
-    code: `type Getters<T> = {
-  [K in keyof T as \`get\${Capitalize<string & K>}\`]: () => T[K];
-};`,
-    highlight: { start: 36, end: 69 },
-    question: "What is this mapped type technique called?",
-    correct: "key remapping",
-    options: ["key remapping", "key filtering", "key aliasing", "property renaming"],
-    hint: "The 'as' keyword inside a mapped type transforms the property keys into new names.",
-    explanation: "Key remapping uses the 'as' clause inside a mapped type to transform property keys. Here, each key K is remapped to a template literal like 'getName' or 'getAge', creating getter-style property names from the original keys."
-  },
-  {
-    code: `type ToArray<T> = T extends any ? T[] : never;`,
-    highlight: { start: 18, end: 45 },
-    question: "Why does ToArray<string | number> produce string[] | number[]?",
-    correct: "distributive conditional type",
-    options: ["distributive conditional type", "union expansion", "type inference", "generic constraint"],
-    hint: "When a naked type parameter appears in a conditional type, it distributes over union members.",
-    explanation: "A distributive conditional type automatically distributes over union members when the checked type is a naked type parameter. ToArray<string | number> becomes ToArray<string> | ToArray<number>, which is string[] | number[]."
-  },
-  {
-    code: `type Concat<A extends unknown[], B extends unknown[]> = [...A, ...B];`,
-    highlight: { start: 56, end: 68 },
-    question: "What TypeScript feature allows spreads in tuple types?",
-    correct: "variadic tuple type",
-    options: ["variadic tuple type", "spread type", "rest tuple", "generic array"],
-    hint: "This feature lets tuple types use spread elements to create variable-length type patterns.",
-    explanation: "Variadic tuple types allow spread elements (...) in tuple type positions. [...A, ...B] creates a new tuple type by concatenating two tuple types. This enables type-safe operations like function composition and array concatenation at the type level."
-  },
-  {
-    code: `type T = Extract<"a" | "b" | "c", "a" | "c">;`,
-    highlight: { start: 9, end: 44 },
-    question: "What utility type keeps only matching union members?",
-    correct: "Extract",
-    options: ["Extract", "Pick", "Filter", "Include"],
-    hint: "This utility type pulls out union members that are assignable to a given type.",
-    explanation: "Extract<T, U> constructs a type by extracting from T all union members that are assignable to U. Extract<'a' | 'b' | 'c', 'a' | 'c'> produces 'a' | 'c'. Its counterpart Exclude removes matching members instead."
-  },
-  {
-    code: `type Result = ReturnType<typeof fetchUser>;`,
-    highlight: { start: 14, end: 42 },
-    question: "What utility type extracts a function's return type?",
-    correct: "ReturnType",
-    options: ["ReturnType", "Awaited", "InstanceType", "ThisType"],
-    hint: "This built-in utility type uses 'infer' internally to extract what a function gives back.",
-    explanation: "ReturnType<T> extracts the return type of a function type T. Combined with typeof, you can get the return type of any function value. Internally, it uses a conditional type with infer to capture the return type."
-  },
-  {
-    code: `const config = {
-  width: 100,
-  color: "red"
-} satisfies Record<string, string | number>;`,
-    highlight: { start: 48, end: 57 },
-    question: "What operator validates a type without widening it?",
-    correct: "satisfies",
-    options: ["satisfies", "as", "implements", "extends"],
-    hint: "This operator checks that a value matches a type while preserving the original inferred type.",
-    explanation: "The satisfies operator (TypeScript 4.9+) validates that an expression matches a type without changing the inferred type. Unlike 'as', it keeps the narrow literal types while still ensuring the value conforms to the expected shape."
-  },
-  {
-    code: `type Shouted = Uppercase<"hello">;`,
-    highlight: { start: 15, end: 33 },
-    question: "What kind of built-in type is Uppercase?",
-    correct: "intrinsic type",
-    options: ["intrinsic type", "utility type", "conditional type", "mapped type"],
-    hint: "Unlike Partial or Record, this type is implemented directly inside the TypeScript compiler.",
-    explanation: "Intrinsic types (Uppercase, Lowercase, Capitalize, Uncapitalize) are special types implemented directly by the TypeScript compiler rather than in TypeScript code. They transform string literal types at the type level — Uppercase<'hello'> produces 'HELLO'."
-  }
 ];
 
 export const levels: Level[] = [

@@ -67,8 +67,8 @@ test.describe('Syntax Quiz E2E', () => {
     const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ });
     await answerButtons.first().click();
     
-    // Feedback banner should appear (filter out DnD live region by checking for visible text)
-    const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
+    // Feedback banner should appear (use data-testid for reliability)
+    const feedbackBanner = page.getByTestId('feedback-banner');
     await expect(feedbackBanner).toBeVisible({ timeout: 3000 });
     
     // Should show either "Correct!" or "Wrong!"

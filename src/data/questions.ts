@@ -314,16 +314,6 @@ const newArr = [...oldArr, 4, 5];`,
     explanation: "Spread syntax (...) expands an iterable's elements in place. In [...oldArr, 4, 5], it unpacks oldArr's elements into the new array. The same ... in a function parameter is rest syntax, which does the opposite."
   },
   {
-    code: `const isActive = true;
-const message = isActive ? 'yes' : 'no';`,
-    highlight: { start: 39, end: 62 },
-    question: "What is this operator called?",
-    correct: "ternary operator",
-    options: ["ternary operator", "comparison operator", "inline if", "expression"],
-    hint: "This condition ? valueIfTrue : valueIfFalse operator has three parts.",
-    explanation: "The ternary operator (condition ? a : b) is the only JavaScript operator that takes three operands. It's a concise alternative to if/else for simple conditional expressions."
-  },
-  {
     code: `const user = { profile: { name: 'Alice' } };
 const name = user?.profile?.name;`,
     highlight: { start: 62, end: 64 },
@@ -422,60 +412,6 @@ const numbers = [1, 2, 3].map(double);`,
     explanation: "A pure function always returns the same output for the same input and produces no side effects. double(3) always returns 6 and doesn't modify any external state."
   },
   {
-    code: `const nums = [1, 2, 3].map(n => n * 2);`,
-    highlight: { start: 13, end: 38 },
-    question: "What does map() return?",
-    correct: "new array",
-    options: ["new array", "modified array", "undefined", "boolean"],
-    hint: "map() does not mutate the original — it creates something fresh.",
-    explanation: "Array.map() always returns a new array of the same length, with each element transformed by the callback. It never mutates the original array \u2014 this immutability is a key principle of functional programming."
-  },
-  {
-    code: `const found = [1, 2, 3, 4].find(n => n > 2);`,
-    highlight: { start: 14, end: 43 },
-    question: "What does find() return?",
-    correct: "first matching element",
-    options: ["first matching element", "all matches", "boolean", "index"],
-    hint: "It stops searching as soon as it finds one element that passes the test.",
-    explanation: "Array.find() returns the first element that satisfies the test function, then stops iterating. If no element matches, it returns undefined. Use filter() to get all matches instead."
-  },
-  {
-    code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
-    highlight: { start: 16, end: 48 },
-    question: "What does some() return?",
-    correct: "boolean",
-    options: ["boolean", "array", "number", "element"],
-    hint: "It answers a yes/no question: does at least one element pass the test?",
-    explanation: "Array.some() returns true if at least one element passes the test, false otherwise. It short-circuits: once it finds a passing element, it stops checking the rest."
-  },
-  {
-    code: `const allPositive = [1, 2, 3].every(n => n > 0);`,
-    highlight: { start: 20, end: 47 },
-    question: "What does every() return?",
-    correct: "boolean",
-    options: ["boolean", "array", "number", "element"],
-    hint: "It answers a yes/no question: do ALL elements pass the test?",
-    explanation: "Array.every() returns true only if all elements pass the test. It short-circuits on the first failure \u2014 as soon as one element fails, it returns false without checking the rest."
-  },
-  {
-    code: `const sum = [1, 2, 3].reduce((acc, n) => acc + n, 0);`,
-    highlight: { start: 12, end: 52 },
-    question: "What array method accumulates values?",
-    correct: "reduce",
-    options: ["reduce", "accumulate", "fold", "aggregate"],
-    hint: "It takes many values and 'reduces' them down to a single accumulated result.",
-    explanation: "Array.reduce() iterates through an array, accumulating a single result by applying a callback to each element. The accumulator (acc) carries the running total between iterations."
-  },
-  {
-    code: `const [count, setCount] = useState(0);`,
-    highlight: { start: 0, end: 37 },
-    question: "What React feature is being used here?",
-    correct: "hook",
-    options: ["hook", "component", "prop", "context"],
-    hint: "Functions starting with 'use' that let you 'hook into' React features.",
-    explanation: "React hooks are functions starting with 'use' that let functional components manage state, effects, and other React features. useState, useEffect, useContext are all built-in hooks."
-  },
-  {
     code: `useEffect(() => {
   document.title = 'Hello';
 }, []);`,
@@ -509,17 +445,6 @@ const numbers = [1, 2, 3].map(double);`,
     explanation: "Props destructuring extracts specific properties from the props object directly in the function parameters. Instead of writing props.onClick and props.children, you get onClick and children as direct variables."
   },
   {
-    code: `<button onClick={() => setCount(count + 1)}>
-  Click me
-</button>`,
-    highlight: { start: 8, end: 43 },
-    question: "What is this attribute called in React?",
-    correct: "event handler",
-    options: ["event handler", "callback prop", "action", "listener"],
-    hint: "This function responds to a user interaction like a click.",
-    explanation: "An event handler is a function assigned to respond to user interactions like clicks, keypresses, or form submissions. In React, they use camelCase naming like onClick instead of HTML's onclick."
-  },
-  {
     code: `{items.map(item => (
   <li key={item.id}>{item.name}</li>
 ))}`,
@@ -539,44 +464,6 @@ const numbers = [1, 2, 3].map(double);`,
     hint: "This & symbol means a type must satisfy ALL of the combined types.",
     explanation: "The ampersand (&) creates an intersection type, meaning the resulting type must have ALL properties from both types. User & Admin has everything from User AND everything from Admin."
   },
-  {
-    code: `type StringOrNumber = string | number;`,
-    highlight: { start: 29, end: 30 },
-    question: "What operator creates a union type?",
-    correct: "pipe",
-    options: ["pipe", "ampersand", "or", "plus"],
-    hint: "This | symbol means a type can be ONE of the combined types.",
-    explanation: "The pipe (|) creates a union type, meaning a value can be any ONE of the listed types. string | number accepts either a string or a number, but not both at once."
-  },
-  {
-    code: `type Pick<T, K extends keyof T> = {
-  [P in K]: T[P];
-};`,
-    highlight: { start: 0, end: 55 },
-    question: "What utility type selects specific properties?",
-    correct: "Pick",
-    options: ["Pick", "Select", "Extract", "Choose"],
-    hint: "Like picking items from a menu — you choose which properties to keep.",
-    explanation: "Pick<T, K> constructs a type by selecting a subset of properties from T. For example, Pick<User, 'name' | 'email'> creates a type with only the name and email properties from User."
-  },
-  {
-    code: `type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;`,
-    highlight: { start: 0, end: 64 },
-    question: "What utility type removes specific properties?",
-    correct: "Omit",
-    options: ["Omit", "Exclude", "Remove", "Without"],
-    hint: "The opposite of Pick — you specify which properties to leave out.",
-    explanation: "Omit<T, K> constructs a type by removing specified properties from T. It's implemented using Pick and Exclude internally, and is the inverse of Pick \u2014 useful for creating types without certain fields."
-  },
-  {
-    code: `type Awaited<T> = T extends Promise<infer U> ? U : T;`,
-    highlight: { start: 0, end: 52 },
-    question: "What utility type unwraps Promises?",
-    correct: "Awaited",
-    options: ["Awaited", "Unwrap", "Resolve", "PromiseResult"],
-    hint: "It extracts the resolved value type, like what you get after using await.",
-    explanation: "Awaited<T> recursively unwraps Promise types to get the resolved value type. Awaited<Promise<string>> gives string, and it even handles nested promises like Promise<Promise<number>> giving number."
-  }
 ];
 
 export const level3Questions: Question[] = [

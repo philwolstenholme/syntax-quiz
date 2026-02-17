@@ -2,6 +2,7 @@ import { Lightbulb } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { MAX_HINTS } from '../constants';
+import { formatNumber } from '../utils/format';
 
 interface HintButtonProps {
   hint: string;
@@ -51,7 +52,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           <Lightbulb size={16} aria-hidden="true" />
           {showEliminate ? 'Eliminate 2 Answers (−50% Pts)' : 'Show Hint (−50% Pts)'}
           <span className="ml-1 text-xs opacity-70">
-            {hintsUsed}/{MAX_HINTS}
+            {formatNumber(hintsUsed)}/{formatNumber(MAX_HINTS)}
           </span>
         </button>
       )}

@@ -85,6 +85,7 @@ A React-based quiz application for testing syntax knowledge. The project is buil
 - Run `npm run lint` to catch code quality issues
 - Test responsive design across different screen sizes
 - Verify animations work smoothly
+- **Note**: Currently, there is no automated test infrastructure in this project. When adding features, consider adding tests if appropriate, but they are not required.
 
 ## Dependencies
 - Use `es-toolkit` for utility functions (modern lodash alternative)

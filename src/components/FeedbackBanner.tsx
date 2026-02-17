@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, Play, Pause, FastForward } from 'lucide-react';
 import clsx from 'clsx';
-import { motion } from 'motion/react';
+import { motion, useMotionValue, animate } from 'motion/react';
+import { useDrag } from '@use-gesture/react';
 import { getMdnUrl } from '../utils/mdnLinks';
+
+// Swipe-to-dismiss configuration
+const SWIPE_DEAD_ZONE = 20; // px of finger movement before the banner starts moving
+const SWIPE_VELOCITY_THRESHOLD = 0.15; // px/ms — minimum release velocity to dismiss
+const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
 export interface AnswerFeedback {
   correct: boolean;
@@ -91,6 +97,9 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const [processedAnswer, setProcessedAnswer] = useState<AnswerFeedback | null>(null);
   const onCompleteRef = useRef(onCountdownComplete);
 
+  // Swipe-to-dismiss: track horizontal position with a motion value
+  const swipeX = useMotionValue(0);
+
   useEffect(() => {
     onCompleteRef.current = onCountdownComplete;
   });
@@ -121,9 +130,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       elapsedRef.current = 0;
       completedRef.current = false;
       startTimeRef.current = performance.now();
+      swipeX.set(0);
       bannerRef.current?.focus();
     }
-  }, [lastAnswer, durationMs]);
+  }, [lastAnswer, durationMs, swipeX]);
 
   // Animation loop
   useEffect(() => {
@@ -162,71 +172,111 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     }
   }, [paused]);
 
+  const bindSwipe = useDrag(
+    ({ active, movement: [mx], velocity: [vx], direction: [dx] }) => {
+      // Only allow rightward movement
+      const clampedX = Math.max(0, mx);
+
+      if (active) {
+        swipeX.set(clampedX);
+      } else {
+        // On release, require both high velocity AND decent distance to dismiss
+        if (vx > SWIPE_VELOCITY_THRESHOLD && clampedX > SWIPE_DISTANCE_THRESHOLD && dx > 0) {
+          animate(swipeX, window.innerWidth, {
+            type: 'tween',
+            duration: 0.2,
+            ease: 'easeOut',
+          }).then(() => completeFeedback());
+        } else {
+          // Snap back
+          animate(swipeX, 0, {
+            type: 'spring',
+            stiffness: 500,
+            damping: 30,
+          });
+        }
+      }
+    },
+    {
+      axis: 'x',
+      threshold: SWIPE_DEAD_ZONE,
+      filterTaps: true,
+    },
+  );
+
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
   const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
 
   return (
-    <motion.div
-      ref={bannerRef}
-      tabIndex={-1}
-      initial={{ x: 0 }}
-      animate={{
-        x: lastAnswer.correct ? 0 : [-10, 10, -10, 10, 0],
-      }}
-      transition={{
-        duration: lastAnswer.correct ? 0 : 0.5,
-        ease: 'easeInOut',
-      }}
-      className={clsx(
-        'rounded-2xl p-4 mb-6 border-2 outline-none',
-        lastAnswer.correct
-          ? 'bg-green-50 text-green-700 border-green-500'
-          : 'bg-red-50 text-red-700 border-red-500',
-      )}
+    <div
+      {...bindSwipe()}
+      style={{ touchAction: 'pan-y' }}
+      className="mb-6"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 font-bold text-lg">
-            {lastAnswer.correct ? (
-              <>
-                <CheckCircle size={24} className="flex-shrink-0" />
-                <span>
-                  Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
-                </span>
-              </>
-            ) : (
-              <>
-                <XCircle size={24} className="flex-shrink-0" />
-                <span>
-                  Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
-                  {lastAnswer.userAnswer}
-                </span>
-              </>
+      <motion.div style={{ x: swipeX }}>
+        <motion.div
+          ref={bannerRef}
+          tabIndex={-1}
+          initial={{ x: 0 }}
+          animate={{
+            x: lastAnswer.correct ? 0 : [-10, 10, -10, 10, 0],
+          }}
+          transition={{
+            duration: lastAnswer.correct ? 0 : 0.5,
+            ease: 'easeInOut',
+          }}
+          className={clsx(
+            'rounded-2xl p-4 border-2 outline-none',
+            lastAnswer.correct
+              ? 'bg-green-50 text-green-700 border-green-500'
+              : 'bg-red-50 text-red-700 border-red-500',
+          )}
+        >
+        <div className="flex items-start gap-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 font-bold text-lg">
+              {lastAnswer.correct ? (
+                <>
+                  <CheckCircle size={24} className="flex-shrink-0" />
+                  <span>
+                    Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <XCircle size={24} className="flex-shrink-0" />
+                  <span>
+                    Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+                    {lastAnswer.userAnswer}
+                  </span>
+                </>
+              )}
+            </div>
+            {lastAnswer.explanation && (
+              <p className={clsx(
+                'mt-2 ml-9 text-sm font-normal leading-relaxed',
+                lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+              )}>
+                {lastAnswer.explanation}
+              </p>
             )}
           </div>
-          {lastAnswer.explanation && (
-            <p className={clsx(
-              'mt-2 ml-9 text-sm font-normal leading-relaxed',
-              lastAnswer.correct ? 'text-green-800' : 'text-red-800',
-            )}>
-              {lastAnswer.explanation}
-            </p>
+          {timerActive && (
+            <div className="flex items-center gap-2">
+              <CountdownButton
+                progress={progress}
+                paused={paused}
+                onToggle={togglePause}
+                color={ringColor}
+              />
+              <SkipButton onSkip={completeFeedback} />
+            </div>
           )}
         </div>
-        {timerActive && (
-          <div className="flex items-center gap-2">
-            <CountdownButton
-              progress={progress}
-              paused={paused}
-              onToggle={togglePause}
-              color={ringColor}
-            />
-            <SkipButton onSkip={completeFeedback} />
-          </div>
-        )}
-      </div>
-    </motion.div>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };

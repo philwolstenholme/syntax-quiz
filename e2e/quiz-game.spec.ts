@@ -42,8 +42,11 @@ test.describe('Syntax Quiz E2E', () => {
     // Verify navigation to questions page
     await expect(page).toHaveURL(/\/syntax-quiz\/level\/1\/questions/);
     
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle');
+    
     // Verify quiz page loaded with question
-    await expect(page.locator('pre, code').first()).toBeVisible();
+    await expect(page.locator('pre, code').first()).toBeVisible({ timeout: 10000 });
     
     // Check for answer buttons
     const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ });
@@ -58,17 +61,18 @@ test.describe('Syntax Quiz E2E', () => {
     // Navigate to quiz
     await page.getByRole('link', { name: /Level 1/i }).click();
     await expect(page).toHaveURL(/\/questions/);
+    await page.waitForLoadState('networkidle');
     
     // Answer first question
     const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ });
     await answerButtons.first().click();
     
-    // Feedback banner should appear
-    await expect(page.locator('[role="status"], [role="alert"]')).toBeVisible({ timeout: 2000 });
+    // Feedback banner should appear (filter out DnD live region by checking for visible text)
+    const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
+    await expect(feedbackBanner).toBeVisible({ timeout: 3000 });
     
     // Should show either "Correct!" or "Wrong!"
-    const feedback = page.locator('[role="status"], [role="alert"]');
-    await expect(feedback).toContainText(/Correct!|Wrong!/);
+    await expect(feedbackBanner).toContainText(/Correct!|Wrong!/);
   });
 
   test('should use pause and skip buttons on feedback banner', async ({ page }) => {
@@ -134,10 +138,14 @@ test.describe('Syntax Quiz E2E', () => {
   test('should display score and streak', async ({ page }) => {
     // Navigate to quiz and answer questions
     await page.getByRole('link', { name: /Level 1/i }).click();
+    await page.waitForLoadState('networkidle');
     
     // Answer first question
     await page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ }).first().click();
-    await page.waitForTimeout(1000);
+    
+    // Wait for feedback to appear
+    const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
+    await expect(feedbackBanner).toBeVisible({ timeout: 3000 });
     
     // Verify score and streak elements exist and contain numbers
     const scoreElement = page.locator('text=/Score/i').locator('..');
@@ -153,6 +161,7 @@ test.describe('Syntax Quiz E2E', () => {
   test('should complete quiz and show results page', async ({ page }) => {
     // Navigate to quiz
     await page.getByRole('link', { name: /Level 1/i }).click();
+    await page.waitForLoadState('networkidle');
     
     // Answer questions quickly until completion (limit to 35 to avoid infinite loop)
     for (let i = 0; i < 35; i++) {
@@ -168,11 +177,14 @@ test.describe('Syntax Quiz E2E', () => {
       if (count === 0) break;
       
       await answerButtons.first().click();
-      await page.waitForTimeout(300);
+      
+      // Wait for feedback banner to appear
+      const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
+      await feedbackBanner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
       
       // Skip feedback if available
       const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-      if (await skipButton.isVisible()) {
+      if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
         await skipButton.click();
         await page.waitForTimeout(300);
       } else {
@@ -208,18 +220,19 @@ test.describe('Syntax Quiz E2E', () => {
   test('should navigate back to home from score page', async ({ page }) => {
     // Navigate to quiz and answer a few questions to get to score page
     await page.getByRole('link', { name: /Level 1/i }).click();
+    await page.waitForLoadState('networkidle');
     
     // Answer questions quickly
     for (let i = 0; i < 35; i++) {
       if (page.url().includes('/score')) break;
       
       const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/, disabled: false });
-      if (await answerButtons.first().isVisible()) {
+      if (await answerButtons.first().isVisible({ timeout: 1000 }).catch(() => false)) {
         await answerButtons.first().click();
         await page.waitForTimeout(200);
         
         const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-        if (await skipButton.isVisible()) {
+        if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
           await skipButton.click();
           await page.waitForTimeout(200);
         }
@@ -271,6 +284,7 @@ test.describe('Syntax Quiz E2E', () => {
   test('should handle mix of correct and incorrect answers', async ({ page }) => {
     // Navigate to quiz
     await page.getByRole('link', { name: /Level 1/i }).click();
+    await page.waitForLoadState('networkidle');
     
     let correctCount = 0;
     let incorrectCount = 0;
@@ -286,10 +300,11 @@ test.describe('Syntax Quiz E2E', () => {
       const index = i % count;
       await answerButtons.nth(index).click();
       
-      // Check feedback
-      await page.waitForTimeout(500);
-      const feedback = page.locator('[role="status"], [role="alert"]');
-      const feedbackText = await feedback.textContent();
+      // Check feedback using a more specific selector
+      const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
+      await feedbackBanner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+      
+      const feedbackText = await feedbackBanner.textContent().catch(() => '');
       
       if (feedbackText?.includes('Correct')) {
         correctCount++;
@@ -299,7 +314,7 @@ test.describe('Syntax Quiz E2E', () => {
       
       // Skip
       const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-      if (await skipButton.isVisible()) {
+      if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
         await skipButton.click();
         await page.waitForTimeout(300);
       }

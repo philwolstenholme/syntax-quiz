@@ -1,0 +1,69 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - link "Skip to content" [ref=e5] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Syntax Quiz — Level 1" [level=1] [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - generic [ref=e11]:
+              - generic [ref=e12]: Level 1
+              - generic [ref=e13]:
+                - img [ref=e14]
+                - generic [ref=e16]: "0"
+              - generic [ref=e17]:
+                - img [ref=e18]
+                - generic [ref=e20]: "0"
+            - generic [ref=e21]:
+              - generic [ref=e22]: 1 / 31
+              - button "Save" [disabled] [ref=e23]:
+                - img [ref=e24]
+                - generic [ref=e28]: Save
+          - progressbar [ref=e29]
+        - alert [active] [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - img [ref=e38]
+                - generic [ref=e42]:
+                  - text: Wrong! It was
+                  - link "parameter" [ref=e43] [cursor=pointer]:
+                    - /url: https://developer.mozilla.org/en-US/docs/Glossary/Parameter
+                  - text: ", not argument"
+              - paragraph [ref=e44]: A parameter is a variable listed in a function's declaration. An argument is the actual value passed to the function when it's called — parameters define, arguments supply.
+            - generic [ref=e45]:
+              - button "Pause Timer" [ref=e46] [cursor=pointer]:
+                - img [ref=e49]
+              - button "Skip Feedback" [ref=e52]:
+                - img [ref=e54]
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - heading "What is the highlighted part called?" [level=2] [ref=e59]
+            - paragraph [ref=e60]: 💡 Drag an answer onto the code snippet or click an answer below
+            - region "Answer dropzone" [ref=e61]:
+              - code [ref=e63]: "function greet(name: string) { return `Hello, ${name}!`; }"
+          - button "Show Hint (−50% Pts) 1/2" [disabled] [ref=e65]:
+            - img [ref=e66]
+            - text: Show Hint (−50% Pts)
+            - generic [ref=e68]: 1/2
+          - generic [ref=e69]:
+            - button "argument" [disabled] [ref=e70]:
+              - img [ref=e72]
+              - generic [ref=e79]: argument
+            - button "variable" [disabled] [ref=e80]:
+              - img [ref=e82]
+              - generic [ref=e89]: variable
+            - button "property" [disabled] [ref=e90]:
+              - img [ref=e92]
+              - generic [ref=e99]: property
+            - button "parameter" [disabled] [ref=e100]:
+              - img [ref=e102]
+              - generic [ref=e109]: parameter
+          - link "Report an issue with this question" [ref=e111] [cursor=pointer]:
+            - /url: https://github.com/philwolstenholme/syntax-quiz/issues/new?title=What%20is%20the%20highlighted%20part%20called%3F
+  - status [ref=e112]
+```

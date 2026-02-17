@@ -1,0 +1,68 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - link "Skip to content" [ref=e5] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Syntax Quiz — Level 1" [level=1] [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - generic [ref=e11]:
+              - generic [ref=e12]: Level 1
+              - generic [ref=e13]:
+                - img [ref=e14]
+                - generic [ref=e16]: "1"
+              - generic [ref=e17]:
+                - img [ref=e18]
+                - generic [ref=e20]: "5"
+            - generic [ref=e21]:
+              - generic [ref=e22]: 1 / 31
+              - button "Save" [disabled] [ref=e23]:
+                - img [ref=e24]
+                - generic [ref=e28]: Save
+          - progressbar [ref=e29]
+        - status [active] [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - img [ref=e38]
+                - generic [ref=e41]:
+                  - text: Correct!
+                  - link "camel case" [ref=e42] [cursor=pointer]:
+                    - /url: https://www.google.com/search?q=camel%20case%20AND%20inurl%3Ahttps%3A%2F%2Fdeveloper.mozilla.org%20OR%20inurl%3Ahttps%3A%2F%2Fjavascript.info%20OR%20inurl%3Ahttps%3A%2F%2Feloquentjavascript.net%20OR%20inurl%3Ahttps%3A%2F%2Fexploringjs.com%20OR%20inurl%3Ahttps%3A%2F%2Fwww.typescriptlang.org%2Fdocs%20OR%20inurl%3Ahttps%3A%2F%2Freact.dev%2Fdocs%20OR%20inurl%3Ahttps%3A%2F%2Flearntypescript.dev
+              - paragraph [ref=e43]: Camel case joins words with no separator, capitalizing each word after the first (userFirstName). It's the standard convention for variables and functions in JavaScript and TypeScript.
+            - generic [ref=e44]:
+              - button "Pause Timer" [ref=e45] [cursor=pointer]:
+                - img [ref=e48]
+              - button "Skip Feedback" [ref=e51]:
+                - img [ref=e53]
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - heading "What naming convention is used here?" [level=2] [ref=e58]
+            - paragraph [ref=e59]: 💡 Drag an answer onto the code snippet or click an answer below
+            - region "Answer dropzone" [ref=e60]:
+              - code [ref=e62]: const userFirstName = 'Alice';
+          - button "Show Hint (−50% Pts) 1/2" [disabled] [ref=e64]:
+            - img [ref=e65]
+            - text: Show Hint (−50% Pts)
+            - generic [ref=e67]: 1/2
+          - generic [ref=e68]:
+            - button "camel case" [disabled] [ref=e69]:
+              - img [ref=e71]
+              - generic [ref=e78]: camel case
+            - button "pascal case" [disabled] [ref=e79]:
+              - img [ref=e81]
+              - generic [ref=e88]: pascal case
+            - button "snake case" [disabled] [ref=e89]:
+              - img [ref=e91]
+              - generic [ref=e98]: snake case
+            - button "kebab case" [disabled] [ref=e99]:
+              - img [ref=e101]
+              - generic [ref=e108]: kebab case
+          - link "Report an issue with this question" [ref=e110] [cursor=pointer]:
+            - /url: https://github.com/philwolstenholme/syntax-quiz/issues/new?title=What%20naming%20convention%20is%20used%20here%3F
+  - status [ref=e111]
+```

@@ -1,0 +1,53 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - link "Skip to content" [ref=e5] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Syntax Quiz — Level 1" [level=1] [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - generic [ref=e11]:
+              - generic [ref=e12]: Level 1
+              - generic [ref=e13]:
+                - img [ref=e14]
+                - generic [ref=e16]: "0"
+              - generic [ref=e17]:
+                - img [ref=e18]
+                - generic [ref=e20]: "0"
+            - generic [ref=e21]:
+              - generic [ref=e22]: 1 / 31
+              - button "Save" [ref=e23] [cursor=pointer]:
+                - img [ref=e24]
+                - generic [ref=e28]: Save
+          - progressbar [ref=e29]
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - heading "What naming convention is used here?" [level=2] [ref=e33]
+            - paragraph [ref=e34]: 💡 Drag an answer onto the code snippet or click an answer below
+            - region "Answer dropzone" [ref=e35]:
+              - code [ref=e37]: const USER_FIRST_NAME = 'Alice';
+          - button "Eliminate 2 Answers (−50% Pts) 0/2" [ref=e39]:
+            - img [ref=e40]
+            - text: Eliminate 2 Answers (−50% Pts)
+            - generic [ref=e42]: 0/2
+          - generic [ref=e43]:
+            - button "pascal case" [ref=e44]:
+              - img [ref=e46]
+              - generic [ref=e53]: pascal case
+            - button "camel case" [ref=e54]:
+              - img [ref=e56]
+              - generic [ref=e63]: camel case
+            - button "kebab case" [ref=e64]:
+              - img [ref=e66]
+              - generic [ref=e73]: kebab case
+            - button "snake case" [ref=e74]:
+              - img [ref=e76]
+              - generic [ref=e83]: snake case
+          - link "Report an issue with this question" [ref=e85] [cursor=pointer]:
+            - /url: https://github.com/philwolstenholme/syntax-quiz/issues/new?title=What%20naming%20convention%20is%20used%20here%3F
+  - status [ref=e86]
+```

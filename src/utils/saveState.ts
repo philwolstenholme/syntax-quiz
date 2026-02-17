@@ -1,13 +1,17 @@
-export interface SaveState {
-  v: number;      // version
-  l: number;      // levelId
-  s: number;      // score
-  k: number;      // streak
-  c: number;      // correctAnswers
-  h: number;      // hintsUsed on current question
-  r: number[];    // remaining question original indices (in current order)
-  e: string[];    // eliminated option strings for current question
-}
+import { z } from 'zod/v4/mini';
+
+const SaveStateSchema = z.object({
+  v: z.literal(1),
+  l: z.number(),
+  s: z.number(),
+  k: z.number(),
+  c: z.number(),
+  h: z.number(),
+  r: z.array(z.number()),
+  e: z.array(z.string()),
+});
+
+export type SaveState = z.infer<typeof SaveStateSchema>;
 
 export function encodeSaveState(state: SaveState): string {
   const json = JSON.stringify(state);
@@ -22,13 +26,8 @@ export function decodeSaveState(encoded: string): SaveState | null {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
     const json = atob(base64);
-    const state = JSON.parse(json) as SaveState;
-    if (state.v !== 1) return null;
-    if (typeof state.l !== 'number' || typeof state.s !== 'number') return null;
-    if (typeof state.k !== 'number' || typeof state.c !== 'number') return null;
-    if (typeof state.h !== 'number') return null;
-    if (!Array.isArray(state.r) || !Array.isArray(state.e)) return null;
-    return state;
+    const result = SaveStateSchema.safeParse(JSON.parse(json));
+    return result.success ? result.data : null;
   } catch {
     return null;
   }

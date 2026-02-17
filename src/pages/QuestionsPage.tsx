@@ -16,7 +16,6 @@ import { FeedbackBanner } from '../components/FeedbackBanner';
 import { QuestionCard } from '../components/QuestionCard';
 import { AnswerOptions } from '../components/AnswerOptions';
 import { HintButton } from '../components/HintButton';
-import { SaveButton } from '../components/SaveButton';
 import { FEEDBACK_DELAY_MS } from '../constants';
 import { useQuiz } from '../hooks/useQuiz';
 
@@ -90,6 +89,8 @@ export const QuestionsPage = () => {
             currentQuestionIndex={answeredSoFar + currentQuestionIndex}
             totalQuestions={totalLevelQuestions}
             level={level}
+            onSave={handleSave}
+            isAnswering={isAnswering}
           />
 
           <AnimatePresence>
@@ -146,11 +147,6 @@ export const QuestionsPage = () => {
             </motion.div>
           </AnimatePresence>
 
-          <SaveButton
-            onSave={handleSave}
-            disabled={isAnswering}
-            questionIndex={currentQuestionIndex}
-          />
         </div>
       </PageLayout>
       <DragOverlay>

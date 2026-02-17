@@ -1,6 +1,7 @@
 import { Flame, Star } from 'lucide-react';
 import type { Level } from '../data/questions';
 import { formatNumber } from '../utils/format';
+import { SaveModal } from './SaveModal';
 
 interface QuizHeaderProps {
   score: number;
@@ -8,9 +9,11 @@ interface QuizHeaderProps {
   currentQuestionIndex: number;
   totalQuestions: number;
   level: Level;
+  onSave: () => string;
+  isAnswering: boolean;
 }
 
-export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level }: QuizHeaderProps) => {
+export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level, onSave, isAnswering }: QuizHeaderProps) => {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
@@ -29,8 +32,11 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
             <span>{formatNumber(score)}</span>
           </div>
         </div>
-        <div className="text-gray-600 font-semibold tabular-nums">
-          {formatNumber(currentQuestionIndex + 1)} / {formatNumber(totalQuestions)}
+        <div className="flex items-center gap-3">
+          <div className="text-gray-600 font-semibold tabular-nums">
+            {formatNumber(currentQuestionIndex + 1)} / {formatNumber(totalQuestions)}
+          </div>
+          <SaveModal onSave={onSave} disabled={isAnswering} />
         </div>
       </div>
       <div

@@ -547,6 +547,35 @@ const numbers = [1, 2, 3].map(double);`,
     options: ["pipe", "ampersand", "or", "plus"],
     hint: "This | symbol means a type can be ONE of the combined types.",
     explanation: "The pipe (|) creates a union type, meaning a value can be any ONE of the listed types. string | number accepts either a string or a number, but not both at once."
+  },
+  {
+    code: `type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};`,
+    highlight: { start: 0, end: 55 },
+    question: "What utility type selects specific properties?",
+    correct: "Pick",
+    options: ["Pick", "Select", "Extract", "Choose"],
+    hint: "Like picking items from a menu — you choose which properties to keep.",
+    explanation: "Pick<T, K> constructs a type by selecting a subset of properties from T. For example, Pick<User, 'name' | 'email'> creates a type with only the name and email properties from User."
+  },
+  {
+    code: `type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;`,
+    highlight: { start: 0, end: 64 },
+    question: "What utility type removes specific properties?",
+    correct: "Omit",
+    options: ["Omit", "Exclude", "Remove", "Without"],
+    hint: "The opposite of Pick — you specify which properties to leave out.",
+    explanation: "Omit<T, K> constructs a type by removing specified properties from T. It's implemented using Pick and Exclude internally, and is the inverse of Pick \u2014 useful for creating types without certain fields."
+  },
+  {
+    code: `type Awaited<T> = T extends Promise<infer U> ? U : T;`,
+    highlight: { start: 0, end: 52 },
+    question: "What utility type unwraps Promises?",
+    correct: "Awaited",
+    options: ["Awaited", "Unwrap", "Resolve", "PromiseResult"],
+    hint: "It extracts the resolved value type, like what you get after using await.",
+    explanation: "Awaited<T> recursively unwraps Promise types to get the resolved value type. Awaited<Promise<string>> gives string, and it even handles nested promises like Promise<Promise<number>> giving number."
   }
 ];
 
@@ -664,26 +693,6 @@ const str = value as string;`,
     explanation: "A recursive type references itself in its definition, allowing it to describe nested data structures. DeepReadonly applies readonly to every level of a nested object by calling itself on each property's type."
   },
   {
-    code: `type Pick<T, K extends keyof T> = {
-  [P in K]: T[P];
-};`,
-    highlight: { start: 0, end: 55 },
-    question: "What utility type selects specific properties?",
-    correct: "Pick",
-    options: ["Pick", "Select", "Extract", "Choose"],
-    hint: "Like picking items from a menu — you choose which properties to keep.",
-    explanation: "Pick<T, K> constructs a type by selecting a subset of properties from T. For example, Pick<User, 'name' | 'email'> creates a type with only the name and email properties from User."
-  },
-  {
-    code: `type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;`,
-    highlight: { start: 0, end: 64 },
-    question: "What utility type removes specific properties?",
-    correct: "Omit",
-    options: ["Omit", "Exclude", "Remove", "Without"],
-    hint: "The opposite of Pick — you specify which properties to leave out.",
-    explanation: "Omit<T, K> constructs a type by removing specified properties from T. It's implemented using Pick and Exclude internally, and is the inverse of Pick \u2014 useful for creating types without certain fields."
-  },
-  {
     code: `function useCustomHook(initialValue: number) {
   const [value, setValue] = useState(initialValue);
   return { value, increment: () => setValue(v => v + 1) };
@@ -695,15 +704,6 @@ const str = value as string;`,
     hint: "A reusable function starting with 'use' that composes built-in hooks.",
     explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. Unlike components, custom hooks return data and functions rather than JSX."
   },
-  {
-    code: `type Awaited<T> = T extends Promise<infer U> ? U : T;`,
-    highlight: { start: 0, end: 52 },
-    question: "What utility type unwraps Promises?",
-    correct: "Awaited",
-    options: ["Awaited", "Unwrap", "Resolve", "PromiseResult"],
-    hint: "It extracts the resolved value type, like what you get after using await.",
-    explanation: "Awaited<T> recursively unwraps Promise types to get the resolved value type. Awaited<Promise<string>> gives string, and it even handles nested promises like Promise<Promise<number>> giving number."
-  }
 ];
 
 export const levels: Level[] = [

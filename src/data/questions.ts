@@ -573,32 +573,6 @@ const str = value as string;`,
     explanation: "A type predicate (value is Type) in a return type tells TypeScript to narrow the type of the parameter when the function returns true. This enables custom type guard functions."
   },
   {
-    code: `class User {
-  private password: string;
-
-  constructor(password: string) {
-    this.password = password;
-  }
-}`,
-    highlight: { start: 15, end: 22 },
-    question: "What is this keyword called?",
-    correct: "access modifier",
-    options: ["access modifier", "visibility", "scope", "qualifier"],
-    hint: "This keyword controls who can see and use a class member (public, private, protected).",
-    explanation: "Access modifiers (public, private, protected) control the visibility of class members. private means the member can only be accessed within the class itself, not from outside or subclasses."
-  },
-  {
-    code: `abstract class Shape {
-  abstract area(): number;
-}`,
-    highlight: { start: 0, end: 21 },
-    question: "What is this type of class called?",
-    correct: "abstract class",
-    options: ["abstract class", "base class", "interface", "virtual class"],
-    hint: "This class cannot be instantiated directly — it must be extended by a subclass.",
-    explanation: "An abstract class provides a base for other classes but cannot be instantiated directly with new. It can contain abstract methods (no implementation) that subclasses must implement."
-  },
-  {
     code: `interface StringMap {
   [key: string]: any;
 }`,
@@ -617,29 +591,6 @@ const str = value as string;`,
     options: ["conditional type", "ternary type", "generic constraint", "mapped type"],
     hint: "It uses the same ? : pattern as an if/else, but at the type level.",
     explanation: "A conditional type uses T extends U ? X : Y syntax to choose between types based on a condition. It's like an if/else statement but for types, evaluated at compile time."
-  },
-  {
-    code: `export default class App {
-  render() {
-    return <div>Hello</div>;
-  }
-}`,
-    highlight: { start: 0, end: 14 },
-    question: "What is this type of export called?",
-    correct: "default export",
-    options: ["default export", "primary export", "main export", "single export"],
-    hint: "A module can only have one of these — it's what you get when importing without curly braces.",
-    explanation: "A default export (export default) is the main exported value of a module. Each module can have only one, and it can be imported without curly braces using any name the importer chooses."
-  },
-  {
-    code: `export const API_URL = 'https://api.example.com';
-export function fetchData() { }`,
-    highlight: { start: 0, end: 6 },
-    question: "What is this type of export called?",
-    correct: "named export",
-    options: ["named export", "explicit export", "public export", "module export"],
-    hint: "Each export is identified by its specific name and imported with curly braces.",
-    explanation: "Named exports use the export keyword before declarations. A module can have many named exports, and importers must use the exact name (with curly braces) or rename with 'as'."
   },
   {
     code: `type Partial<T> = {
@@ -711,45 +662,6 @@ export function fetchData() { }`,
     options: ["recursive type", "nested type", "deep type", "self-referential type"],
     hint: "This type references itself in its own definition — like a function calling itself.",
     explanation: "A recursive type references itself in its definition, allowing it to describe nested data structures. DeepReadonly applies readonly to every level of a nested object by calling itself on each property's type."
-  },
-  {
-    code: `const theme = useContext(ThemeContext);`,
-    highlight: { start: 14, end: 38 },
-    question: "What React hook accesses context?",
-    correct: "useContext",
-    options: ["useContext", "useProvider", "useConsumer", "useTheme"],
-    hint: "This hook reads a value that was provided by a Context.Provider higher in the tree.",
-    explanation: "useContext reads the current value from a React Context, which is set by the nearest Context.Provider ancestor in the component tree. It avoids the need to pass props through every intermediate component."
-  },
-  {
-    code: `const memoized = useMemo(() => compute(a, b), [a, b]);`,
-    highlight: { start: 17, end: 53 },
-    question: "What React hook memoizes computed values?",
-    correct: "useMemo",
-    options: ["useMemo", "useCallback", "useRef", "useEffect"],
-    hint: "It caches the result of an expensive calculation, recomputing only when dependencies change.",
-    explanation: "useMemo caches the result of an expensive computation and only recomputes when its dependencies change. It returns the memoized value, unlike useCallback which memoizes the function itself."
-  },
-  {
-    code: `const handler = useCallback(() => {
-  onClick(id);
-}, [onClick, id]);`,
-    highlight: { start: 16, end: 66 },
-    question: "What React hook memoizes functions?",
-    correct: "useCallback",
-    options: ["useCallback", "useMemo", "useHandler", "useFunction"],
-    hint: "Like useMemo, but specifically for caching function references between renders.",
-    explanation: "useCallback returns a memoized version of a callback function that only changes when its dependencies change. It's essentially useMemo(() => fn, deps) \u2014 useful for preventing unnecessary re-renders of child components."
-  },
-  {
-    code: `const inputRef = useRef<HTMLInputElement>(null);
-inputRef.current?.focus();`,
-    highlight: { start: 17, end: 47 },
-    question: "What React hook creates a mutable reference?",
-    correct: "useRef",
-    options: ["useRef", "usePointer", "useHandle", "useMutable"],
-    hint: "It returns an object with a .current property that persists across renders.",
-    explanation: "useRef creates a mutable ref object with a .current property that persists across renders without causing re-renders when changed. It's commonly used for DOM element references and storing mutable values."
   },
   {
     code: `type Pick<T, K extends keyof T> = {

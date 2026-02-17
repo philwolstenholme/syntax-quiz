@@ -224,6 +224,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
         <motion.div
           ref={bannerRef}
           tabIndex={-1}
+          data-testid="feedback-banner"
           initial={{ x: 0 }}
           animate={{
             x: lastAnswer.correct || prefersReducedMotion ? 0 : [-10, 10, -10, 10, 0],

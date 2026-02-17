@@ -24,6 +24,7 @@ function App() {
 
   return (
     <Transition
+      as="div"
       show={show}
       appear
       enter="transition-opacity duration-300"

@@ -105,6 +105,7 @@ export const QuestionsPage = () => {
           />
 
           <Transition
+            as="div"
             show={!!lastAnswer && isAnswering}
             enter="transition duration-210 ease-[cubic-bezier(0,0,0.2,1)]"
             enterFrom="opacity-0"

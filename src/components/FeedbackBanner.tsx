@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, Play, Pause, FastForward } from 'lucide-react';
 import clsx from 'clsx';
+import { motion, useMotionValue, animate, useReducedMotion } from 'motion/react';
+import { useDrag } from '@use-gesture/react';
 import { getMdnUrl } from '../utils/mdnLinks';
+
+// Swipe-to-dismiss configuration
+const SWIPE_DEAD_ZONE = 20; // px of finger movement before the banner starts moving
+const SWIPE_VELOCITY_THRESHOLD = 0.15; // px/ms — minimum release velocity to dismiss
+const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
 export interface AnswerFeedback {
   correct: boolean;
@@ -15,7 +22,7 @@ const MdnLink = ({ term, className }: { term: string; className: string }) => (
     href={getMdnUrl(term)}
     target="_blank"
     rel="noopener noreferrer"
-    className={`underline decoration-2 underline-offset-2 hover:opacity-80 ${className}`}
+    className={`underline decoration-2 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
   >
     {term}
   </a>
@@ -36,9 +43,11 @@ const CountdownButton = ({
 
   return (
     <button
+      type="button"
       onClick={onToggle}
-      className="relative w-9 h-9 flex-shrink-0 cursor-pointer"
-      aria-label={paused ? 'Resume timer' : 'Pause timer'}
+      className="relative w-11 h-11 flex-shrink-0 cursor-pointer rounded-full hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current touch-manipulation"
+      aria-label={paused ? 'Resume Timer' : 'Pause Timer'}
+      aria-pressed={paused}
     >
       <div
         className="absolute inset-0 rounded-full transition-opacity duration-200"
@@ -49,7 +58,7 @@ const CountdownButton = ({
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        {paused ? <Play size={14} fill="currentColor" /> : <Pause size={14} />}
+        {paused ? <Play size={14} fill="currentColor" aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}
       </div>
     </button>
   );
@@ -61,12 +70,13 @@ interface SkipButtonProps {
 
 const SkipButton = ({ onSkip }: SkipButtonProps) => (
   <button
+    type="button"
     onClick={onSkip}
-    className="relative w-9 h-9 flex-shrink-0 rounded-full text-current hover:bg-black/5 transition-colors"
-    aria-label="Skip feedback"
+    className="relative w-11 h-11 flex-shrink-0 rounded-full text-current hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current touch-manipulation"
+    aria-label="Skip Feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">
-      <FastForward size={14} />
+      <FastForward size={14} aria-hidden="true" />
     </div>
   </button>
 );
@@ -89,11 +99,14 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const [completed, setCompleted] = useState(false);
   const [processedAnswer, setProcessedAnswer] = useState<AnswerFeedback | null>(null);
   const onCompleteRef = useRef(onCountdownComplete);
-  const [shaking, setShaking] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Swipe-to-dismiss: track horizontal position with a motion value
+  const swipeX = useMotionValue(0);
 
   useEffect(() => {
     onCompleteRef.current = onCountdownComplete;
-  });
+  }, [onCountdownComplete]);
 
   const completeFeedback = useCallback(() => {
     if (completedRef.current) return;
@@ -114,22 +127,17 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     setCompleted(false);
   }
 
-  // Reset refs, focus, and trigger shake when lastAnswer changes
+  // Reset refs and focus when lastAnswer changes
   useEffect(() => {
     if (lastAnswer && lastAnswer !== lastAnswerRef.current && durationMs) {
       lastAnswerRef.current = lastAnswer;
       elapsedRef.current = 0;
       completedRef.current = false;
       startTimeRef.current = performance.now();
+      swipeX.set(0);
       bannerRef.current?.focus();
-
-      if (!lastAnswer.correct) {
-        setShaking(true);
-        const timer = setTimeout(() => setShaking(false), 500);
-        return () => clearTimeout(timer);
-      }
     }
-  }, [lastAnswer, durationMs]);
+  }, [lastAnswer, durationMs, swipeX]);
 
   // Animation loop
   useEffect(() => {
@@ -168,6 +176,39 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     }
   }, [paused]);
 
+  const bindSwipe = useDrag(
+    ({ active, movement: [mx], velocity: [vx], direction: [dx] }) => {
+      // Only allow rightward movement
+      const clampedX = Math.max(0, mx);
+
+      if (active) {
+        swipeX.set(clampedX);
+      } else {
+        // On release, require both high velocity AND decent distance to dismiss
+        if (vx > SWIPE_VELOCITY_THRESHOLD && clampedX > SWIPE_DISTANCE_THRESHOLD && dx > 0) {
+          animate(swipeX, window.innerWidth, {
+            type: 'tween',
+            duration: prefersReducedMotion ? 0 : 0.2,
+            ease: 'easeOut',
+          }).then(() => completeFeedback());
+        } else {
+          // Snap back
+          animate(swipeX, 0, {
+            type: 'spring',
+            stiffness: 500,
+            damping: 30,
+            duration: prefersReducedMotion ? 0 : undefined,
+          });
+        }
+      }
+    },
+    {
+      axis: 'x',
+      threshold: SWIPE_DEAD_ZONE,
+      filterTaps: true,
+    },
+  );
+
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
@@ -175,57 +216,75 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
 
   return (
     <div
-      ref={bannerRef}
-      tabIndex={-1}
-      className={clsx(
-        'rounded-2xl p-4 mb-6 border-2 outline-none',
-        lastAnswer.correct
-          ? 'bg-green-50 text-green-700 border-green-500'
-          : 'bg-red-50 text-red-700 border-red-500',
-        shaking && 'animate-shake',
-      )}
+      {...bindSwipe()}
+      style={{ touchAction: 'pan-y' }}
+      className="mb-6"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 font-bold text-lg">
-            {lastAnswer.correct ? (
-              <>
-                <CheckCircle size={24} className="flex-shrink-0" />
-                <span>
-                  Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
-                </span>
-              </>
-            ) : (
-              <>
-                <XCircle size={24} className="flex-shrink-0" />
-                <span>
-                  Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
-                  {lastAnswer.userAnswer}
-                </span>
-              </>
+      <motion.div style={{ x: swipeX }}>
+        <motion.div
+          ref={bannerRef}
+          tabIndex={-1}
+          initial={{ x: 0 }}
+          animate={{
+            x: lastAnswer.correct || prefersReducedMotion ? 0 : [-10, 10, -10, 10, 0],
+          }}
+          transition={{
+            duration: lastAnswer.correct || prefersReducedMotion ? 0 : 0.5,
+            ease: 'easeInOut',
+          }}
+          role={lastAnswer.correct ? 'status' : 'alert'}
+          aria-live={lastAnswer.correct ? 'polite' : 'assertive'}
+          aria-atomic="true"
+          className={clsx(
+            'rounded-2xl p-4 border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            lastAnswer.correct
+              ? 'bg-green-50 text-green-700 border-green-500 focus-visible:ring-green-500 focus-visible:ring-offset-green-50'
+              : 'bg-red-50 text-red-700 border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-50',
+          )}
+        >
+        <div className="flex items-start gap-3">
+          <div className="flex-1 min-w-0 break-words">
+            <div className="flex items-center gap-3 font-bold text-lg">
+              {lastAnswer.correct ? (
+                <>
+                  <CheckCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                  <span>
+                    Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <XCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                  <span>
+                    Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+                    {lastAnswer.userAnswer}
+                  </span>
+                </>
+              )}
+            </div>
+            {lastAnswer.explanation && (
+              <p className={clsx(
+                'mt-2 ml-9 text-sm font-normal leading-relaxed',
+                lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+              )}>
+                {lastAnswer.explanation}
+              </p>
             )}
           </div>
-          {lastAnswer.explanation && (
-            <p className={clsx(
-              'mt-2 ml-9 text-sm font-normal leading-relaxed',
-              lastAnswer.correct ? 'text-green-800' : 'text-red-800',
-            )}>
-              {lastAnswer.explanation}
-            </p>
+          {timerActive && (
+            <div className="flex items-center gap-2">
+              <CountdownButton
+                progress={progress}
+                paused={paused}
+                onToggle={togglePause}
+                color={ringColor}
+              />
+              <SkipButton onSkip={completeFeedback} />
+            </div>
           )}
         </div>
-        {timerActive && (
-          <div className="flex items-center gap-2">
-            <CountdownButton
-              progress={progress}
-              paused={paused}
-              onToggle={togglePause}
-              color={ringColor}
-            />
-            <SkipButton onSkip={completeFeedback} />
-          </div>
-        )}
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

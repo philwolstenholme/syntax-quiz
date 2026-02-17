@@ -1,13 +1,11 @@
 @import "tailwindcss";
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-10px); }
-  40% { transform: translateX(10px); }
-  60% { transform: translateX(-10px); }
-  80% { transform: translateX(10px); }
-}
+@layer base {
+  :root {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-@utility animate-shake {
-  animation: shake 0.5s ease-in-out;
+  body {
+    font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  }
 }

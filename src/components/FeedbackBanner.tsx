@@ -5,10 +5,10 @@ import { motion, useMotionValue, animate } from 'motion/react';
 import { useDrag } from '@use-gesture/react';
 import { getMdnUrl } from '../utils/mdnLinks';
 
-// Swipe-to-dismiss configuration: require a confident, deliberate swipe
-const SWIPE_DEAD_ZONE = 30; // px of finger movement before the banner starts moving
-const SWIPE_VELOCITY_THRESHOLD = 0.5; // px/ms — minimum release velocity to dismiss
-const SWIPE_DISTANCE_THRESHOLD = 100; // px — minimum drag distance to dismiss
+// Swipe-to-dismiss configuration
+const SWIPE_DEAD_ZONE = 20; // px of finger movement before the banner starts moving
+const SWIPE_VELOCITY_THRESHOLD = 0.15; // px/ms — minimum release velocity to dismiss
+const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
 export interface AnswerFeedback {
   correct: boolean;

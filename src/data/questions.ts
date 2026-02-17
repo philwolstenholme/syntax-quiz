@@ -898,19 +898,7 @@ type Result = ReturnType<typeof getUser>;`,
     options: ["intrinsic type", "utility type", "template type", "string type"],
     hint: "This type is implemented natively in the TypeScript compiler, not in TypeScript code.",
     explanation: "Intrinsic types like Uppercase, Lowercase, Capitalize, and Uncapitalize are implemented directly in the TypeScript compiler rather than being written in TypeScript. They perform string transformations at the type level that can't be expressed with regular TypeScript."
-  },
-  {
-    code: `function useCustomHook(initialValue: number) {
-  const [value, setValue] = useState(initialValue);
-  return { value, increment: () => setValue(v => v + 1) };
-}`,
-    highlight: { start: 0, end: 154 },
-    question: "What React pattern is this?",
-    correct: "custom hook",
-    options: ["custom hook", "higher-order component", "render prop", "compound component"],
-    hint: "A reusable function starting with 'use' that composes built-in hooks.",
-    explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. Unlike components, custom hooks return data and functions rather than JSX."
-  },
+  }
 ];
 
 export const levels: Level[] = [

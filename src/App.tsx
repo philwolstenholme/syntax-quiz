@@ -25,8 +25,8 @@ function App() {
 
   return (
     <QuizResultProvider>
-      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
-        <AnimatePresence mode="wait">
+      <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+        <AnimatePresence mode="popLayout">
           <motion.div key={location} {...pageTransition}>
             <Switch>
               <Route path={ROUTES.home} component={LevelSelect} />

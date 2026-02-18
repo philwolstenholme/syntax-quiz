@@ -33,7 +33,10 @@ interface UseQuizReturn {
   hintsUsed: number;
   eliminatedOptions: string[];
   quizComplete: boolean;
+  isRetryRound: boolean;
+  retryQuestionCount: number;
   handleAnswer: (answer: string) => void;
+  handleSkip: () => void;
   handleUseHint: () => void;
   handleFeedbackComplete: () => void;
   handleSave: () => string;
@@ -77,7 +80,7 @@ export function useQuiz(): UseQuizReturn {
     }));
   }, [level, saveState]);
 
-  const [questions] = useState<QuestionWithIndex[]>(initialQuestions);
+  const [questions, setQuestions] = useState<QuestionWithIndex[]>(initialQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(saveState?.s ?? 0);
   const [streak, setStreak] = useState(saveState?.k ?? 0);
@@ -86,11 +89,15 @@ export function useQuiz(): UseQuizReturn {
   const [isAnswering, setIsAnswering] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(saveState?.h ?? 0);
   const [eliminatedOptions, setEliminatedOptions] = useState<string[]>(saveState?.e ?? []);
+  const [missedQuestions, setMissedQuestions] = useState<QuestionWithIndex[]>([]);
+  const [isRetryRound, setIsRetryRound] = useState(false);
 
   const totalLevelQuestions = level?.questions.length ?? 0;
-  const answeredSoFar = totalLevelQuestions - questions.length;
+  const answeredSoFar = isRetryRound ? 0 : totalLevelQuestions - questions.length;
   const currentQuestion = questions[currentQuestionIndex];
-  const quizComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
+  const passComplete = questions.length > 0 && currentQuestionIndex >= questions.length;
+  const quizComplete = passComplete && (isRetryRound || missedQuestions.length === 0);
+  const retryQuestionCount = isRetryRound ? questions.length : 0;
 
   // Redirect to home if invalid level
   useEffect(() => {
@@ -106,13 +113,29 @@ export function useQuiz(): UseQuizReturn {
     }
   }, [saveState, levelId]);
 
-  // Navigate to score page when quiz is complete
+  // Handle pass completion: start retry round or navigate to score page
   useEffect(() => {
-    if (quizComplete && level) {
-      setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
-      setLocation(ROUTES.score(levelId));
+    if (!passComplete || !level) return;
+
+    if (!isRetryRound && missedQuestions.length > 0) {
+      // Start retry round with missed questions
+      const retryQuestions = shuffle([...missedQuestions]).map(q => ({
+        ...q,
+        options: shuffle(q.options),
+      }));
+      setQuestions(retryQuestions);
+      setCurrentQuestionIndex(0);
+      setMissedQuestions([]);
+      setIsRetryRound(true);
+      setHintsUsed(0);
+      setEliminatedOptions([]);
+      return;
     }
-  }, [quizComplete, level, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult]);
+
+    // Quiz truly complete — navigate to score page via context
+    setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
+    setLocation(ROUTES.score(levelId));
+  }, [passComplete, level, isRetryRound, missedQuestions, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult]);
 
   const handleFeedbackComplete = useCallback(() => {
     setCurrentQuestionIndex((prev) => prev + 1);
@@ -139,6 +162,7 @@ export function useQuiz(): UseQuizReturn {
       vibrateIncorrect();
       playIncorrectSound();
       setStreak(0);
+      setMissedQuestions((prev) => [...prev, currentQuestion]);
     }
 
     setLastAnswer({
@@ -148,6 +172,22 @@ export function useQuiz(): UseQuizReturn {
       explanation: currentQuestion.explanation,
     });
   }, [isAnswering, currentQuestion, hintsUsed, streak]);
+
+  const handleSkip = useCallback((): void => {
+    if (isAnswering || !currentQuestion) return;
+    setIsAnswering(true);
+
+    // "I don't know" — no score change, no streak change, but track as missed
+    setMissedQuestions((prev) => [...prev, currentQuestion]);
+
+    setLastAnswer({
+      correct: false,
+      skipped: true,
+      term: currentQuestion.correct,
+      userAnswer: null,
+      explanation: currentQuestion.explanation,
+    });
+  }, [isAnswering, currentQuestion]);
 
   const handleUseHint = useCallback((): void => {
     if (isAnswering || !currentQuestion) return;
@@ -202,7 +242,10 @@ export function useQuiz(): UseQuizReturn {
     hintsUsed,
     eliminatedOptions,
     quizComplete,
+    isRetryRound,
+    retryQuestionCount,
     handleAnswer,
+    handleSkip,
     handleUseHint,
     handleFeedbackComplete,
     handleSave,

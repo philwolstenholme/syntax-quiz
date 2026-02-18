@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CheckCircle, XCircle, Play, Pause, FastForward } from 'lucide-react';
+import { CheckCircle, XCircle, HelpCircle, Play, Pause, FastForward, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import { useDrag } from '@use-gesture/react';
@@ -12,6 +12,7 @@ const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
 export interface AnswerFeedback {
   correct: boolean;
+  skipped?: boolean;
   term: string;
   userAnswer: string | null;
   explanation: string;
@@ -120,7 +121,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   }, []);
 
   // Reset state when lastAnswer changes (render-time pattern)
-  if (lastAnswer && lastAnswer !== processedAnswer && durationMs) {
+  if (lastAnswer && lastAnswer !== processedAnswer) {
     setProcessedAnswer(lastAnswer);
     setProgress(0);
     setPaused(false);
@@ -129,7 +130,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
 
   // Reset refs and focus when lastAnswer changes
   useEffect(() => {
-    if (lastAnswer && lastAnswer !== lastAnswerRef.current && durationMs) {
+    if (lastAnswer && lastAnswer !== lastAnswerRef.current) {
       lastAnswerRef.current = lastAnswer;
       elapsedRef.current = 0;
       completedRef.current = false;
@@ -137,7 +138,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       swipeX.set(0);
       bannerRef.current?.focus();
     }
-  }, [lastAnswer, durationMs, swipeX]);
+  }, [lastAnswer, swipeX]);
 
   // Animation loop
   useEffect(() => {
@@ -212,7 +213,8 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
-  const ringColor = lastAnswer.correct ? '#16a34a' : '#dc2626';
+  const ringColor = lastAnswer.correct ? '#16a34a' : lastAnswer.skipped ? '#64748b' : '#dc2626';
+  const isIncorrect = !lastAnswer.correct && !lastAnswer.skipped;
 
   return (
     <div
@@ -227,26 +229,35 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           data-testid="feedback-banner"
           initial={{ x: 0 }}
           animate={{
-            x: lastAnswer.correct || prefersReducedMotion ? 0 : [-10, 10, -10, 10, 0],
+            x: isIncorrect && !prefersReducedMotion ? [-10, 10, -10, 10, 0] : 0,
           }}
           transition={{
-            duration: lastAnswer.correct || prefersReducedMotion ? 0 : 0.5,
+            duration: isIncorrect && !prefersReducedMotion ? 0.5 : 0,
             ease: 'easeInOut',
           }}
-          role={lastAnswer.correct ? 'status' : 'alert'}
-          aria-live={lastAnswer.correct ? 'polite' : 'assertive'}
+          role={isIncorrect ? 'alert' : 'status'}
+          aria-live={isIncorrect ? 'assertive' : 'polite'}
           aria-atomic="true"
           className={clsx(
             'rounded-2xl p-4 border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            lastAnswer.correct
-              ? 'bg-green-50 text-green-700 border-green-500 focus-visible:ring-green-500 focus-visible:ring-offset-green-50'
-              : 'bg-red-50 text-red-700 border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-50',
+            lastAnswer.skipped
+              ? 'bg-slate-50 text-slate-700 border-slate-400 focus-visible:ring-slate-400 focus-visible:ring-offset-slate-50'
+              : lastAnswer.correct
+                ? 'bg-green-50 text-green-700 border-green-500 focus-visible:ring-green-500 focus-visible:ring-offset-green-50'
+                : 'bg-red-50 text-red-700 border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-50',
           )}
         >
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0 break-words">
             <div className="flex items-center gap-3 font-bold text-lg">
-              {lastAnswer.correct ? (
+              {lastAnswer.skipped ? (
+                <>
+                  <HelpCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                  <span>
+                    The answer is <MdnLink term={lastAnswer.term} className="text-slate-800" />
+                  </span>
+                </>
+              ) : lastAnswer.correct ? (
                 <>
                   <CheckCircle size={24} className="flex-shrink-0" aria-hidden="true" />
                   <span>
@@ -266,13 +277,13 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
             {lastAnswer.explanation && (
               <p className={clsx(
                 'mt-2 ml-9 text-sm font-normal leading-relaxed',
-                lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+                lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
               )}>
                 {lastAnswer.explanation}
               </p>
             )}
           </div>
-          {timerActive && (
+          {timerActive ? (
             <div className="flex items-center gap-2">
               <CountdownButton
                 progress={progress}
@@ -282,6 +293,21 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               />
               <SkipButton onSkip={completeFeedback} />
             </div>
+          ) : !completed && (
+            <button
+              type="button"
+              onClick={completeFeedback}
+              className={clsx(
+                'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation flex-shrink-0',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                lastAnswer.skipped
+                  ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400'
+                  : 'bg-red-200 text-red-800 hover:bg-red-300 focus-visible:ring-red-500',
+              )}
+              aria-label="Next Question"
+            >
+              Next <ArrowRight size={16} aria-hidden="true" />
+            </button>
           )}
         </div>
         </motion.div>

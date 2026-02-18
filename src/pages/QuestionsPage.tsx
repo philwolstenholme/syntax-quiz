@@ -9,7 +9,7 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, HelpCircle, RotateCcw } from 'lucide-react';
 import { PageLayout } from '../components/PageLayout';
 import { QuizHeader } from '../components/QuizHeader';
 import { FeedbackBanner } from '../components/FeedbackBanner';
@@ -33,7 +33,10 @@ export const QuestionsPage = () => {
     hintsUsed,
     eliminatedOptions,
     quizComplete,
+    isRetryRound,
+    retryQuestionCount,
     handleAnswer,
+    handleSkip,
     handleUseHint,
     handleFeedbackComplete,
     handleSave,
@@ -83,11 +86,17 @@ export const QuestionsPage = () => {
       <PageLayout>
         <div className="max-w-4xl mx-auto">
           <h1 className="sr-only">Syntax Quiz — {level.name}</h1>
+          {isRetryRound && (
+            <div className="flex items-center gap-2 mb-4 px-4 py-3 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-800 font-semibold">
+              <RotateCcw size={18} aria-hidden="true" />
+              <span>Retry Round — reviewing {retryQuestionCount} missed {retryQuestionCount === 1 ? 'question' : 'questions'}</span>
+            </div>
+          )}
           <QuizHeader
             score={score}
             streak={streak}
-            currentQuestionIndex={answeredSoFar + currentQuestionIndex}
-            totalQuestions={totalLevelQuestions}
+            currentQuestionIndex={isRetryRound ? currentQuestionIndex : answeredSoFar + currentQuestionIndex}
+            totalQuestions={isRetryRound ? retryQuestionCount : totalLevelQuestions}
             level={level}
             onSave={handleSave}
             isAnswering={isAnswering}
@@ -103,7 +112,7 @@ export const QuestionsPage = () => {
               >
                 <FeedbackBanner
                   lastAnswer={lastAnswer}
-                  durationMs={FEEDBACK_DELAY_MS}
+                  durationMs={lastAnswer?.correct ? FEEDBACK_DELAY_MS : undefined}
                   onCountdownComplete={handleFeedbackComplete}
                 />
               </motion.div>
@@ -134,7 +143,19 @@ export const QuestionsPage = () => {
                 eliminatedOptions={eliminatedOptions}
               />
 
-              <div className="mt-8 text-center">
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={handleSkip}
+                  disabled={isAnswering}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 touch-manipulation"
+                >
+                  <HelpCircle size={16} aria-hidden="true" />
+                  I don't know — show me the answer
+                </button>
+              </div>
+
+              <div className="mt-4 text-center">
                 <a
                   href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?template=incorrect-question.yml&title=${encodeURIComponent(`Incorrect or misleading question: ${currentQuestion.question}`)}&question_name=${encodeURIComponent(currentQuestion.question)}`}
                   target="_blank"

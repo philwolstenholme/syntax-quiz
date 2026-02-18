@@ -8,7 +8,7 @@ interface PageLayoutProps {
 
 export const PageLayout = ({ children, centered = false }: PageLayoutProps) => (
   <div className={clsx(
-    'min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-indigo-100 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] pl-[calc(1.5rem+env(safe-area-inset-left))] pr-[calc(1.5rem+env(safe-area-inset-right))] sm:pl-[calc(1rem+env(safe-area-inset-left))] sm:pr-[calc(1rem+env(safe-area-inset-right))]',
+    'pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] pl-[calc(1.5rem+env(safe-area-inset-left))] pr-[calc(1.5rem+env(safe-area-inset-right))] sm:pl-[calc(1rem+env(safe-area-inset-left))] sm:pr-[calc(1rem+env(safe-area-inset-right))]',
     centered && 'flex items-center justify-center'
   )}>
     <a

@@ -25,16 +25,18 @@ function App() {
 
   return (
     <QuizResultProvider>
-      <AnimatePresence mode="wait">
-        <motion.div key={location} {...pageTransition}>
-          <Switch>
-            <Route path={ROUTES.home} component={LevelSelect} />
-            <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
-            <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
-            <Route><LevelSelect /></Route>
-          </Switch>
-        </motion.div>
-      </AnimatePresence>
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+        <AnimatePresence mode="wait">
+          <motion.div key={location} {...pageTransition}>
+            <Switch>
+              <Route path={ROUTES.home} component={LevelSelect} />
+              <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
+              <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
+              <Route><LevelSelect /></Route>
+            </Switch>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </QuizResultProvider>
   );
 }

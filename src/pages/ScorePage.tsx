@@ -1,24 +1,19 @@
 import { useEffect } from 'react';
-import { useParams, useLocation, useSearch } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 import { CompletionScreen } from '../components/CompletionScreen';
 import { levels } from '../data/questions';
 import { ROUTES } from '../routes';
+import { useQuizResult } from '../context/QuizResultContext';
 
 export const ScorePage = () => {
   const params = useParams();
   const [, setLocation] = useLocation();
-  const searchString = useSearch();
-  const searchParams = new URLSearchParams(searchString);
+  const { result } = useQuizResult();
 
   const levelId = parseInt(params.levelId ?? '0', 10);
   const level = levels.find((l) => l.id === levelId);
 
-  const completed = searchParams.get('completed');
-  const score = parseInt(searchParams.get('score') || '0', 10);
-  const correctAnswers = parseInt(searchParams.get('correct') || '0', 10);
-  const totalQuestions = parseInt(searchParams.get('total') || '0', 10);
-
-  const isValidAccess = completed === 'true' && totalQuestions > 0 && level;
+  const isValidAccess = result !== null && result.levelId === levelId && level;
 
   useEffect(() => {
     if (!isValidAccess) {
@@ -32,9 +27,9 @@ export const ScorePage = () => {
 
   return (
     <CompletionScreen
-      score={score}
-      correctAnswers={correctAnswers}
-      totalQuestions={totalQuestions}
+      score={result.score}
+      correctAnswers={result.correctAnswers}
+      totalQuestions={result.totalQuestions}
       level={level}
     />
   );

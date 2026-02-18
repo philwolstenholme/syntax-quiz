@@ -4,6 +4,7 @@ import { LevelSelect } from './components/LevelSelect';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
 import { ROUTES, ROUTE_PATTERNS } from './routes';
+import { QuizResultProvider } from './context/QuizResultContext';
 
 function App() {
   const [location] = useLocation();
@@ -23,16 +24,18 @@ function App() {
     };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div key={location} {...pageTransition}>
-        <Switch>
-          <Route path={ROUTES.home} component={LevelSelect} />
-          <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
-          <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
-          <Route><LevelSelect /></Route>
-        </Switch>
-      </motion.div>
-    </AnimatePresence>
+    <QuizResultProvider>
+      <AnimatePresence mode="wait">
+        <motion.div key={location} {...pageTransition}>
+          <Switch>
+            <Route path={ROUTES.home} component={LevelSelect} />
+            <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
+            <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
+            <Route><LevelSelect /></Route>
+          </Switch>
+        </motion.div>
+      </AnimatePresence>
+    </QuizResultProvider>
   );
 }
 

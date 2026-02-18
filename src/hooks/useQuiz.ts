@@ -8,6 +8,7 @@ import type { SaveState } from '../utils/saveState';
 import type { Question, Level } from '../data/questions';
 import { levels } from '../data/questions';
 import { ROUTES } from '../routes';
+import { useQuizResult } from '../context/QuizResultContext';
 import {
   BASE_SCORE_POINTS,
   HINT_SCORE_PENALTY,
@@ -41,6 +42,7 @@ interface UseQuizReturn {
 export function useQuiz(): UseQuizReturn {
   const params = useParams();
   const [, setLocation] = useLocation();
+  const { setResult } = useQuizResult();
   const levelId = parseInt(params.levelId ?? '0', 10);
   const level = levels.find((l) => l.id === levelId);
 
@@ -107,15 +109,10 @@ export function useQuiz(): UseQuizReturn {
   // Navigate to score page when quiz is complete
   useEffect(() => {
     if (quizComplete && level) {
-      const searchParams = new URLSearchParams({
-        completed: 'true',
-        score: score.toString(),
-        correct: correctAnswers.toString(),
-        total: totalLevelQuestions.toString(),
-      });
-      setLocation(`${ROUTES.score(levelId)}?${searchParams.toString()}`);
+      setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
+      setLocation(ROUTES.score(levelId));
     }
-  }, [quizComplete, level, levelId, score, correctAnswers, totalLevelQuestions, setLocation]);
+  }, [quizComplete, level, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult]);
 
   const handleFeedbackComplete = useCallback(() => {
     setCurrentQuestionIndex((prev) => prev + 1);

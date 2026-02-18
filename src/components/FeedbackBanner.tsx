@@ -247,44 +247,42 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 : 'bg-red-50 text-red-700 border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-50',
           )}
         >
-        <div className="flex items-start gap-3">
-          <div className="flex-1 min-w-0 break-words">
-            <div className="flex items-center gap-3 font-bold text-lg">
-              {lastAnswer.skipped ? (
-                <>
-                  <HelpCircle size={24} className="flex-shrink-0" aria-hidden="true" />
-                  <span>
-                    The answer is <MdnLink term={lastAnswer.term} className="text-slate-800" />
-                  </span>
-                </>
-              ) : lastAnswer.correct ? (
-                <>
-                  <CheckCircle size={24} className="flex-shrink-0" aria-hidden="true" />
-                  <span>
-                    Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
-                  </span>
-                </>
-              ) : (
-                <>
-                  <XCircle size={24} className="flex-shrink-0" aria-hidden="true" />
-                  <span>
-                    Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
-                    {lastAnswer.userAnswer}
-                  </span>
-                </>
-              )}
-            </div>
-            {lastAnswer.explanation && (
-              <p className={clsx(
-                'mt-2 ml-9 text-sm font-normal leading-relaxed',
-                lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
-              )}>
-                {lastAnswer.explanation}
-              </p>
+        <div>
+          <div className="flex items-center gap-3 font-bold text-lg">
+            {lastAnswer.skipped ? (
+              <>
+                <HelpCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <span>
+                  The answer is <MdnLink term={lastAnswer.term} className="text-slate-800" />
+                </span>
+              </>
+            ) : lastAnswer.correct ? (
+              <>
+                <CheckCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <span>
+                  Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+                </span>
+              </>
+            ) : (
+              <>
+                <XCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <span>
+                  Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+                  {lastAnswer.userAnswer}
+                </span>
+              </>
             )}
           </div>
+          {lastAnswer.explanation && (
+            <p className={clsx(
+              'mt-2 ml-9 text-sm font-normal leading-relaxed',
+              lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+            )}>
+              {lastAnswer.explanation}
+            </p>
+          )}
           {timerActive ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2 mt-3">
               <CountdownButton
                 progress={progress}
                 paused={paused}
@@ -294,20 +292,22 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               <SkipButton onSkip={completeFeedback} />
             </div>
           ) : !completed && (
-            <button
-              type="button"
-              onClick={completeFeedback}
-              className={clsx(
-                'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation flex-shrink-0 cursor-pointer',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                lastAnswer.skipped
-                  ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400'
-                  : 'bg-red-200 text-red-800 hover:bg-red-300 focus-visible:ring-red-500',
-              )}
-              aria-label="Next Question"
-            >
-              Next <ArrowRight size={16} aria-hidden="true" />
-            </button>
+            <div className="flex justify-end mt-3">
+              <button
+                type="button"
+                onClick={completeFeedback}
+                className={clsx(
+                  'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation cursor-pointer',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  lastAnswer.skipped
+                    ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400'
+                    : 'bg-red-200 text-red-800 hover:bg-red-300 focus-visible:ring-red-500',
+                )}
+                aria-label="Next Question"
+              >
+                Next <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </div>
           )}
         </div>
         </motion.div>

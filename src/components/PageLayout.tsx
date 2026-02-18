@@ -17,7 +17,7 @@ export const PageLayout = ({ children, centered = false }: PageLayoutProps) => (
     >
       Skip to content
     </a>
-    <main id="main-content" className="w-full">
+    <main id="main-content" className={clsx('w-full', centered && 'flex flex-col items-center')}>
       {children}
     </main>
   </div>

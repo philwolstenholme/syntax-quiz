@@ -136,7 +136,7 @@ export const QuestionsPage = () => {
 
               <div className="mt-8 text-center">
                 <a
-                  href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?title=${encodeURIComponent(currentQuestion.question)}`}
+                  href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?template=incorrect-question.yml&title=${encodeURIComponent(`Incorrect or misleading question: ${currentQuestion.question}`)}&question_name=${encodeURIComponent(currentQuestion.question)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-400 hover:text-indigo-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50 rounded-md px-1 py-0.5 touch-manipulation"

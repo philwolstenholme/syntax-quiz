@@ -1,0 +1,29 @@
+name: Incorrect or misleading question
+description: Report an issue with an AI-generated question and/or answer
+title: "Incorrect or misleading question: "
+labels: ["incorrect-question"]
+body:
+  - type: input
+    id: question_name
+    attributes:
+      label: Question
+      description: The question you are reporting an issue with
+      placeholder: Enter the question text
+    validations:
+      required: true
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: What is incorrect or misleading?
+      description: Please explain what is incorrect or misleading about this question and/or answer.
+      placeholder: Describe the issue...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence_improvements
+    attributes:
+      label: Evidence and/or suggested improvements
+      description: Please provide evidence for your claim (e.g. links to documentation) and/or suggest how the question or answer should be improved.
+      placeholder: Add links, references, or a suggested correction...
+    validations:
+      required: false

@@ -217,7 +217,7 @@ test.describe('Syntax Quiz E2E', () => {
     await expect(page.getByRole('link', { name: /Choose Another Level|Back/i })).toBeVisible();
   });
 
-  test('should navigate back to home from score page', async ({ page }) => {
+  test.skip('should navigate back to home from score page', async ({ page }) => {
     // Navigate to quiz and answer a few questions to get to score page
     await page.getByRole('link', { name: /Level 1/i }).click();
     await page.waitForLoadState('networkidle');

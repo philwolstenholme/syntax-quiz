@@ -298,7 +298,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               type="button"
               onClick={completeFeedback}
               className={clsx(
-                'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation flex-shrink-0',
+                'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation flex-shrink-0 cursor-pointer',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 lastAnswer.skipped
                   ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400'

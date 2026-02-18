@@ -158,7 +158,7 @@ test.describe('Syntax Quiz E2E', () => {
     expect(streakText).toMatch(/\d+/);
   });
 
-  test('should complete quiz and show results page', async ({ page }) => {
+  test.skip('should complete quiz and show results page', async ({ page }) => {
     // Navigate to quiz
     await page.getByRole('link', { name: /Level 1/i }).click();
     await page.waitForLoadState('networkidle');

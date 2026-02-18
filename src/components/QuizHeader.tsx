@@ -15,25 +15,27 @@ interface QuizHeaderProps {
 
 export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level, onSave, isAnswering }: QuizHeaderProps) => {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  const levelShortName = level.name.replace(/^Level\s*/i, '');
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <span className={`flex items-center h-9 text-sm px-3 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
-            {level.name}
+    <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-6 mb-6">
+      <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-1.5 sm:gap-4">
+          <span className={`flex items-center h-8 sm:h-9 text-sm px-2 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
+            <span className="sm:hidden">{levelShortName}</span>
+            <span className="hidden sm:inline">{level.name}</span>
           </span>
-          <div className="flex items-center gap-2 h-9 bg-orange-500 text-white px-3 sm:px-4 rounded-xl font-bold tabular-nums">
-            <Flame size={20} aria-hidden="true" />
+          <div className="flex items-center gap-1 sm:gap-2 h-8 sm:h-9 bg-orange-500 text-white px-2 sm:px-3 rounded-xl font-bold tabular-nums">
+            <Flame size={16} className="hidden sm:block" aria-hidden="true" />
             <span>{formatNumber(streak)}</span>
           </div>
-          <div className="flex items-center gap-2 h-9 bg-yellow-500 text-white px-3 sm:px-4 rounded-xl font-bold tabular-nums">
-            <Star size={20} aria-hidden="true" />
+          <div className="flex items-center gap-1 sm:gap-2 h-8 sm:h-9 bg-yellow-500 text-white px-2 sm:px-3 rounded-xl font-bold tabular-nums">
+            <Star size={16} className="hidden sm:block" aria-hidden="true" />
             <span>{formatNumber(score)}</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-gray-600 font-semibold tabular-nums">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="text-gray-600 font-semibold tabular-nums text-sm sm:text-base">
             {formatNumber(currentQuestionIndex + 1)} / {formatNumber(totalQuestions)}
           </div>
           <SaveModal onSave={onSave} disabled={isAnswering} />

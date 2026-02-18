@@ -220,10 +220,7 @@ export function useQuiz(): UseQuizReturn {
     };
 
     const encoded = encodeSaveState(state);
-    const path = `${ROUTES.questions(levelId)}?s=${encoded}`;
-    const url = `${window.location.origin}${path}`;
-
-    window.history.replaceState({}, '', path);
+    const url = `${window.location.origin}${ROUTES.questions(levelId)}?s=${encoded}`;
 
     return url;
   }, [questions, currentQuestionIndex, levelId, score, streak, correctAnswers, hintsUsed, eliminatedOptions]);

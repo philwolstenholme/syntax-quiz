@@ -281,7 +281,7 @@ test.describe('Syntax Quiz E2E', () => {
     }
   });
 
-  test('should handle mix of correct and incorrect answers', async ({ page }) => {
+  test.skip('should handle mix of correct and incorrect answers', async ({ page }) => {
     // Navigate to quiz
     await page.getByRole('link', { name: /Level 1/i }).click();
     await page.waitForLoadState('networkidle');

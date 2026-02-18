@@ -148,7 +148,7 @@ export const QuestionsPage = () => {
                   type="button"
                   onClick={handleSkip}
                   disabled={isAnswering}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 touch-manipulation"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 touch-manipulation"
                 >
                   <HelpCircle size={16} aria-hidden="true" />
                   I don't know — show me the answer

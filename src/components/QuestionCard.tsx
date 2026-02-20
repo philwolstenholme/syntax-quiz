@@ -99,6 +99,12 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
 
   const tokenLines = useMemo(() => typedTokenMap[code] ?? [], [code]);
 
+  const hlRange = useMemo(() => {
+    const start = code.indexOf(highlight);
+    if (start === -1) return { start: 0, end: 0 };
+    return { start, end: start + highlight.length };
+  }, [code, highlight]);
+
   return (
     <div
       className="bg-white rounded-3xl shadow-xl p-8 mb-6"
@@ -129,7 +135,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         )}
         <pre className="bg-gray-900 p-6 rounded-xl overflow-x-auto text-base leading-relaxed">
           <code className="font-mono">
-            {renderTokensWithHighlight(tokenLines, highlight)}
+            {renderTokensWithHighlight(tokenLines, hlRange)}
           </code>
         </pre>
       </div>

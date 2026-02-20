@@ -1,7 +1,4 @@
-export interface Highlight {
-  start: number;
-  end: number;
-}
+export type Highlight = string;
 
 export interface Question {
   code: string;
@@ -27,7 +24,7 @@ export const level1Questions: Question[] = [
     code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
 }`,
-    highlight: { start: 15, end: 19 },
+    highlight: 'name',
     question: "What is the highlighted part called?",
     correct: "parameter",
     options: ["parameter", "argument", "property", "variable"],
@@ -36,7 +33,7 @@ export const level1Questions: Question[] = [
   },
   {
     code: `const greeting = \`Hello, \${name}!\`;`,
-    highlight: { start: 17, end: 34 },
+    highlight: `\`Hello, \${name}!\``,
     question: "What is this string syntax called?",
     correct: "template literal",
     options: ["template literal", "string literal", "format string", "interpolated string"],
@@ -45,7 +42,7 @@ export const level1Questions: Question[] = [
   },
   {
     code: `const greeting = \`Hello, \${name}!\`;`,
-    highlight: { start: 25, end: 32 },
+    highlight: '${name}',
     question: "What is the highlighted syntax called?",
     correct: "string interpolation",
     options: ["string interpolation", "variable injection", "placeholder", "expression slot"],
@@ -54,7 +51,7 @@ export const level1Questions: Question[] = [
   },
   {
     code: `import { useState } from 'react';`,
-    highlight: { start: 7, end: 19 },
+    highlight: '{ useState }',
     question: "What type of import is this?",
     correct: "named import",
     options: ["named import", "default import", "namespace import", "side effect import"],
@@ -65,7 +62,8 @@ export const level1Questions: Question[] = [
     code: `const doubled = numbers
   .filter(n => n > 0)
   .map(n => n * 2);`,
-    highlight: { start: 26, end: 64 },
+    highlight: `.filter(n => n > 0)
+  .map(n => n * 2)`,
     question: "What is this programming pattern called?",
     correct: "method chaining",
     options: ["method chaining", "pipeline", "fluent interface", "cascade"],
@@ -76,7 +74,7 @@ export const level1Questions: Question[] = [
     code: `function greet(name = 'World') {
   return \`Hello, \${name}!\`;
 }`,
-    highlight: { start: 15, end: 29 },
+    highlight: "name = 'World'",
     question: "What is this parameter syntax called?",
     correct: "default parameter",
     options: ["default parameter", "optional parameter", "fallback parameter", "preset parameter"],
@@ -87,7 +85,7 @@ export const level1Questions: Question[] = [
     code: `function sum(...numbers) {
   return numbers.reduce((a, b) => a + b, 0);
 }`,
-    highlight: { start: 13, end: 23 },
+    highlight: '...numbers',
     question: "What is this parameter syntax called?",
     correct: "rest parameter",
     options: ["rest parameter", "spread parameter", "variadic parameter", "collect parameter"],
@@ -96,7 +94,7 @@ export const level1Questions: Question[] = [
   },
   {
     code: `const element = <h1>Hello World</h1>;`,
-    highlight: { start: 16, end: 36 },
+    highlight: '<h1>Hello World</h1>',
     question: "What is this syntax called?",
     correct: "JSX",
     options: ["JSX", "HTML", "XML", "template"],
@@ -106,7 +104,7 @@ export const level1Questions: Question[] = [
   {
     code: `const colors = ['red', 'green', 'blue'];
 const last = colors.pop();`,
-    highlight: { start: 54, end: 67 },
+    highlight: 'colors.pop();',
     question: "What does this method do?",
     correct: "removes the last element",
     options: ["removes the last element", "adds an element", "returns the length", "finds an element"],
@@ -116,7 +114,7 @@ const last = colors.pop();`,
   {
     code: `const numbers = [1, 2, 3];
 numbers.push(4);`,
-    highlight: { start: 27, end: 42 },
+    highlight: 'numbers.push(4)',
     question: "What does this method do?",
     correct: "adds to the end",
     options: ["adds to the end", "adds to the start", "removes from end", "removes from start"],
@@ -126,7 +124,7 @@ numbers.push(4);`,
   {
     code: `const text = 'hello world';
 const upper = text.toUpperCase();`,
-    highlight: { start: 42, end: 60 },
+    highlight: 'text.toUpperCase()',
     question: "What type of method is this?",
     correct: "string method",
     options: ["string method", "array method", "object method", "number method"],
@@ -138,7 +136,7 @@ const upper = text.toUpperCase();`,
   return \`Hello, \${name}!\`;
 }
 greet('Alice');`,
-    highlight: { start: 67, end: 74 },
+    highlight: "'Alice'",
     question: "What is the highlighted part called?",
     correct: "argument",
     options: ["argument", "parameter", "property", "value"],
@@ -149,7 +147,9 @@ greet('Alice');`,
     code: `function calculate(a: number, b: number) {
   return a + b;
 }`,
-    highlight: { start: 41, end: 60 },
+    highlight: `{
+  return a + b;
+}`,
     question: "What is the highlighted part called?",
     correct: "function body",
     options: ["function body", "code block", "statement", "expression"],
@@ -158,7 +158,7 @@ greet('Alice');`,
   },
   {
     code: `const numbers = [1, 2, 3, 4, 5];`,
-    highlight: { start: 16, end: 31 },
+    highlight: '[1, 2, 3, 4, 5]',
     question: "What are these symbols called?",
     correct: "square brackets",
     options: ["square brackets", "curly braces", "parentheses", "angle brackets"],
@@ -167,7 +167,7 @@ greet('Alice');`,
   },
   {
     code: `const person = { name: 'Alice', age: 30 };`,
-    highlight: { start: 15, end: 41 },
+    highlight: "{ name: 'Alice', age: 30 }",
     question: "What are these symbols called?",
     correct: "curly braces",
     options: ["curly braces", "square brackets", "parentheses", "angle brackets"],
@@ -178,7 +178,7 @@ greet('Alice');`,
     code: `function add(a: number, b: number): number {
   return a + b;
 }`,
-    highlight: { start: 12, end: 34 },
+    highlight: '(a: number, b: number)',
     question: "What are these symbols called?",
     correct: "parentheses",
     options: ["parentheses", "curly braces", "square brackets", "angle brackets"],
@@ -190,7 +190,7 @@ greet('Alice');`,
   name: string;
   age: number;
 }`,
-    highlight: { start: 19, end: 32 },
+    highlight: 'name: string;',
     question: "What is the highlighted part called?",
     correct: "property",
     options: ["property", "field", "attribute", "member"],
@@ -200,7 +200,7 @@ greet('Alice');`,
   {
     code: `const fruits = ['apple', 'banana', 'orange'];
 console.log(fruits[0]);`,
-    highlight: { start: 64, end: 67 },
+    highlight: '[0]',
     question: "What is the highlighted part called?",
     correct: "index",
     options: ["index", "key", "position", "offset"],
@@ -209,7 +209,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const add = (a, b) => a + b;`,
-    highlight: { start: 12, end: 27 },
+    highlight: '(a, b) => a + b',
     question: "What is this syntax called?",
     correct: "arrow function",
     options: ["arrow function", "lambda", "anonymous function", "inline function"],
@@ -218,7 +218,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const point = { x: 10, y: 20 };`,
-    highlight: { start: 14, end: 30 },
+    highlight: '{ x: 10, y: 20 }',
     question: "What is this syntax called?",
     correct: "object literal",
     options: ["object literal", "object notation", "hash", "dictionary"],
@@ -227,7 +227,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const doubled = numbers.map(n => n * 2);`,
-    highlight: { start: 28, end: 38 },
+    highlight: 'n => n * 2',
     question: "What is the function passed to map called?",
     correct: "callback",
     options: ["callback", "lambda", "handler", "delegate"],
@@ -236,7 +236,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const USER_FIRST_NAME = 'Alice';`,
-    highlight: { start: 6, end: 21 },
+    highlight: 'USER_FIRST_NAME',
     question: "What naming convention is used here?",
     correct: "snake case",
     options: ["snake case", "camel case", "kebab case", "pascal case"],
@@ -245,7 +245,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const userFirstName = 'Alice';`,
-    highlight: { start: 6, end: 19 },
+    highlight: 'userFirstName',
     question: "What naming convention is used here?",
     correct: "camel case",
     options: ["camel case", "snake case", "pascal case", "kebab case"],
@@ -254,7 +254,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `<div class="user-profile-card">Hello</div>`,
-    highlight: { start: 12, end: 29 },
+    highlight: 'user-profile-card',
     question: "What naming convention is used in this CSS class?",
     correct: "kebab case",
     options: ["kebab case", "snake case", "camel case", "train case"],
@@ -264,7 +264,7 @@ console.log(fruits[0]);`,
   {
     code: `const isActive = true;
 const message = isActive ? 'yes' : 'no';`,
-    highlight: { start: 39, end: 62 },
+    highlight: "isActive ? 'yes' : 'no'",
     question: "What is this operator called?",
     correct: "ternary operator",
     options: ["ternary operator", "comparison operator", "inline if", "expression"],
@@ -273,7 +273,7 @@ const message = isActive ? 'yes' : 'no';`,
   },
   {
     code: `const nums = [1, 2, 3].map(n => n * 2);`,
-    highlight: { start: 13, end: 38 },
+    highlight: '[1, 2, 3].map(n => n * 2)',
     question: "What does map() return?",
     correct: "new array",
     options: ["new array", "modified array", "undefined", "boolean"],
@@ -282,7 +282,7 @@ const message = isActive ? 'yes' : 'no';`,
   },
   {
     code: `const found = [1, 2, 3, 4].find(n => n > 2);`,
-    highlight: { start: 14, end: 43 },
+    highlight: '[1, 2, 3, 4].find(n => n > 2)',
     question: "What does find() return?",
     correct: "first matching element",
     options: ["first matching element", "all matches", "boolean", "index"],
@@ -291,7 +291,7 @@ const message = isActive ? 'yes' : 'no';`,
   },
   {
     code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
-    highlight: { start: 16, end: 48 },
+    highlight: '[1, 2, 3].some(n => n % 2 === 0)',
     question: "What does some() return?",
     correct: "boolean",
     options: ["boolean", "array", "number", "element"],
@@ -300,7 +300,7 @@ const message = isActive ? 'yes' : 'no';`,
   },
   {
     code: `const allPositive = [1, 2, 3].every(n => n > 0);`,
-    highlight: { start: 20, end: 47 },
+    highlight: '[1, 2, 3].every(n => n > 0)',
     question: "What does every() return?",
     correct: "boolean",
     options: ["boolean", "array", "number", "element"],
@@ -309,7 +309,7 @@ const message = isActive ? 'yes' : 'no';`,
   },
   {
     code: `const [count, setCount] = useState(0);`,
-    highlight: { start: 26, end: 37 },
+    highlight: 'useState(0)',
     question: "What React feature is being used here?",
     correct: "hook",
     options: ["hook", "component", "prop", "context"],
@@ -320,7 +320,7 @@ const message = isActive ? 'yes' : 'no';`,
     code: `<button onClick={() => setCount(count + 1)}>
   Click me
 </button>`,
-    highlight: { start: 8, end: 15 },
+    highlight: 'onClick',
     question: "What is this attribute called in React?",
     correct: "event handler",
     options: ["event handler", "callback prop", "action", "listener"],
@@ -332,7 +332,7 @@ const message = isActive ? 'yes' : 'no';`,
 export const level2Questions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
-    highlight: { start: 15, end: 28 },
+    highlight: 'Array<number>',
     question: "What is the highlighted part called?",
     correct: "generic",
     options: ["generic", "type parameter", "template", "type annotation"],
@@ -341,7 +341,7 @@ export const level2Questions: Question[] = [
   },
   {
     code: `type Status = 'active' | 'inactive' | 'pending';`,
-    highlight: { start: 14, end: 47 },
+    highlight: "'active' | 'inactive' | 'pending'",
     question: "What is the highlighted part called?",
     correct: "union type",
     options: ["union type", "intersection type", "literal type", "enum"],
@@ -352,7 +352,7 @@ export const level2Questions: Question[] = [
     code: `function getName(): string {
   return 'Alice';
 }`,
-    highlight: { start: 18, end: 26 },
+    highlight: ': string',
     question: "What is the highlighted part called?",
     correct: "return type",
     options: ["return type", "output signature", "type hint", "output type"],
@@ -362,7 +362,7 @@ export const level2Questions: Question[] = [
   {
     code: `const user = { name: 'Alice', age: 30, city: 'NYC' };
 const { name, age } = user;`,
-    highlight: { start: 60, end: 73 },
+    highlight: '{ name, age }',
     question: "What is this syntax called?",
     correct: "destructuring",
     options: ["destructuring", "unpacking", "pattern matching", "extraction"],
@@ -372,7 +372,7 @@ const { name, age } = user;`,
   {
     code: `const oldArr = [1, 2, 3];
 const newArr = [...oldArr, 4, 5];`,
-    highlight: { start: 42, end: 51 },
+    highlight: '...oldArr',
     question: "What is this syntax called?",
     correct: "spread syntax",
     options: ["spread syntax", "rest syntax", "destructuring", "expansion"],
@@ -382,7 +382,7 @@ const newArr = [...oldArr, 4, 5];`,
   {
     code: `const user = { profile: { name: 'Alice' } };
 const name = user?.profile?.name;`,
-    highlight: { start: 62, end: 77 },
+    highlight: '?.profile?.name',
     question: "What is this operator called?",
     correct: "optional chaining",
     options: ["optional chaining", "safe navigation", "null check", "elvis operator"],
@@ -393,7 +393,8 @@ const name = user?.profile?.name;`,
     code: `function getValue(input?: string) {
   return input ?? 'default';
 }`,
-    highlight: { start: 51, end: 66 },
+    highlight: `?? 'default';
+}`,
     question: "What is this operator called?",
     correct: "nullish coalescing",
     options: ["nullish coalescing", "default operator", "fallback operator", "NaN operator"],
@@ -406,7 +407,7 @@ const name = user?.profile?.name;`,
     console.log('Woof!');
   }
 }`,
-    highlight: { start: 10, end: 24 },
+    highlight: 'extends Animal',
     question: "What does this represent?",
     correct: "inheritance",
     options: ["inheritance", "extension", "composition", "implementation"],
@@ -415,7 +416,7 @@ const name = user?.profile?.name;`,
   },
   {
     code: `type ID = string | number;`,
-    highlight: { start: 0, end: 25 },
+    highlight: 'type ID = string | number',
     question: "What is this declaration called?",
     correct: "type alias",
     options: ["type alias", "type definition", "typedef", "interface"],
@@ -424,7 +425,7 @@ const name = user?.profile?.name;`,
   },
   {
     code: `type Coordinates = [number, number];`,
-    highlight: { start: 19, end: 35 },
+    highlight: '[number, number]',
     question: "What is this type called?",
     correct: "tuple",
     options: ["tuple", "array", "pair", "vector"],
@@ -438,7 +439,9 @@ const name = user?.profile?.name;`,
     return x;
   };
 }`,
-    highlight: { start: 44, end: 80 },
+    highlight: `function inner() {
+    return x;
+  }`,
     question: "What JavaScript concept is demonstrated here?",
     correct: "closure",
     options: ["closure", "scope", "hoisting", "recursion"],
@@ -448,7 +451,8 @@ const name = user?.profile?.name;`,
   {
     code: `console.log(x);
 var x = 5;`,
-    highlight: { start: 0, end: 26 },
+    highlight: `console.log(x);
+var x = 5;`,
     question: "What JavaScript behavior causes x to be undefined here?",
     correct: "hoisting",
     options: ["hoisting", "closure", "scoping", "coercion"],
@@ -460,7 +464,7 @@ var x = 5;`,
   const data = await fetchUser(id);
   return data;
 }`,
-    highlight: { start: 53, end: 72 },
+    highlight: 'await fetchUser(id)',
     question: "What does the `await` keyword pause execution for?",
     correct: "Promise",
     options: ["Promise", "Callback", "Observable", "Event"],
@@ -470,7 +474,7 @@ var x = 5;`,
   {
     code: `const double = (x) => x * 2;
 const numbers = [1, 2, 3].map(double);`,
-    highlight: { start: 0, end: 28 },
+    highlight: 'const double = (x) => x * 2;',
     question: "What type of function is this?",
     correct: "pure function",
     options: ["pure function", "impure function", "side effect", "closure"],
@@ -481,7 +485,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `useEffect(() => {
   document.title = 'Hello';
 }, []);`,
-    highlight: { start: 0, end: 9 },
+    highlight: 'useEffect',
     question: "What is this React hook used for?",
     correct: "side effects",
     options: ["side effects", "state management", "memoization", "context"],
@@ -492,7 +496,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `useEffect(() => {
   fetchData();
 }, [userId]);`,
-    highlight: { start: 36, end: 46 },
+    highlight: '[userId]);',
     question: "What is this array called in useEffect?",
     correct: "dependency array",
     options: ["dependency array", "watch list", "trigger array", "effect list"],
@@ -503,7 +507,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `function Button({ onClick, children }) {
   return <button onClick={onClick}>{children}</button>;
 }`,
-    highlight: { start: 16, end: 37 },
+    highlight: '{ onClick, children }',
     question: "What is this pattern called in React?",
     correct: "props destructuring",
     options: ["props destructuring", "parameter spread", "object unpacking", "property access"],
@@ -514,7 +518,7 @@ const numbers = [1, 2, 3].map(double);`,
     code: `{items.map(item => (
   <li key={item.id}>{item.name}</li>
 ))}`,
-    highlight: { start: 27, end: 40 },
+    highlight: 'key={item.id}',
     question: "What is this attribute used for in React?",
     correct: "identifying list items",
     options: ["identifying list items", "styling elements", "indexing", "sorting"],
@@ -523,7 +527,7 @@ const numbers = [1, 2, 3].map(double);`,
   },
   {
     code: `type AdminUser = User & Admin;`,
-    highlight: { start: 22, end: 30 },
+    highlight: '& Admin;',
     question: "What operator creates an intersection type?",
     correct: "ampersand",
     options: ["ampersand", "pipe", "plus", "asterisk"],
@@ -536,7 +540,7 @@ export const level3Questions: Question[] = [
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,
-    highlight: { start: 47, end: 62 },
+    highlight: 'value as string',
     question: "What is this syntax called?",
     correct: "type assertion",
     options: ["type assertion", "type cast", "type conversion", "type coercion"],
@@ -547,7 +551,7 @@ const str = value as string;`,
     code: `function isString(value: unknown): value is string {
   return typeof value === 'string';
 }`,
-    highlight: { start: 35, end: 50 },
+    highlight: 'value is string',
     question: "What is this return type syntax called?",
     correct: "type predicate",
     options: ["type predicate", "type narrowing", "type check", "type assertion"],
@@ -558,7 +562,7 @@ const str = value as string;`,
     code: `interface StringMap {
   [key: string]: any;
 }`,
-    highlight: { start: 24, end: 42 },
+    highlight: '[key: string]: any',
     question: "What is this syntax called?",
     correct: "index signature",
     options: ["index signature", "indexer", "dynamic property", "computed property"],
@@ -567,7 +571,7 @@ const str = value as string;`,
   },
   {
     code: `type IsString<T> = T extends string ? T : never;`,
-    highlight: { start: 19, end: 47 },
+    highlight: 'T extends string ? T : never',
     question: "What is this type called?",
     correct: "conditional type",
     options: ["conditional type", "ternary type", "generic constraint", "mapped type"],
@@ -578,7 +582,7 @@ const str = value as string;`,
     code: `type Partial<T> = {
   [P in keyof T]?: T[P];
 };`,
-    highlight: { start: 22, end: 43 },
+    highlight: '[P in keyof T]?: T[P]',
     question: "What is this type called?",
     correct: "mapped type",
     options: ["mapped type", "conditional type", "indexed type", "generic type"],
@@ -587,7 +591,7 @@ const str = value as string;`,
   },
   {
     code: `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;`,
-    highlight: { start: 51, end: 58 },
+    highlight: 'infer R',
     question: "What keyword extracts a type from a pattern?",
     correct: "infer",
     options: ["infer", "extract", "typeof", "keyof"],
@@ -598,7 +602,7 @@ const str = value as string;`,
     code: `type Shape =
   | { kind: 'circle'; radius: number }
   | { kind: 'square'; side: number };`,
-    highlight: { start: 19, end: 33 },
+    highlight: "kind: 'circle'",
     question: "What property enables discriminated unions?",
     correct: "discriminant",
     options: ["discriminant", "enumerator", "identifier", "selector"],
@@ -609,7 +613,7 @@ const str = value as string;`,
     code: `function process<T extends { id: number }>(item: T) {
   return item.id;
 }`,
-    highlight: { start: 16, end: 42 },
+    highlight: '<T extends { id: number }>',
     question: "What is this syntax called?",
     correct: "generic constraint",
     options: ["generic constraint", "type bound", "type limit", "interface requirement"],
@@ -618,7 +622,7 @@ const str = value as string;`,
   },
   {
     code: `type NonNullable<T> = T extends null | undefined ? never : T;`,
-    highlight: { start: 51, end: 61 },
+    highlight: 'never : T;',
     question: "What type represents an impossible value?",
     correct: "never",
     options: ["never", "void", "null", "undefined"],
@@ -627,7 +631,7 @@ const str = value as string;`,
   },
   {
     code: `type EventNames = \`on\${Capitalize<string>}\`;`,
-    highlight: { start: 18, end: 43 },
+    highlight: `\`on\${Capitalize<string>}\``,
     question: "What is this type syntax called?",
     correct: "template literal type",
     options: ["template literal type", "string pattern type", "format type", "interpolated type"],
@@ -638,7 +642,7 @@ const str = value as string;`,
     code: `type DeepReadonly<T> = {
   readonly [P in keyof T]: DeepReadonly<T[P]>;
 };`,
-    highlight: { start: 52, end: 70 },
+    highlight: 'DeepReadonly<T[P]>',
     question: "What kind of type is this?",
     correct: "recursive type",
     options: ["recursive type", "nested type", "deep type", "self-referential type"],
@@ -650,7 +654,7 @@ const str = value as string;`,
   const [value, setValue] = useState(initialValue);
   return { value, increment: () => setValue(v => v + 1) };
 }`,
-    highlight: { start: 9, end: 22 },
+    highlight: 'useCustomHook',
     question: "What React pattern is this?",
     correct: "custom hook",
     options: ["custom hook", "higher-order component", "render prop", "compound component"],

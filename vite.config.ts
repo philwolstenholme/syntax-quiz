@@ -60,6 +60,13 @@ function tokenizePlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tokenizePlugin(), react()],
+  plugins: [
+    tokenizePlugin(),
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler']],
+      },
+    }),
+  ],
   base: '/',
 })

@@ -227,7 +227,7 @@ console.log(fruits[0]);`,
   },
   {
     code: `const doubled = numbers.map(n => n * 2);`,
-    highlight: { start: 28, end: 40 },
+    highlight: { start: 28, end: 38 },
     question: "What is the function passed to map called?",
     correct: "callback",
     options: ["callback", "lambda", "handler", "delegate"],

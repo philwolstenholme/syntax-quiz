@@ -200,7 +200,7 @@ greet('Alice');`,
   {
     code: `const fruits = ['apple', 'banana', 'orange'];
 console.log(fruits[0]);`,
-    highlight: { start: 64, end: 69 },
+    highlight: { start: 64, end: 67 },
     question: "What is the highlighted part called?",
     correct: "index",
     options: ["index", "key", "position", "offset"],

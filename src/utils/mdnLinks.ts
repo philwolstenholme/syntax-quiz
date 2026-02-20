@@ -14,6 +14,7 @@ const mdnPages: Record<string, string> = {
   index: '/docs/Web/JavaScript/Reference/Global_Objects/Array#accessing_array_elements',
   destructuring: '/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment',
   'spread operator': '/docs/Web/JavaScript/Reference/Operators/Spread_syntax',
+  'spread syntax': '/docs/Web/JavaScript/Reference/Operators/Spread_syntax',
   'ternary operator': '/docs/Web/JavaScript/Reference/Operators/Conditional_operator',
   'optional chaining': '/docs/Web/JavaScript/Reference/Operators/Optional_chaining',
   'nullish coalescing': '/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing',
@@ -23,7 +24,16 @@ const mdnPages: Record<string, string> = {
   'object literal': '/docs/Web/JavaScript/Reference/Operators/Object_initializer',
   'default export': '/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export',
   'named export': '/docs/Web/JavaScript/Reference/Statements/export',
+  'named import': '/docs/Web/JavaScript/Reference/Statements/import',
   void: '/docs/Web/JavaScript/Reference/Operators/void',
+  'template literal': '/docs/Web/JavaScript/Reference/Template_literals',
+  'default parameter': '/docs/Web/JavaScript/Reference/Functions/Default_parameters',
+  'rest parameter': '/docs/Web/JavaScript/Reference/Functions/rest_parameters',
+  closure: '/docs/Web/JavaScript/Closures',
+  hoisting: '/docs/Glossary/Hoisting',
+  promise: '/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  boolean: '/docs/Glossary/Boolean',
+  'event handler': '/docs/Web/Events/Event_handlers',
 };
 
 export function getMdnUrl(term: string): string {

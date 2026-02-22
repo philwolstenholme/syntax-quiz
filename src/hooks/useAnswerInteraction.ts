@@ -16,7 +16,7 @@ interface UseAnswerInteractionReturn {
   eliminatedOptions: string[];
   canInteract: boolean;
   submitAnswer: (feedback: AnswerFeedback) => void;
-  useHint: (currentQuestion: QuestionWithIndex) => void;
+  applyHint: (currentQuestion: QuestionWithIndex) => void;
   resetForNextQuestion: () => void;
 }
 
@@ -36,7 +36,7 @@ export function useAnswerInteraction({
     setLastAnswer(feedback);
   }, []);
 
-  const useHint = useCallback((currentQuestion: QuestionWithIndex) => {
+  const applyHint = useCallback((currentQuestion: QuestionWithIndex) => {
     if (hintsUsed === 0) {
       const wrongOptions = currentQuestion.options.filter(
         (opt: string) => opt !== currentQuestion.correct
@@ -62,7 +62,7 @@ export function useAnswerInteraction({
     eliminatedOptions,
     canInteract,
     submitAnswer,
-    useHint,
+    applyHint,
     resetForNextQuestion,
   };
 }

@@ -120,12 +120,6 @@ test.describe('Syntax Quiz E2E', () => {
     );
     
     if (await hintButton.first().isVisible()) {
-      // Get initial number of enabled buttons
-      const initialButtons = await page.getByRole('button').filter({ 
-        hasText: /^[a-zA-Z]/, 
-        disabled: false 
-      }).count();
-      
       await hintButton.first().click();
       await page.waitForTimeout(500);
       

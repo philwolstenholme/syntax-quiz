@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { BASE_SCORE_POINTS, HINT_SCORE_PENALTY } from '../constants';
 
 interface UseScoringInput {
@@ -24,7 +24,7 @@ export function useScoring({
   const [streak, setStreak] = useState(initialStreak);
   const [correctAnswers, setCorrectAnswers] = useState(initialCorrect);
 
-  const recordCorrect = useCallback((hintsUsed: number) => {
+  const recordCorrect = (hintsUsed: number) => {
     setStreak(prev => {
       const newStreak = prev + 1;
       const penalty = Math.pow(HINT_SCORE_PENALTY, hintsUsed);
@@ -33,11 +33,11 @@ export function useScoring({
       return newStreak;
     });
     setCorrectAnswers(prev => prev + 1);
-  }, []);
+  };
 
-  const recordIncorrect = useCallback(() => {
+  const recordIncorrect = () => {
     setStreak(0);
-  }, []);
+  };
 
   return { score, streak, correctAnswers, recordCorrect, recordIncorrect };
 }

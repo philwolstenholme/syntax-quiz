@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   DndContext,
@@ -53,9 +53,11 @@ export const QuestionsPage = () => {
   });
   const sensors = useSensors(pointerSensor, touchSensor);
 
-  if (!level || quizComplete || !currentQuestion) {
-    return null;
-  }
+  useEffect(() => {
+    return () => {
+      document.body.style.userSelect = '';
+    };
+  }, []);
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);
@@ -73,15 +75,21 @@ export const QuestionsPage = () => {
     }
   };
 
+  const handleDragCancel = () => {
+    setActiveId(null);
+    document.body.style.userSelect = '';
+  };
+
+  if (!level || quizComplete || !currentQuestion) {
+    return null;
+  }
+
   return (
     <DndContext
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => {
-        setActiveId(null);
-        document.body.style.userSelect = '';
-      }}
+      onDragCancel={handleDragCancel}
     >
       <PageLayout>
         <div className="max-w-4xl mx-auto">

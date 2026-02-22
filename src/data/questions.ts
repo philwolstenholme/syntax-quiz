@@ -376,7 +376,7 @@ console.log(selectedUser, cachedValue);`,
 export const level2Questions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
-    highlight: 'Array<number>',
+    highlight: '<number>',
     question: "What is the highlighted part called?",
     correct: "generic",
     options: ["generic", "type parameter", "template", "type annotation"],

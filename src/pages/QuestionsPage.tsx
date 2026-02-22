@@ -130,6 +130,8 @@ export const QuestionsPage = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestionIndex}
+              data-testid="question-panel"
+              data-question-index={currentQuestion.originalIndex}
               initial={{ x: prefersReducedMotion ? 0 : 30, opacity: prefersReducedMotion ? 1 : 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={prefersReducedMotion ? { x: 0, opacity: 1 } : { x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
@@ -154,6 +156,7 @@ export const QuestionsPage = () => {
               <div className="mt-4 text-center">
                 <button
                   type="button"
+                  data-testid="skip-question"
                   onClick={handleSkip}
                   disabled={isAnswering}
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 touch-manipulation"

@@ -34,6 +34,8 @@ const DraggableOption = ({
     <button
       ref={setNodeRef}
       {...attributes}
+      data-testid="answer-option"
+      data-answer-option={option}
       inert={isDragging ? true : undefined}
       type="button"
       disabled={isDisabled}
@@ -80,7 +82,7 @@ export const AnswerOptions = ({
   eliminatedOptions = [],
 }: AnswerOptionsProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
       {options.map((option) => (
         <DraggableOption
           key={option}

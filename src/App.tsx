@@ -1,5 +1,5 @@
 import { Route, Switch, useLocation } from 'wouter';
-import { LazyMotion, domAnimation, m, AnimatePresence, useReducedMotion } from 'motion/react';
+import { LazyMotion, domMax, m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { LevelSelect } from './components/LevelSelect';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
@@ -25,7 +25,7 @@ function App() {
 
   return (
     <QuizResultProvider>
-      <LazyMotion features={domAnimation}>
+      <LazyMotion features={domMax}>
         <div className="app-shell relative overflow-x-hidden bg-[#0a0a0a] min-h-dvh">
           <AnimatePresence mode="popLayout">
             <m.div key={location} {...pageTransition}>

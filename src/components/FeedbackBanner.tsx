@@ -2,10 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, HelpCircle, Play, Pause, FastForward, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
-import { useDrag } from '@use-gesture/react';
+import type { PanInfo } from 'motion/react';
 // Swipe-to-dismiss configuration
-const SWIPE_DEAD_ZONE = 20; // px of finger movement before the banner starts moving
-const SWIPE_VELOCITY_THRESHOLD = 0.15; // px/ms — minimum release velocity to dismiss
 const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
 export interface AnswerFeedback {
@@ -170,38 +168,24 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     }
   }, [paused]);
 
-  const bindSwipe = useDrag(
-    ({ active, movement: [mx], velocity: [vx], direction: [dx] }) => {
-      // Only allow rightward movement
-      const clampedX = Math.max(0, mx);
-
-      if (active) {
-        swipeX.set(clampedX);
-      } else {
-        // On release, require both high velocity AND decent distance to dismiss
-        if (vx > SWIPE_VELOCITY_THRESHOLD && clampedX > SWIPE_DISTANCE_THRESHOLD && dx > 0) {
-          animate(swipeX, window.innerWidth, {
-            type: 'tween',
-            duration: prefersReducedMotion ? 0 : 0.2,
-            ease: 'easeOut',
-          }).then(() => completeFeedback());
-        } else {
-          // Snap back
-          animate(swipeX, 0, {
-            type: 'spring',
-            stiffness: 500,
-            damping: 30,
-            duration: prefersReducedMotion ? 0 : undefined,
-          });
-        }
-      }
-    },
-    {
-      axis: 'x',
-      threshold: SWIPE_DEAD_ZONE,
-      filterTaps: true,
-    },
-  );
+  const handleDragEnd = useCallback((_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (info.velocity.x > 0 && info.offset.x > SWIPE_DISTANCE_THRESHOLD) {
+      // Dismiss: animate off-screen
+      animate(swipeX, window.innerWidth, {
+        type: 'tween',
+        duration: prefersReducedMotion ? 0 : 0.2,
+        ease: 'easeOut',
+      }).then(() => completeFeedback());
+    } else {
+      // Snap back
+      animate(swipeX, 0, {
+        type: 'spring',
+        stiffness: 500,
+        damping: 30,
+        duration: prefersReducedMotion ? 0 : undefined,
+      });
+    }
+  }, [swipeX, completeFeedback, prefersReducedMotion]);
 
   if (!lastAnswer) return null;
 
@@ -210,12 +194,15 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const isIncorrect = !lastAnswer.correct && !lastAnswer.skipped;
 
   return (
-    <div
-      {...bindSwipe()}
-      style={{ touchAction: 'pan-y' }}
+    <m.div
+      drag="x"
+      style={{ x: swipeX, touchAction: 'pan-y' }}
       className="feedback-banner"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={{ left: 0, right: 0.5 }}
+      dragMomentum={false}
+      onDragEnd={handleDragEnd}
     >
-      <m.div style={{ x: swipeX }}>
         <m.div
           ref={bannerRef}
           tabIndex={-1}
@@ -304,7 +291,6 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           )}
         </div>
         </m.div>
-      </m.div>
-    </div>
+    </m.div>
   );
 };

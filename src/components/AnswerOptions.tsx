@@ -68,6 +68,8 @@ const DraggableOption = ({
   );
 };
 
+const EMPTY_ELIMINATED: string[] = [];
+
 interface AnswerOptionsProps {
   options: string[];
   onAnswer: (answer: string) => void;
@@ -79,7 +81,7 @@ export const AnswerOptions = ({
   options,
   onAnswer,
   disabled,
-  eliminatedOptions = [],
+  eliminatedOptions = EMPTY_ELIMINATED,
 }: AnswerOptionsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">

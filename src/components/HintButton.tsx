@@ -1,6 +1,6 @@
 import { Lightbulb } from 'lucide-react';
 import clsx from 'clsx';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { MAX_HINTS } from '../constants';
 import { formatNumber } from '../utils/format';
 
@@ -21,7 +21,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
     <div className="mb-6 flex flex-col items-center">
       <AnimatePresence mode="wait">
         {showHintText && (
-          <motion.div
+          <m.div
             key="hint-text"
             initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           >
             <Lightbulb className="text-amber-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
             <p className="text-amber-800 font-medium">{hint}</p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

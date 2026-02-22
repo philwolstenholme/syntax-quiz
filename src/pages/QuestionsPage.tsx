@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   DndContext,
   PointerSensor,
@@ -112,23 +112,24 @@ export const QuestionsPage = () => {
 
           <AnimatePresence>
             {lastAnswer && isAnswering && (
-              <motion.div
+              <m.div
                 initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
                 animate={{ opacity: 1 }}
                 exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
                 transition={{ duration: prefersReducedMotion ? 0 : 0.21, ease: [0, 0, 0.2, 1] }}
               >
                 <FeedbackBanner
+                  key={`${isRetryRound ? 'retry' : 'main'}-${currentQuestion.originalIndex}-${currentQuestionIndex}`}
                   lastAnswer={lastAnswer}
                   durationMs={lastAnswer?.correct ? FEEDBACK_DELAY_MS : undefined}
                   onCountdownComplete={handleFeedbackComplete}
                 />
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={currentQuestionIndex}
               data-testid="question-panel"
               data-question-index={currentQuestion.originalIndex}
@@ -176,7 +177,7 @@ export const QuestionsPage = () => {
                   Report an issue with this question
                 </a>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
 
         </div>

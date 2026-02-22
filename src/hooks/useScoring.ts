@@ -25,14 +25,12 @@ export function useScoring({
   const [correctAnswers, setCorrectAnswers] = useState(initialCorrect);
 
   const recordCorrect = (hintsUsed: number) => {
-    setStreak(prev => {
-      const newStreak = prev + 1;
-      const penalty = Math.pow(HINT_SCORE_PENALTY, hintsUsed);
-      const points = Math.round(BASE_SCORE_POINTS * newStreak * penalty);
-      setScore(s => s + points);
-      return newStreak;
-    });
-    setCorrectAnswers(prev => prev + 1);
+    const newStreak = streak + 1;
+    const penalty = Math.pow(HINT_SCORE_PENALTY, hintsUsed);
+    const points = Math.round(BASE_SCORE_POINTS * newStreak * penalty);
+    setStreak(newStreak);
+    setScore(s => s + points);
+    setCorrectAnswers(c => c + 1);
   };
 
   const recordIncorrect = () => {

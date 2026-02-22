@@ -28,7 +28,7 @@ const MdnLink = ({ term, className }: { term: string; className: string }) => (
     href={getMdnUrl(term)}
     target="_blank"
     rel="noopener noreferrer"
-    className={`underline decoration-2 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
+    className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
   >
     {term}
   </a>
@@ -51,7 +51,7 @@ const CountdownButton = ({
     <button
       type="button"
       onClick={onToggle}
-      className="relative w-11 h-11 flex-shrink-0 cursor-pointer rounded-full hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current touch-manipulation"
+      className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
       aria-label={paused ? 'Resume Timer' : 'Pause Timer'}
       aria-pressed={paused}
     >
@@ -78,7 +78,7 @@ const SkipButton = ({ onSkip }: SkipButtonProps) => (
   <button
     type="button"
     onClick={onSkip}
-    className="relative w-11 h-11 flex-shrink-0 rounded-full text-current hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-current touch-manipulation"
+    className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
     aria-label="Skip Feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">
@@ -200,14 +200,14 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
-  const ringColor = lastAnswer.correct ? '#16a34a' : lastAnswer.skipped ? '#64748b' : '#dc2626';
+  const ringColor = lastAnswer.correct ? '#34d399' : lastAnswer.skipped ? '#737373' : '#f87171';
   const isIncorrect = !lastAnswer.correct && !lastAnswer.skipped;
 
   return (
     <div
       {...bindSwipe()}
       style={{ touchAction: 'pan-y' }}
-      className="mb-6"
+      className="feedback-banner mb-4"
     >
       <m.div style={{ x: swipeX }}>
         <m.div
@@ -226,35 +226,35 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           aria-live={isIncorrect ? 'assertive' : 'polite'}
           aria-atomic="true"
           className={clsx(
-            'rounded-2xl p-4 border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            'rounded-lg p-3 sm:p-4 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
             lastAnswer.skipped
-              ? 'bg-slate-50 text-slate-700 border-slate-400 focus-visible:ring-slate-400 focus-visible:ring-offset-slate-50'
+              ? 'bg-neutral-900/50 text-neutral-300 border-neutral-700 focus-visible:ring-neutral-500'
               : lastAnswer.correct
-                ? 'bg-green-50 text-green-700 border-green-500 focus-visible:ring-green-500 focus-visible:ring-offset-green-50'
-                : 'bg-red-50 text-red-700 border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-50',
+                ? 'bg-emerald-500/5 text-emerald-300 border-emerald-500/20 focus-visible:ring-emerald-500'
+                : 'bg-red-500/5 text-red-300 border-red-500/20 focus-visible:ring-red-500',
           )}
         >
         <div>
-          <div className="flex items-center gap-3 font-bold text-lg">
+          <div className="flex items-center gap-2 font-medium text-base leading-relaxed">
             {lastAnswer.skipped ? (
               <>
-                <HelpCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  The answer is <MdnLink term={lastAnswer.term} className="text-slate-800" />
+                  The answer is <MdnLink term={lastAnswer.term} className="text-neutral-100" />
                 </span>
               </>
             ) : lastAnswer.correct ? (
               <>
-                <CheckCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <CheckCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Correct! <MdnLink term={lastAnswer.term} className="text-green-800" />
+                  Correct! <MdnLink term={lastAnswer.term} className="text-emerald-200" />
                 </span>
               </>
             ) : (
               <>
-                <XCircle size={24} className="flex-shrink-0" aria-hidden="true" />
+                <XCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Wrong! It was <MdnLink term={lastAnswer.term} className="text-red-800" />, not{' '}
+                  Wrong — it was <MdnLink term={lastAnswer.term} className="text-red-200" />, not{' '}
                   {lastAnswer.userAnswer}
                 </span>
               </>
@@ -262,8 +262,8 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           </div>
           {lastAnswer.explanation && (
             <p className={clsx(
-              'mt-2 ml-9 text-sm font-normal leading-relaxed',
-              lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
+              'mt-2 ml-7 text-sm leading-relaxed font-normal',
+              lastAnswer.skipped ? 'text-neutral-400' : lastAnswer.correct ? 'text-emerald-300/80' : 'text-red-300/80',
             )}>
               <ExplanationWithCode text={lastAnswer.explanation} />
             </p>
@@ -284,11 +284,11 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 type="button"
                 onClick={completeFeedback}
                 className={clsx(
-                  'flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors touch-manipulation cursor-pointer',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-xs transition-colors touch-manipulation cursor-pointer',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
                   lastAnswer.skipped
-                    ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 focus-visible:ring-slate-400'
-                    : 'bg-red-200 text-red-800 hover:bg-red-300 focus-visible:ring-red-500',
+                    ? 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-neutral-500'
+                    : 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-red-500',
                 )}
                 aria-label="Next Question"
               >

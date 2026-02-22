@@ -14,9 +14,9 @@ export const StatCard = ({
   value,
   label,
 }: StatCardProps) => (
-  <div className="bg-gray-50 rounded-xl p-6">
-    <Icon className={`w-8 h-8 ${iconColor} mx-auto mb-2`} aria-hidden="true" />
-    <div className="text-3xl font-bold text-gray-800 tabular-nums">{value}</div>
-    <div className="text-gray-600 mt-1">{label}</div>
+  <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-4">
+    <Icon className={`w-5 h-5 ${iconColor} mx-auto mb-1.5`} aria-hidden="true" />
+    <div className="text-xl font-medium text-neutral-100 tabular-nums font-mono">{value}</div>
+    <div className="text-neutral-500 text-xs mt-0.5">{label}</div>
   </div>
 );

@@ -8,57 +8,56 @@ import { formatNumber } from '../utils/format';
 export const LevelSelect = () => {
   return (
     <PageLayout>
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl mb-6 shadow-lg">
-            <Code2 className="w-10 h-10 text-white" aria-hidden="true" />
+      <div className="py-12 sm:py-20">
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900">
+              <Code2 className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+            </div>
+            <span className="text-sm text-neutral-500 font-mono">syntax-quiz</span>
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-3 text-balance">
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-neutral-100 mb-2">
             Syntax Quiz
           </h1>
-          <p className="text-gray-600 text-lg">
-            Test your TypeScript & JavaScript knowledge
+          <p className="text-neutral-400 text-sm max-w-[50ch]">
+            Test your TypeScript and JavaScript knowledge across {levels.length} difficulty levels.
           </p>
         </div>
 
-        <div className="space-y-4">
-          {levels.map((level) => (
+        <div className="border-t border-neutral-800">
+          {levels.map((level, index) => (
             <Link
               key={level.id}
               to={ROUTES.questions(level.id)}
-              className="block w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-transform transition-shadow duration-200 hover:scale-[1.02] p-6 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50 touch-manipulation"
+              className={`group flex items-center justify-between gap-4 py-4 px-1 transition-colors hover:bg-neutral-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-md touch-manipulation ${index < levels.length - 1 ? 'border-b border-neutral-800' : ''}`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${level.color} flex items-center justify-center shadow-md`}>
-                    <span className="text-2xl font-bold text-white">{level.id}</span>
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-800 bg-neutral-900 text-sm font-mono text-neutral-300 tabular-nums">
+                  {level.id}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2.5">
+                    <h2 className="text-sm font-medium text-neutral-200 truncate">
+                      {level.name}
+                    </h2>
+                    <span className="shrink-0 text-xs font-medium text-neutral-500 border border-neutral-800 rounded-full px-2 py-0.5">
+                      {level.subtitle}
+                    </span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-bold text-gray-800 text-balance">
-                        {level.name}
-                      </h2>
-                      <span className={`text-sm font-medium px-2 py-0.5 rounded-full bg-gradient-to-r ${level.color} text-white`}>
-                        {level.subtitle}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mt-1">
-                      {level.description}
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {formatNumber(level.questions.length)} questions
-                    </p>
-                  </div>
+                  <p className="text-xs text-neutral-500 mt-0.5 truncate">
+                    {level.description}
+                  </p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-colors transition-transform" aria-hidden="true" />
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-xs text-neutral-500 font-mono tabular-nums">
+                  {formatNumber(level.questions.length)}
+                </span>
+                <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-neutral-400 transition-colors" aria-hidden="true" />
               </div>
             </Link>
           ))}
         </div>
-
-        <p className="text-center text-gray-500 mt-8 text-sm">
-          Choose a level to begin practicing
-        </p>
       </div>
     </PageLayout>
   );

@@ -3,17 +3,31 @@
 @layer base {
   :root {
     -webkit-tap-highlight-color: transparent;
+    color-scheme: dark;
   }
 
   body {
-    font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    font-family: "Geist", system-ui, -apple-system, sans-serif;
+    background-color: #0a0a0a;
+    color: #ededed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  code {
-    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "Liberation Mono", Menlo, Monaco, Consolas, monospace;
-    font-size: 0.9em;
-    background-color: rgba(0, 0, 0, 0.06);
-    padding: 0.15em 0.35em;
+  .feedback-banner code {
+    font-family: "Geist Mono", ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+    font-size: 0.875em;
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 0.2em 0.4em;
     border-radius: 0.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background-color: rgba(0, 112, 243, 0.3);
   }
 }

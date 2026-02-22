@@ -233,10 +233,10 @@ test('save URL restores score and returns user to question flow', async ({ page 
 
   await page.getByRole('button', { name: /Save/i }).click();
 
-  const saveLink = page.locator('a').filter({ hasText: 'Open save link' });
-  await expect(saveLink).toBeVisible();
+  const copyButton = page.getByRole('button', { name: 'Copy link' });
+  await expect(copyButton).toBeVisible();
 
-  const savedUrl = await saveLink.getAttribute('href');
+  const savedUrl = await page.locator('.font-mono.select-all').innerText();
   expect(savedUrl).toBeTruthy();
   expect(savedUrl).toContain('?s=');
 

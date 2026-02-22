@@ -49,12 +49,12 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/60 backdrop-blur-sm opacity-0 data-[open]:opacity-100 transition-opacity duration-200" />
+        <Dialog.Backdrop className="fixed inset-0 bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200" />
         <Dialog.Viewport className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-800 bg-[#0a0a0a] opacity-0 scale-95 data-[open]:opacity-100 data-[open]:scale-100 transition-all duration-200 origin-center">
+          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-800 bg-[#0a0a0a] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-all duration-200 origin-center">
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-0">
-              <Dialog.Title className="text-sm font-medium text-neutral-100">
+              <Dialog.Title className="font-medium text-xl tracking-tight text-neutral-100">
                 Save game
               </Dialog.Title>
               <Dialog.Close className="flex items-center justify-center w-7 h-7 rounded-md text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 touch-manipulation cursor-pointer">
@@ -98,19 +98,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
                     )}
                   </button>
 
-                  {/* Divider + open link */}
-                  <div className="flex items-center gap-3 pt-1">
-                    <div className="flex-1 h-px bg-neutral-800" />
-                    <span className="text-xs text-neutral-600">or</span>
-                    <div className="flex-1 h-px bg-neutral-800" />
-                  </div>
 
-                  <a
-                    href={saveUrl}
-                    className="block w-full text-center text-xs text-neutral-400 hover:text-neutral-200 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-md py-1 touch-manipulation"
-                  >
-                    Open save link
-                  </a>
                 </div>
               )}
             </div>

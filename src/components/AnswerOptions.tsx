@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useRef } from 'react';
 import type { MouseEvent } from 'react';
 import { GripVertical } from 'lucide-react';
 import clsx from 'clsx';
@@ -23,22 +22,6 @@ const DraggableOption = ({
     data: { answer: option },
     disabled: isDisabled,
   });
-  const nodeRef = useRef<HTMLButtonElement | null>(null);
-
-  const setRefs = useCallback((node: HTMLButtonElement | null) => {
-    nodeRef.current = node;
-    setNodeRef(node);
-  }, [setNodeRef]);
-
-  useEffect(() => {
-    if (!nodeRef.current) return;
-    if (isDragging) {
-      nodeRef.current.setAttribute('inert', '');
-    } else {
-      nodeRef.current.removeAttribute('inert');
-    }
-  }, [isDragging]);
-
   const handleClick = (e: MouseEvent) => {
     // Prevent click from triggering after drag
     if (e.defaultPrevented) return;
@@ -49,8 +32,9 @@ const DraggableOption = ({
 
   return (
     <button
-      ref={setRefs}
+      ref={setNodeRef}
       {...attributes}
+      inert={isDragging ? true : undefined}
       type="button"
       disabled={isDisabled}
       onClick={handleClick}

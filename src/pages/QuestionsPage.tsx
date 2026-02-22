@@ -114,7 +114,7 @@ export const QuestionsPage = () => {
           <AnimatePresence>
             {lastAnswer && isAnswering && (
               <m.div
-                style={{ overflow: 'hidden' }}
+                style={{ clipPath: 'inset(0 -16px)' }}
                 initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0, marginBottom: 0 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', marginBottom: 16 }}
                 exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0, marginBottom: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } }}

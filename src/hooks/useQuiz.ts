@@ -4,7 +4,7 @@ import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
 import { encodeSaveState } from '../utils/saveState';
 import type { SaveState } from '../utils/saveState';
 import { ROUTES } from '../routes';
-import { useQuizResult } from '../context/QuizResultContext';
+import { useQuizResult } from '../context/useQuizResult';
 import type { AnswerFeedback } from '../components/FeedbackBanner';
 import type { Level } from '../data/questions';
 import type { QuestionWithIndex } from './types';
@@ -53,7 +53,7 @@ export function useQuiz(): UseQuizReturn {
     eliminatedOptions,
     canInteract,
     submitAnswer,
-    useHint,
+    applyHint,
     resetForNextQuestion,
   } = useAnswerInteraction({
     initialHintsUsed: saveState?.h,
@@ -131,8 +131,8 @@ export function useQuiz(): UseQuizReturn {
 
   const handleUseHint = useCallback((): void => {
     if (!canInteract || !currentQuestion) return;
-    useHint(currentQuestion);
-  }, [canInteract, currentQuestion, useHint]);
+    applyHint(currentQuestion);
+  }, [canInteract, currentQuestion, applyHint]);
 
   const handleSave = useCallback((): string => {
     const remainingIndices = questions

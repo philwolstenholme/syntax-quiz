@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'wouter';
 import { CompletionScreen } from '../components/CompletionScreen';
 import { levels } from '../data/questions';
 import { ROUTES } from '../routes';
-import { useQuizResult } from '../context/QuizResultContext';
+import { useQuizResult } from '../context/useQuizResult';
 
 export const ScorePage = () => {
   const params = useParams();

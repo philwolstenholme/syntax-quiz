@@ -1,20 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
-
-interface QuizResult {
-  score: number;
-  correctAnswers: number;
-  totalQuestions: number;
-  levelId: number;
-}
-
-interface QuizResultContextValue {
-  result: QuizResult | null;
-  setResult: (result: QuizResult) => void;
-  clearResult: () => void;
-}
-
-const QuizResultContext = createContext<QuizResultContextValue | null>(null);
+import { QuizResultContext } from './QuizResultState';
+import type { QuizResult } from './QuizResultState';
 
 export function QuizResultProvider({ children }: { children: ReactNode }) {
   const [result, setResultState] = useState<QuizResult | null>(null);
@@ -27,10 +14,4 @@ export function QuizResultProvider({ children }: { children: ReactNode }) {
       {children}
     </QuizResultContext.Provider>
   );
-}
-
-export function useQuizResult(): QuizResultContextValue {
-  const ctx = useContext(QuizResultContext);
-  if (!ctx) throw new Error('useQuizResult must be used within QuizResultProvider');
-  return ctx;
 }

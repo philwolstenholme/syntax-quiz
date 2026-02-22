@@ -35,7 +35,7 @@ const TokenizedCode = ({
       const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
       const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
       elements.push(
-        <span key={key++} className={inHighlight ? 'bg-blue-500/20 text-blue-300' : undefined}>
+        <span key={key++} className={inHighlight ? 'bg-yellow-500/20 text-yellow-200' : undefined}>
           {'\n'}
         </span>,
       );
@@ -65,7 +65,7 @@ const TokenizedCode = ({
       const hlStart = Math.max(0, hlRange.start - tokenStart);
       const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
       elements.push(
-        <span key={key++} className="bg-blue-500/20 text-blue-200">
+        <span key={key++} className="bg-yellow-500/20 text-yellow-200">
           {token.content.substring(hlStart, hlEnd)}
         </span>,
       );

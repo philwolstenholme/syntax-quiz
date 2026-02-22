@@ -346,7 +346,7 @@ export const level2Questions: Question[] = [
     correct: "union type",
     options: ["union type", "intersection type", "literal type", "enum"],
     hint: "The | (pipe) operator combines multiple types into one 'this OR that' type.",
-    explanation: "A union type uses the `|` operator to declare that a value can be one of several types. An intersection type uses `&` and requires all types at once. An enum defines named constants \u2014 while similar in effect, union types are more flexible. Each option here is a string literal type; the `|` combines them into a union."
+    explanation: "A union type uses the `|` operator to declare that a value can be one of several types. An intersection type uses `&` and requires all types at once. An enum defines named constants — while similar in effect, union types are more flexible. Each option here is a string literal type; the `|` combines them into a union."
   },
   {
     code: `function getName(): string {
@@ -357,7 +357,7 @@ export const level2Questions: Question[] = [
     correct: "return type",
     options: ["return type", "output signature", "type hint", "output type"],
     hint: "This annotation after the () declares what type the function gives back.",
-    explanation: "A return type annotation after the parentheses declares what type a function will return. It's placed after the parameter list, separated by a colon. 'Type hint' is Python's term for this concept. 'Output signature' and 'output type' aren't standard TypeScript terminology \u2014 the official term is return type annotation."
+    explanation: "A return type annotation after the parentheses declares what type a function will return. It's placed after the parameter list, separated by a colon. 'Type hint' is Python's term for this concept. 'Output signature' and 'output type' aren't standard TypeScript terminology — the official term is return type annotation."
   },
   {
     code: `const user = { name: 'Alice', age: 30, city: 'NYC' };
@@ -367,7 +367,7 @@ const { name, age } = user;`,
     correct: "destructuring",
     options: ["destructuring", "unpacking", "pattern matching", "extraction"],
     hint: "This syntax extracts values from an object into individual variables.",
-    explanation: "Destructuring extracts values from objects or arrays into distinct variables using a pattern that mirrors the data structure. It's not 'unpacking' (Python's term) or 'pattern matching' (a broader concept involving conditional checks). Destructuring simply creates variables from an existing structure \u2014 `const { name, age } = user` creates variables `name` and `age` from the `user` object."
+    explanation: "Destructuring extracts values from objects or arrays into distinct variables using a pattern that mirrors the data structure. It's not 'unpacking' (Python's term) or 'pattern matching' (a broader concept involving conditional checks). Destructuring simply creates variables from an existing structure — `const { name, age } = user` creates variables `name` and `age` from the `user` object."
   },
   {
     code: `const oldArr = [1, 2, 3];
@@ -377,7 +377,7 @@ const newArr = [...oldArr, 4, 5];`,
     correct: "spread syntax",
     options: ["spread syntax", "rest syntax", "destructuring", "expansion"],
     hint: "The three dots (...) expand an iterable's elements into a new array.",
-    explanation: "Spread syntax (`...`) expands an iterable's elements in place. The critical distinction from rest syntax: spread appears in array literals or function calls to expand elements, while rest appears in function parameters or destructuring patterns to collect them. Here, `...oldArr` expands into the new array \u2014 it's spreading, not resting."
+    explanation: "Spread syntax (`...`) expands an iterable's elements in place. The critical distinction from rest syntax: spread appears in array literals or function calls to expand elements, while rest appears in function parameters or destructuring patterns to collect them. Here, `...oldArr` expands into the new array — it's spreading, not resting."
   },
   {
     code: `const user = { profile: { name: 'Alice' } };
@@ -421,7 +421,7 @@ const name = user?.profile?.name;`,
     correct: "type alias",
     options: ["type alias", "type definition", "typedef", "interface"],
     hint: "The 'type' keyword gives a new name to an existing type expression.",
-    explanation: "A type alias gives a name to any type expression using the `type` keyword. Unlike an interface (which can only describe object shapes and can be extended), type aliases can name unions, intersections, tuples, primitives, and any other type expression. 'Typedef' is C/C++ terminology \u2014 TypeScript uses 'type alias.'"
+    explanation: "A type alias gives a name to any type expression using the `type` keyword. Unlike an interface (which can only describe object shapes and can be extended), type aliases can name unions, intersections, tuples, primitives, and any other type expression. 'Typedef' is C/C++ terminology — TypeScript uses 'type alias.'"
   },
   {
     code: `type Coordinates = [number, number];`,
@@ -446,7 +446,7 @@ const name = user?.profile?.name;`,
     correct: "closure",
     options: ["closure", "scope", "hoisting", "recursion"],
     hint: "The inner function 'remembers' the variable x from its outer function.",
-    explanation: "A closure is a function that retains access to variables from its enclosing scope, even after that scope has finished executing. This isn't just 'scope' (which defines where variables are accessible) \u2014 a closure specifically captures and preserves that scope. It's not hoisting (which moves declarations to the top) or recursion (where a function calls itself)."
+    explanation: "A closure is a function that retains access to variables from its enclosing scope, even after that scope has finished executing. This isn't just 'scope' (which defines where variables are accessible) — a closure specifically captures and preserves that scope. It's not hoisting (which moves declarations to the top) or recursion (where a function calls itself)."
   },
   {
     code: `console.log(x);
@@ -469,7 +469,7 @@ var x = 5;`,
     correct: "Promise",
     options: ["Promise", "Callback", "Observable", "Event"],
     hint: "This object represents a value that may not be available yet but will resolve later.",
-    explanation: "The `await` keyword pauses an async function until a Promise settles. A Promise represents an asynchronous operation with three states: pending, fulfilled, or rejected. Callbacks are an older pattern for handling async code but aren't what `await` operates on. Observables (from RxJS) handle streams of values \u2014 Promises handle a single future value."
+    explanation: "The `await` keyword pauses an async function until a Promise settles. A Promise represents an asynchronous operation with three states: pending, fulfilled, or rejected. Callbacks are an older pattern for handling async code but aren't what `await` operates on. Observables (from RxJS) handle streams of values — Promises handle a single future value."
   },
   {
     code: `const double = (x) => x * 2;
@@ -490,7 +490,7 @@ const numbers = [1, 2, 3].map(double);`,
     correct: "side effects",
     options: ["side effects", "state management", "memoization", "context"],
     hint: "This hook runs code that interacts with things outside the component, like the DOM.",
-    explanation: "`useEffect` runs code that produces side effects \u2014 interactions with systems outside React's rendering, like DOM manipulation, API calls, or subscriptions. It's not for state management (that's `useState`/`useReducer`), memoization (that's `useMemo`/`useCallback`), or context (that's `useContext`). The empty `[]` dependency array means it runs once after the first render."
+    explanation: "`useEffect` runs code that produces side effects — interactions with systems outside React's rendering, like DOM manipulation, API calls, or subscriptions. It's not for state management (that's `useState`/`useReducer`), memoization (that's `useMemo`/`useCallback`), or context (that's `useContext`). The empty `[]` dependency array means it runs once after the first render."
   },
   {
     code: `useEffect(() => {
@@ -501,7 +501,7 @@ const numbers = [1, 2, 3].map(double);`,
     correct: "dependency array",
     options: ["dependency array", "watch list", "trigger array", "effect list"],
     hint: "The effect re-runs whenever a value in this array changes.",
-    explanation: "The dependency array tells `useEffect` when to re-run. The effect fires whenever any value in this array changes between renders. It's not a 'watch list' or 'trigger array' \u2014 those aren't React concepts. Key rule: an empty `[]` means 'run once on mount'; omitting the array entirely means 'run after every render.'"
+    explanation: "The dependency array tells `useEffect` when to re-run. The effect fires whenever any value in this array changes between renders. It's not a 'watch list' or 'trigger array' — those aren't React concepts. Key rule: an empty `[]` means 'run once on mount'; omitting the array entirely means 'run after every render.'"
   },
   {
     code: `function Button({ onClick, children }) {
@@ -512,7 +512,7 @@ const numbers = [1, 2, 3].map(double);`,
     correct: "props destructuring",
     options: ["props destructuring", "parameter spread", "object unpacking", "property access"],
     hint: "The { } in the function parameters extract specific properties from the props object.",
-    explanation: "Props destructuring extracts specific properties from the props object directly in the function parameters. This isn't 'parameter spread' (which would use `...` to pass all props through) \u2014 destructuring selects specific properties. It's standard JavaScript destructuring applied to React's props object."
+    explanation: "Props destructuring extracts specific properties from the props object directly in the function parameters. This isn't 'parameter spread' (which would use `...` to pass all props through) — destructuring selects specific properties. It's standard JavaScript destructuring applied to React's props object."
   },
   {
     code: `{items.map(item => (
@@ -523,7 +523,7 @@ const numbers = [1, 2, 3].map(double);`,
     correct: "identifying list items",
     options: ["identifying list items", "styling elements", "indexing", "sorting"],
     hint: "React uses this to track which items in a list have changed, been added, or removed.",
-    explanation: "React uses the `key` prop to uniquely identify list items so it can efficiently track which items have changed, been added, or removed during re-renders. It's not for styling, indexing data, or sorting \u2014 it's purely a React reconciliation optimization. Keys should be stable, unique identifiers; using array indices can cause bugs when the list reorders."
+    explanation: "React uses the `key` prop to uniquely identify list items so it can efficiently track which items have changed, been added, or removed during re-renders. It's not for styling, indexing data, or sorting — it's purely a React reconciliation optimization. Keys should be stable, unique identifiers; using array indices can cause bugs when the list reorders."
   },
   {
     code: `type AdminUser = User & Admin;`,
@@ -532,7 +532,7 @@ const numbers = [1, 2, 3].map(double);`,
     correct: "ampersand",
     options: ["ampersand", "pipe", "plus", "asterisk"],
     hint: "This & symbol means a type must satisfy ALL of the combined types.",
-    explanation: "The ampersand (`&`) creates an intersection type, meaning the resulting type must have ALL properties from both types. The pipe (`|`) creates a union type (one OR the other) \u2014 the ampersand requires both. `User & Admin` has everything from `User` AND everything from `Admin` combined into a single type."
+    explanation: "The ampersand (`&`) creates an intersection type, meaning the resulting type must have ALL properties from both types. The pipe (`|`) creates a union type (one OR the other) — the ampersand requires both. `User & Admin` has everything from `User` AND everything from `Admin` combined into a single type."
   },
 ];
 
@@ -545,7 +545,7 @@ const str = value as string;`,
     correct: "type assertion",
     options: ["type assertion", "type cast", "type conversion", "type coercion"],
     hint: "The 'as' keyword tells TypeScript to treat a value as a specific type.",
-    explanation: "A type assertion (`value as Type`) tells TypeScript to treat a value as a specific type. Unlike type casting or type conversion in other languages, assertions don't transform the value at runtime \u2014 they only affect compile-time type checking. Type coercion is JavaScript's automatic runtime conversion (like `'5' * 1` becoming `5`), which is a completely different concept."
+    explanation: "A type assertion (`value as Type`) tells TypeScript to treat a value as a specific type. Unlike type casting or type conversion in other languages, assertions don't transform the value at runtime — they only affect compile-time type checking. Type coercion is JavaScript's automatic runtime conversion (like `'5' * 1` becoming `5`), which is a completely different concept."
   },
   {
     code: `function isString(value: unknown): value is string {
@@ -556,7 +556,7 @@ const str = value as string;`,
     correct: "type predicate",
     options: ["type predicate", "type narrowing", "type check", "type assertion"],
     hint: "The 'value is string' syntax narrows the type when the function returns true.",
-    explanation: "A type predicate (`value is Type`) in a return type tells TypeScript to narrow the type of the parameter when the function returns `true`. 'Type narrowing' is the broader concept (it includes `typeof` checks, `instanceof`, etc.) \u2014 a type predicate is a specific mechanism for creating custom type guards. A type assertion (`as Type`) forces the type without checking; a predicate proves it."
+    explanation: "A type predicate (`value is Type`) in a return type tells TypeScript to narrow the type of the parameter when the function returns `true`. 'Type narrowing' is the broader concept (it includes `typeof` checks, `instanceof`, etc.) — a type predicate is a specific mechanism for creating custom type guards. A type assertion (`as Type`) forces the type without checking; a predicate proves it."
   },
   {
     code: `interface StringMap {
@@ -567,7 +567,7 @@ const str = value as string;`,
     correct: "index signature",
     options: ["index signature", "indexer", "dynamic property", "computed property"],
     hint: "The [key: string] syntax allows an object to have any number of dynamically-named properties.",
-    explanation: "An index signature `[key: string]: type` allows an object to have any number of properties with string keys. A computed property (`[expression]: value`) evaluates an expression as a key in an object literal \u2014 that's a different concept. An 'indexer' is C#'s term. Index signatures define a contract for dynamically-named properties whose types are known."
+    explanation: "An index signature `[key: string]: type` allows an object to have any number of properties with string keys. A computed property (`[expression]: value`) evaluates an expression as a key in an object literal — that's a different concept. An 'indexer' is C#'s term. Index signatures define a contract for dynamically-named properties whose types are known."
   },
   {
     code: `type IsString<T> = T extends string ? T : never;`,
@@ -587,7 +587,7 @@ const str = value as string;`,
     correct: "mapped type",
     options: ["mapped type", "conditional type", "indexed type", "generic type"],
     hint: "The [P in keyof T] iterates over each property, transforming the type like Array.map.",
-    explanation: "A mapped type iterates over the keys of another type using `[P in keyof T]` and transforms each property. The `in` keyword is the distinguishing feature \u2014 conditional types use `extends ? :`, while mapped types use `in` to loop. An indexed type uses `T[K]` to look up a single property. `Partial<T>` makes every property optional by adding `?` to each one."
+    explanation: "A mapped type iterates over the keys of another type using `[P in keyof T]` and transforms each property. The `in` keyword is the distinguishing feature — conditional types use `extends ? :`, while mapped types use `in` to loop. An indexed type uses `T[K]` to look up a single property. `Partial<T>` makes every property optional by adding `?` to each one."
   },
   {
     code: `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;`,
@@ -618,7 +618,7 @@ const str = value as string;`,
     correct: "generic constraint",
     options: ["generic constraint", "type bound", "type limit", "interface requirement"],
     hint: "The 'extends' keyword limits what types T can be, requiring certain properties.",
-    explanation: "A generic constraint (`T extends Type`) restricts what types can be used as a type argument. `extends` here means 'must be assignable to,' not class inheritance. A 'type bound' is Java's term for this concept. An interface requirement would use `implements` \u2014 `extends` in a generic context specifically constrains the type parameter."
+    explanation: "A generic constraint (`T extends Type`) restricts what types can be used as a type argument. `extends` here means 'must be assignable to,' not class inheritance. A 'type bound' is Java's term for this concept. An interface requirement would use `implements` — `extends` in a generic context specifically constrains the type parameter."
   },
   {
     code: `type NonNullable<T> = T extends null | undefined ? never : T;`,
@@ -627,7 +627,7 @@ const str = value as string;`,
     correct: "never",
     options: ["never", "void", "null", "undefined"],
     hint: "A function that always throws or an exhausted conditional produces this bottom type.",
-    explanation: "The `never` type represents values that never occur \u2014 functions that always throw, infinite loops, or exhausted type narrowing. It's different from `void` (which means 'no return value' \u2014 the function completes but returns nothing), `null` (an intentional empty value), and `undefined` (an unset value). `never` means the code point is truly unreachable."
+    explanation: "The `never` type represents values that never occur — functions that always throw, infinite loops, or exhausted type narrowing. It's different from `void` (which means 'no return value' — the function completes but returns nothing), `null` (an intentional empty value), and `undefined` (an unset value). `never` means the code point is truly unreachable."
   },
   {
     code: `type EventNames = \`on\${Capitalize<string>}\`;`,
@@ -647,7 +647,7 @@ const str = value as string;`,
     correct: "recursive type",
     options: ["recursive type", "nested type", "deep type", "self-referential type"],
     hint: "This type references itself in its own definition — like a function calling itself.",
-    explanation: "A recursive type references itself in its definition, like a function calling itself. 'Nested type' just means types within types \u2014 it doesn't imply self-reference. 'Self-referential type' describes the concept but isn't the standard term. Recursive types are essential for modeling tree structures, linked lists, and deeply nested objects like `DeepReadonly`."
+    explanation: "A recursive type references itself in its definition, like a function calling itself. 'Nested type' just means types within types — it doesn't imply self-reference. 'Self-referential type' describes the concept but isn't the standard term. Recursive types are essential for modeling tree structures, linked lists, and deeply nested objects like `DeepReadonly`."
   },
   {
     code: `function useCustomHook(initialValue: number) {
@@ -659,7 +659,7 @@ const str = value as string;`,
     correct: "custom hook",
     options: ["custom hook", "higher-order component", "render prop", "compound component"],
     hint: "A reusable function starting with 'use' that composes built-in hooks.",
-    explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. A higher-order component (HOC) wraps a component to add behavior \u2014 that's the older pattern. Render props pass a function as a child. Custom hooks are the modern React pattern for logic reuse, returning data and functions rather than JSX."
+    explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. A higher-order component (HOC) wraps a component to add behavior — that's the older pattern. Render props pass a function as a child. Custom hooks are the modern React pattern for logic reuse, returning data and functions rather than JSX."
   },
 ];
 

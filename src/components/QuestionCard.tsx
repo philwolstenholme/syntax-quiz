@@ -117,16 +117,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         )}
       >
         {isOver && (
-          <div className="absolute inset-0 bg-blue-500/5 flex items-center justify-center z-10">
-            <span className="text-sm font-medium text-blue-400">
+          <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-[5px] flex items-center justify-center z-10">
+            <span className="text-sm font-medium text-blue-400 bg-slate-900 rounded-full px-3 py-1">
               Drop here
             </span>
           </div>
         )}
         <pre className="bg-neutral-950 border border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
-          <code className="font-mono text-neutral-300">
+          <div className={clsx(
+            isOver && 'scale-[98%] origin-center transition-transform'
+          )}>
+            <code className="font-mono text-neutral-300">
             <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
           </code>
+          </div>
         </pre>
       </div>
     </div>

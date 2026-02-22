@@ -51,15 +51,16 @@ const DraggableOption = ({
         isDragging && 'opacity-30',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
         'touch-manipulation',
+        'overflow-hidden'
       )}
     >
       <span
         {...listeners}
         className={clsx(
           'relative shrink-0 cursor-move',
-          "after:content-[''] after:absolute after:-inset-4",
+          "after:content-[''] after:absolute after:-inset-4 pointer-coarse:after:w-[min(300px,50vw)] pointer-fine:after:w-[400px]",
         )}
-        style={!isDisabled ? { touchAction: 'none' } : undefined}
+        style={!isDisabled ? { touchAction: 'none'  } : {pointerEvents: 'none'}}
       >
         <GripVertical className="text-neutral-600" size={16} aria-hidden="true" />
       </span>

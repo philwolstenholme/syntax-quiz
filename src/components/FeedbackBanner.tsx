@@ -100,13 +100,19 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const elapsedRef = useRef(0);
   const rafRef = useRef<number | undefined>(undefined);
   const completedRef = useRef(false);
-  const bannerRef = useRef<HTMLDivElement>(null);
   const [completed, setCompleted] = useState(false);
   const onCompleteRef = useRef(onCountdownComplete);
   const prefersReducedMotion = useReducedMotion();
 
   // Swipe-to-dismiss: track horizontal position with a motion value
   const swipeX = useMotionValue(0);
+
+  const bannerRef = useCallback((el: HTMLDivElement | null) => {
+    if (el) {
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   useEffect(() => {
     onCompleteRef.current = onCountdownComplete;
@@ -121,10 +127,6 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     setProgress(1);
     setPaused(false);
     onCompleteRef.current?.();
-  }, []);
-
-  useEffect(() => {
-    bannerRef.current?.focus();
   }, []);
 
   // Animation loop
@@ -226,7 +228,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           aria-live={isIncorrect ? 'assertive' : 'polite'}
           aria-atomic="true"
           className={clsx(
-            'rounded-lg p-3 sm:p-4 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+            'rounded-lg p-3 sm:p-4 border scroll-mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
             lastAnswer.skipped
               ? 'bg-neutral-900/50 text-neutral-300 border-neutral-700 focus-visible:ring-neutral-500'
               : lastAnswer.correct

@@ -14,7 +14,7 @@ The project is built on React 19, TypeScript, and Vite. Syntax highlighting of a
 
 ## Question Design and Difficulty Levels
 
-The question bank is organised into three difficulty levels. Level 1 covers the everyday fundamentals — array methods like `.map()` and `.filter()`, the difference between a declaration and an invocation, naming conventions such as SCREAMING_SNAKE_CASE, and basic module syntax. Level 2 moves into intermediate territory: destructuring assignment, closures, hoisting, the event loop, async/await patterns, and error handling. Level 3 tackles advanced TypeScript concepts including generic constraints, mapped types, conditional types, discriminated unions, recursive types, and custom hook conventions.
+The question bank is organised into three difficulty levels. Level 1 covers the everyday fundamentals — array methods like `.map()` and `.filter()`, the difference between a declaration and an invocation, naming conventions such as SCREAMING_SNAKE_CASE, and basic module syntax. Level 2 moves into intermediate territory: destructuring assignment, closures, hoisting, the event loop, async/await patterns, and error handling. Level 3 tackles Advanced bits concepts including generic constraints, mapped types, conditional types, discriminated unions, recursive types, and custom hook conventions.
 
 Each question is narrow and precise by design. Rather than asking broad questions that reward guessing, every question targets a single, unambiguous term. This keeps the cognitive load low per question while building a wide vocabulary across the session. Questions and their answer options are shuffled at the start of each quiz, so replaying a level still feels fresh.
 

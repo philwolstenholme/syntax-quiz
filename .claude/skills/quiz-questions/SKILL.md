@@ -25,7 +25,7 @@ Questions belong to one of three difficulty levels in the `levels` array:
 
 - **Level 1 (Easy)** — Basic syntax fundamentals (variable names, bracket types, simple methods)
 - **Level 2 (Medium)** — Intermediate concepts (generics, destructuring, closures, React hooks)
-- **Level 3 (Hard)** — Advanced TypeScript (conditional types, mapped types, `infer`, type predicates)
+- **Level 3 (Hard)** — Advanced bits (conditional types, mapped types, `infer`, type predicates)
 
 ## Writing the `code` field
 

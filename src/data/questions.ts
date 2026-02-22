@@ -885,7 +885,7 @@ export const levels: Level[] = [
     id: 3,
     name: "Level 3",
     subtitle: "Hard",
-    description: "Advanced TypeScript",
+    description: "Advanced bits",
     questions: level3Questions,
     color: "from-red-500 to-pink-500"
   }

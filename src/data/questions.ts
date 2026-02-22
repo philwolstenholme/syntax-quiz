@@ -590,13 +590,14 @@ const str = value as string;`,
     explanation: "A mapped type iterates over the keys of another type using `[P in keyof T]` and transforms each property. The `in` keyword is the distinguishing feature — conditional types use `extends ? :`, while mapped types use `in` to loop. An indexed type uses `T[K]` to look up a single property. `Partial<T>` makes every property optional by adding `?` to each one."
   },
   {
-    code: `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;`,
-    highlight: 'infer R',
-    question: "What keyword extracts a type from a pattern?",
-    correct: "infer",
-    options: ["infer", "extract", "typeof", "keyof"],
-    hint: "This keyword lets TypeScript deduce a type variable from within a conditional type.",
-    explanation: "The `infer` keyword declares a type variable within a conditional type that TypeScript will fill in automatically. It's not `extract` (that's a utility type), `typeof` (which gets a value's type at the type level), or `keyof` (which gets an object type's keys). `infer` is unique: it lets TypeScript deduce a type from a pattern, like extracting `R` from a function's return type."
+    code: `type ToArray<T> = T extends string ? T[] : never;
+type Result = ToArray<'a' | 'b' | 42>;`,
+    highlight: "ToArray<'a' | 'b' | 42>",
+    question: "What does `Result` resolve to?",
+    correct: "'a'[] | 'b'[]",
+    options: ["'a'[] | 'b'[]", "('a' | 'b')[]", "'a'[] | 'b'[] | 42[]", "never"],
+    hint: "Conditional types distribute over unions, but only union members that satisfy the condition survive.",
+    explanation: "`Result` becomes `'a'[] | 'b'[]` because conditional types distribute over each union member: `'a'` and `'b'` match `extends string`, while `42` becomes `never` and drops out of the union. `('a' | 'b')[]` would be the non-distributed shape, which you'd get by preventing distribution with a tuple wrapper like `[T] extends [string]`. `'a'[] | 'b'[] | 42[]` is wrong because `42` fails the string condition. It is not `never` because at least two union members satisfy the condition."
   },
   {
     code: `type Shape =
@@ -621,13 +622,19 @@ const str = value as string;`,
     explanation: "A generic constraint (`T extends Type`) restricts what types can be used as a type argument. `extends` here means 'must be assignable to,' not class inheritance. A 'type bound' is Java's term for this concept. An interface requirement would use `implements` — `extends` in a generic context specifically constrains the type parameter."
   },
   {
-    code: `type NonNullable<T> = T extends null | undefined ? never : T;`,
-    highlight: 'never : T;',
-    question: "What type represents an impossible value?",
-    correct: "never",
-    options: ["never", "void", "null", "undefined"],
-    hint: "A function that always throws or an exhausted conditional produces this bottom type.",
-    explanation: "The `never` type represents values that never occur — functions that always throw, infinite loops, or exhausted type narrowing. It's different from `void` (which means 'no return value' — the function completes but returns nothing), `null` (an intentional empty value), and `undefined` (an unset value). `never` means the code point is truly unreachable."
+    code: `console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+queueMicrotask(() => console.log('D'));
+console.log('E');`,
+    highlight: `setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+queueMicrotask(() => console.log('D'));`,
+    question: 'What is the output order?',
+    correct: 'A, E, C, D, B',
+    options: ['A, E, C, D, B', 'A, E, B, C, D', 'A, C, D, E, B', 'A, E, D, C, B'],
+    hint: 'Synchronous logs run first, then microtasks in registration order, then macrotasks like timers.',
+    explanation: "The output is `A, E, C, D, B` because synchronous code runs immediately, then the microtask queue drains before timers. Both `Promise.then()` and `queueMicrotask()` schedule microtasks, and `Promise.then()` is registered first, so `C` logs before `D`. `setTimeout(..., 0)` is a macrotask, so `B` runs after microtasks finish. Any option placing `B` before `C`/`D`, or moving `C`/`D` before `E`, violates event loop ordering."
   },
   {
     code: `type EventNames = \`on\${Capitalize<string>}\`;`,
@@ -650,16 +657,27 @@ const str = value as string;`,
     explanation: "A recursive type references itself in its definition, like a function calling itself. 'Nested type' just means types within types — it doesn't imply self-reference. 'Self-referential type' describes the concept but isn't the standard term. Recursive types are essential for modeling tree structures, linked lists, and deeply nested objects like `DeepReadonly`."
   },
   {
-    code: `function useCustomHook(initialValue: number) {
-  const [value, setValue] = useState(initialValue);
-  return { value, increment: () => setValue(v => v + 1) };
+    code: `function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <p>{count}</p>;
 }`,
-    highlight: 'useCustomHook',
-    question: "What React pattern is this?",
-    correct: "custom hook",
-    options: ["custom hook", "higher-order component", "render prop", "compound component"],
-    hint: "A reusable function starting with 'use' that composes built-in hooks.",
-    explanation: "A custom hook is a function starting with 'use' that composes other hooks to extract reusable stateful logic. A higher-order component (HOC) wraps a component to add behavior — that's the older pattern. Render props pass a function as a child. Custom hooks are the modern React pattern for logic reuse, returning data and functions rather than JSX."
+    highlight: `setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);`,
+    question: 'What bug pattern does this component demonstrate?',
+    correct: 'stale closure',
+    options: ['stale closure', 'memory leak', 'tearing', 'double render'],
+    hint: 'The interval callback captures `count` from the initial render because the effect never re-subscribes.',
+    explanation: "This is a stale closure: the interval callback closes over the initial `count` value because the effect has an empty dependency array, so `setCount(count + 1)` keeps using outdated state. A memory leak would mean resources are never cleaned up, but this code calls `clearInterval(id)` correctly. Tearing refers to inconsistent concurrent reads across UI boundaries, not this captured-state issue. Double render is a React Strict Mode dev behavior, not the root bug in this snippet."
   },
 ];
 

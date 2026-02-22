@@ -290,6 +290,18 @@ const message = isActive ? 'yes' : 'no';`,
     explanation: "`Array.find()` returns the first element that satisfies the test function, then stops iterating. It doesn't return all matches (that's `filter()`), a boolean (that's `some()` or `every()`), or an index (that's `findIndex()`). If no element matches, `find()` returns `undefined`."
   },
   {
+    code: `let selectedUser = null;
+let cachedValue;
+
+console.log(selectedUser, cachedValue);`,
+    highlight: 'null',
+    question: "In JavaScript, what does null usually represent (compared to undefined)?",
+    correct: "intentional absence of a value",
+    options: ["intentional absence of a value", "an uninitialized variable", "a missing object property", "a variable that was never declared"],
+    hint: "Think: was the value set on purpose, or is it just not assigned yet?",
+    explanation: "`null` is usually used intentionally to mean 'no value right now.' `undefined` usually means a value hasn't been assigned yet (like an uninitialized variable) or a property doesn't exist. So `null` is explicit absence, while `undefined` is default/missing absence."
+  },
+  {
     code: `const hasEven = [1, 2, 3].some(n => n % 2 === 0);`,
     highlight: '[1, 2, 3].some(n => n % 2 === 0)',
     question: "What does some() return?",

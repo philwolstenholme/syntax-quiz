@@ -113,9 +113,16 @@ export function useQuiz(): UseQuizReturn {
     }
   }, [saveState, levelId]);
 
-  // Handle pass completion: start retry round or navigate to score page
-  useEffect(() => {
-    if (!passComplete || !level) return;
+  const handleFeedbackComplete = useCallback(() => {
+    const nextIndex = currentQuestionIndex + 1;
+    setCurrentQuestionIndex(nextIndex);
+    setIsAnswering(false);
+    setHintsUsed(0);
+    setEliminatedOptions([]);
+
+    // Check if pass is now complete
+    const isPassComplete = questions.length > 0 && nextIndex >= questions.length;
+    if (!isPassComplete || !level) return;
 
     if (!isRetryRound && missedQuestions.length > 0) {
       // Start retry round with missed questions
@@ -135,14 +142,7 @@ export function useQuiz(): UseQuizReturn {
     // Quiz truly complete — navigate to score page via context
     setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
     setLocation(ROUTES.score(levelId));
-  }, [passComplete, level, isRetryRound, missedQuestions, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult]);
-
-  const handleFeedbackComplete = useCallback(() => {
-    setCurrentQuestionIndex((prev) => prev + 1);
-    setIsAnswering(false);
-    setHintsUsed(0);
-    setEliminatedOptions([]);
-  }, []);
+  }, [currentQuestionIndex, questions.length, level, isRetryRound, missedQuestions, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult]);
 
   const handleAnswer = useCallback((answer: string): void => {
     if (isAnswering || !currentQuestion) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Save, Check, Copy, Link } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
@@ -26,14 +26,8 @@ export const SaveButton = ({ onSave, disabled, questionIndex }: SaveButtonProps)
     const url = onSave();
     setSaveUrl(url);
     setCopied(false);
+    requestAnimationFrame(() => confirmationRef.current?.focus());
   };
-
-  // Focus the confirmation element when it becomes visible
-  useEffect(() => {
-    if (saveUrl) {
-      confirmationRef.current?.focus();
-    }
-  }, [saveUrl]);
 
   const handleCopy = async () => {
     if (!saveUrl) return;

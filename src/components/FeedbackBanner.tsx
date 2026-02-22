@@ -262,7 +262,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           </div>
           {lastAnswer.explanation && (
             <p className={clsx(
-              'mt-2 ml-7 leading-7',
+              'mt-2 ml-7 text-base leading-7',
               lastAnswer.skipped ? 'text-neutral-400' : lastAnswer.correct ? 'text-emerald-300/80' : 'text-red-300/80',
             )}>
               <ExplanationWithCode text={lastAnswer.explanation} />

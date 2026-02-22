@@ -135,9 +135,9 @@ export const QuestionsPage = () => {
               key={currentQuestionIndex}
               data-testid="question-panel"
               data-question-index={currentQuestion.originalIndex}
-              initial={{ x: prefersReducedMotion ? 0 : 30, opacity: prefersReducedMotion ? 1 : 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={prefersReducedMotion ? { x: 0, opacity: 1 } : { x: -30, opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+              initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
+              animate={{ opacity: 1 }}
+              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: [0, 0, 0.2, 1] }}
             >
               <QuestionCard question={currentQuestion} />

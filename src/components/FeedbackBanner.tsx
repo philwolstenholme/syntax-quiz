@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, HelpCircle, Play, Pause, FastForward, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
-import { motion, useMotionValue, animate, useReducedMotion } from 'motion/react';
+import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import { useDrag } from '@use-gesture/react';
 import { getMdnUrl } from '../utils/mdnLinks';
 
@@ -18,11 +18,9 @@ export interface AnswerFeedback {
   explanation: string;
 }
 
-const renderWithCode = (text: string) => {
+const ExplanationWithCode = ({ text }: { text: string }) => {
   const parts = text.split(/`([^`]+)`/);
-  return parts.map((part, i) =>
-    i % 2 === 1 ? <code key={i}>{part}</code> : part
-  );
+  return <>{parts.map((part, i) => i % 2 === 1 ? <code key={part}>{part}</code> : part)}</>;
 };
 
 const MdnLink = ({ term, className }: { term: string; className: string }) => (
@@ -211,8 +209,8 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
       style={{ touchAction: 'pan-y' }}
       className="mb-6"
     >
-      <motion.div style={{ x: swipeX }}>
-        <motion.div
+      <m.div style={{ x: swipeX }}>
+        <m.div
           ref={bannerRef}
           tabIndex={-1}
           data-testid="feedback-banner"
@@ -267,7 +265,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               'mt-2 ml-9 text-sm font-normal leading-relaxed',
               lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
             )}>
-              {renderWithCode(lastAnswer.explanation)}
+              <ExplanationWithCode text={lastAnswer.explanation} />
             </p>
           )}
           {timerActive ? (
@@ -299,8 +297,8 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
             </div>
           )}
         </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </div>
   );
 };

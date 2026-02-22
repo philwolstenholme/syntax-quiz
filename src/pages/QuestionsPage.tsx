@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   DndContext,
   PointerSensor,
@@ -104,7 +104,7 @@ export const QuestionsPage = () => {
 
           <AnimatePresence>
             {lastAnswer && isAnswering && (
-              <motion.div
+              <m.div
                 initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
                 animate={{ opacity: 1 }}
                 exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
@@ -115,12 +115,12 @@ export const QuestionsPage = () => {
                   durationMs={lastAnswer?.correct ? FEEDBACK_DELAY_MS : undefined}
                   onCountdownComplete={handleFeedbackComplete}
                 />
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={currentQuestionIndex}
               initial={{ x: prefersReducedMotion ? 0 : 30, opacity: prefersReducedMotion ? 1 : 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -165,7 +165,7 @@ export const QuestionsPage = () => {
                   Report an issue with this question
                 </a>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
 
         </div>

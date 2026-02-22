@@ -16,16 +16,13 @@ interface QuestionCardProps {
 
 const typedTokenMap = tokenMap as Record<string, Token[][]>;
 
-/**
- * Renders pre-computed tokens with a quiz highlight overlay.
- * Tokens that overlap the highlight range are split so the highlighted
- * portion gets a yellow background with dark text, while the rest
- * keeps its syntax color.
- */
-function renderTokensWithHighlight(
-  tokenLines: Token[][],
-  highlight: { start: number; end: number },
-): React.ReactNode[] {
+const TokenizedCode = ({
+  tokenLines,
+  hlRange,
+}: {
+  tokenLines: Token[][];
+  hlRange: { start: number; end: number };
+}) => {
   const elements: React.ReactNode[] = [];
   let key = 0;
 
@@ -33,11 +30,10 @@ function renderTokensWithHighlight(
     const line = tokenLines[lineIdx]!;
 
     if (lineIdx > 0) {
-      // Determine the newline's absolute offset from the previous line's last token
       const prevLine = tokenLines[lineIdx - 1]!;
       const lastToken = prevLine[prevLine.length - 1];
       const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
-      const inHighlight = nlOffset >= highlight.start && nlOffset < highlight.end;
+      const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
       elements.push(
         <span key={key++} className={inHighlight ? 'bg-yellow-300' : undefined}>
           {'\n'}
@@ -49,8 +45,7 @@ function renderTokensWithHighlight(
       const tokenStart = token.offset;
       const tokenEnd = tokenStart + token.content.length;
 
-      // No overlap with highlight range
-      if (tokenEnd <= highlight.start || tokenStart >= highlight.end) {
+      if (tokenEnd <= hlRange.start || tokenStart >= hlRange.end) {
         elements.push(
           <span key={key++} style={{ color: token.color }}>
             {token.content}
@@ -59,39 +54,34 @@ function renderTokensWithHighlight(
         continue;
       }
 
-      // Token overlaps with highlight — split into up to 3 parts
-
-      // Part before the highlight
-      if (tokenStart < highlight.start) {
+      if (tokenStart < hlRange.start) {
         elements.push(
           <span key={key++} style={{ color: token.color }}>
-            {token.content.substring(0, highlight.start - tokenStart)}
+            {token.content.substring(0, hlRange.start - tokenStart)}
           </span>,
         );
       }
 
-      // Highlighted part
-      const hlStart = Math.max(0, highlight.start - tokenStart);
-      const hlEnd = Math.min(token.content.length, highlight.end - tokenStart);
+      const hlStart = Math.max(0, hlRange.start - tokenStart);
+      const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
       elements.push(
         <span key={key++} className="bg-yellow-300 text-gray-900 font-bold">
           {token.content.substring(hlStart, hlEnd)}
         </span>,
       );
 
-      // Part after the highlight
-      if (tokenEnd > highlight.end) {
+      if (tokenEnd > hlRange.end) {
         elements.push(
           <span key={key++} style={{ color: token.color }}>
-            {token.content.substring(highlight.end - tokenStart)}
+            {token.content.substring(hlRange.end - tokenStart)}
           </span>,
         );
       }
     }
   }
 
-  return elements;
-}
+  return <>{elements}</>;
+};
 
 export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
@@ -135,7 +125,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         )}
         <pre className="bg-gray-900 p-6 rounded-xl overflow-x-auto text-base leading-relaxed">
           <code className="font-mono">
-            {renderTokensWithHighlight(tokenLines, hlRange)}
+            <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
           </code>
         </pre>
       </div>

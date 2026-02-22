@@ -331,3 +331,23 @@ test('score and streak increment on consecutive correct answers', async ({ page 
   expect(scoreAfterSecond).toBeGreaterThan(scoreAfterFirst);
   expect(await getStreakValue(page)).toBe(2);
 });
+
+test('home breadcrumb navigates back to level select and allows picking a different level', async ({ page }) => {
+  // Start on the home page and pick Level 1
+  await pickLevel(page, 1);
+
+  // The home link should be visible with accessible text "Home"
+  const homeLink = page.getByRole('link', { name: 'Home' }).first();
+  await expect(homeLink).toBeVisible();
+
+  // Click the home icon to go back to "/"
+  await homeLink.click();
+  await expect(page).toHaveURL('/');
+
+  // Now pick Level 2
+  await pickLevel(page, 2);
+
+  // Verify we're on the Level 2 questions page
+  await expect(page).toHaveURL(/\/level\/2\/questions$/);
+  await expect(currentQuestionPanel(page)).toBeVisible();
+});

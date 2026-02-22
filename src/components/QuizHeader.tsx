@@ -1,5 +1,7 @@
-import { Flame, Star } from 'lucide-react';
+import { ChevronRight, Flame, Home, Star } from 'lucide-react';
+import { Link } from 'wouter';
 import type { Level } from '../data/questions';
+import { ROUTES } from '../routes';
 import { formatNumber } from '../utils/format';
 import { SaveModal } from './SaveModal';
 
@@ -20,9 +22,19 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
     <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-3 sm:p-4 mb-4">
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <span className="flex items-center h-7 text-xs px-2.5 text-neutral-300 font-mono">
-            {level.name}
-          </span>
+          <div className="flex items-center gap-0.5">
+            <Link
+              to={ROUTES.home}
+              className="flex items-center justify-center h-7 w-7 text-neutral-100 hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              <Home size={14} aria-hidden="true" />
+              <span className="sr-only">Home</span>
+            </Link>
+            <ChevronRight size={12} className="text-neutral-600" aria-hidden="true" />
+            <span className="flex items-center h-7 text-xs px-1 text-neutral-300 font-mono">
+              {level.name}
+            </span>
+          </div>
           <div data-testid="streak-value" className="flex items-center gap-1 h-7 text-xs px-2 text-orange-400 font-mono tabular-nums">
             <Flame size={12} aria-hidden="true" />
             <span>{formatNumber(streak)}</span>

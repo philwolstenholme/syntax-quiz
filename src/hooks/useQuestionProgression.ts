@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
 import type { Level } from '../data/questions';
 import type { QuestionWithIndex } from './types';
@@ -39,18 +39,18 @@ export function useQuestionProgression({
   const quizComplete = passComplete && (isRetryRound || missedQuestions.length === 0);
   const retryQuestionCount = isRetryRound ? questions.length : 0;
 
-  const advanceQuestion = useCallback((): { isPassComplete: boolean } => {
+  const advanceQuestion = (): { isPassComplete: boolean } => {
     const nextIndex = currentQuestionIndex + 1;
     setCurrentQuestionIndex(nextIndex);
     const isPassComplete = questions.length > 0 && nextIndex >= questions.length;
     return { isPassComplete };
-  }, [currentQuestionIndex, questions.length]);
+  };
 
-  const addMissedQuestion = useCallback((q: QuestionWithIndex) => {
+  const addMissedQuestion = (q: QuestionWithIndex) => {
     setMissedQuestions(prev => [...prev, q]);
-  }, []);
+  };
 
-  const startRetryRound = useCallback(() => {
+  const startRetryRound = () => {
     setMissedQuestions(prev => {
       const retryQuestions = shuffle([...prev]).map(q => ({
         ...q,
@@ -61,7 +61,7 @@ export function useQuestionProgression({
       setIsRetryRound(true);
       return [];
     });
-  }, []);
+  };
 
   return {
     questions,

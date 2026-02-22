@@ -15,6 +15,7 @@ interface Question {
   options: string[];   // Exactly 4 answer choices, correct answer first
   hint: string;        // Clue shown when the user requests a hint
   explanation: string; // Shown after answering — see writing guide below
+  docsLink?: string;   // Optional direct URL for the "Learn more" link
 }
 ```
 
@@ -97,9 +98,9 @@ Use the literal `—` character, not the `\u2014` escape sequence.
 
 Notice how it: defines `find()`, then explains why each of the three wrong answers is wrong, referencing the correct method for each.
 
-## MDN links
+## Docs links
 
-The correct answer term is automatically linked to MDN in the feedback banner. Direct MDN URLs are configured in `src/utils/mdnLinks.ts`. If no direct mapping exists, a Google search fallback is used. When adding a new question, check if the correct answer term needs a direct MDN URL added to the `mdnPages` map.
+The correct answer term is automatically linked in the feedback banner. Each question can include an optional `docsLink` property with a direct URL (MDN, TypeScript Handbook, React docs, etc.). If `docsLink` is omitted, a Google search fallback is used. When adding a new question, include a `docsLink` whenever a canonical reference page exists for the concept.
 
 ## Scoring and hints
 

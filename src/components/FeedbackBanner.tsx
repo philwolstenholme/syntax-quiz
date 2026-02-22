@@ -3,8 +3,6 @@ import { CheckCircle, XCircle, HelpCircle, Play, Pause, FastForward, ArrowRight 
 import clsx from 'clsx';
 import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import { useDrag } from '@use-gesture/react';
-import { getMdnUrl } from '../utils/mdnLinks';
-
 // Swipe-to-dismiss configuration
 const SWIPE_DEAD_ZONE = 20; // px of finger movement before the banner starts moving
 const SWIPE_VELOCITY_THRESHOLD = 0.15; // px/ms — minimum release velocity to dismiss
@@ -16,6 +14,7 @@ export interface AnswerFeedback {
   term: string;
   userAnswer: string | null;
   explanation: string;
+  docsLink?: string;
 }
 
 const ExplanationWithCode = ({ text }: { text: string }) => {
@@ -23,9 +22,14 @@ const ExplanationWithCode = ({ text }: { text: string }) => {
   return <>{parts.map((part, i) => i % 2 === 1 ? <code key={part}>{part}</code> : part)}</>;
 };
 
-const MdnLink = ({ term, className }: { term: string; className: string }) => (
+const getSearchUrl = (term: string): string => {
+  const query = `${term} site:developer.mozilla.org OR site:typescriptlang.org/docs OR site:react.dev OR site:javascript.info`;
+  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+};
+
+const DocsLink = ({ term, href, className }: { term: string; href?: string; className: string }) => (
   <a
-    href={getMdnUrl(term)}
+    href={href ?? getSearchUrl(term)}
     target="_blank"
     rel="noopener noreferrer"
     className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
@@ -242,21 +246,21 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  The answer is <MdnLink term={lastAnswer.term} className="text-neutral-100" />
+                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-100" />
                 </span>
               </>
             ) : lastAnswer.correct ? (
               <>
                 <CheckCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Correct! <MdnLink term={lastAnswer.term} className="text-emerald-200" />
+                  Correct! <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-emerald-200" />
                 </span>
               </>
             ) : (
               <>
                 <XCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Wrong — it was <MdnLink term={lastAnswer.term} className="text-red-200" />, not{' '}
+                  Wrong — it was <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-red-200" />, not{' '}
                   {lastAnswer.userAnswer}
                 </span>
               </>

@@ -111,6 +111,7 @@ export function useQuiz(): UseQuizReturn {
       term: currentQuestion.correct,
       userAnswer: correct ? null : answer,
       explanation: currentQuestion.explanation,
+      docsLink: currentQuestion.docsLink,
     });
   };
 
@@ -125,6 +126,7 @@ export function useQuiz(): UseQuizReturn {
       term: currentQuestion.correct,
       userAnswer: null,
       explanation: currentQuestion.explanation,
+      docsLink: currentQuestion.docsLink,
     });
   };
 

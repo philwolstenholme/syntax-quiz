@@ -9,7 +9,7 @@ interface PageLayoutProps {
 export const PageLayout = ({ children, centered = false }: PageLayoutProps) => (
   <div className={clsx(
     'px-4 sm:px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))]',
-    centered && 'min-h-[100dvh] flex items-center justify-center'
+    centered && 'min-h-dvh flex items-center justify-center'
   )}>
     <a
       href="#main-content"

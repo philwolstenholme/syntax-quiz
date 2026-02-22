@@ -31,3 +31,11 @@
     background-color: rgba(0, 112, 243, 0.3);
   }
 }
+
+@media (orientation: landscape) {
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}

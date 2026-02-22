@@ -213,7 +213,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     <div
       {...bindSwipe()}
       style={{ touchAction: 'pan-y' }}
-      className="feedback-banner mb-4"
+      className="feedback-banner"
     >
       <m.div style={{ x: swipeX }}>
         <m.div

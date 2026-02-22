@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   test:
@@ -13,23 +14,61 @@ jobs:
       contents: read
       actions: read
       checks: write
+    env:
+      PRODUCTION_URL: https://syntax-quiz.netlify.app
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      
-      - name: Run Playwright tests
+
+      - name: Resolve Netlify URL under test
+        id: resolve-url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--syntax-quiz.netlify.app"
+            echo "base_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using Netlify deploy preview URL: ${PREVIEW_URL}"
+          else
+            echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using production URL: ${PRODUCTION_URL}"
+          fi
+
+      - name: Wait for Netlify deploy preview
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
+        run: |
+          echo "Waiting for Netlify preview to be ready at ${BASE_URL}"
+
+          for attempt in $(seq 1 60); do
+            status_code=$(curl -L -s -o /dev/null -w "%{http_code}" "${BASE_URL}")
+
+            if [ "$status_code" = "200" ]; then
+              echo "Netlify preview is ready (HTTP 200)."
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}/60: got HTTP ${status_code}, retrying in 10s..."
+            sleep 10
+          done
+
+          echo "Timed out waiting for Netlify preview URL ${BASE_URL}"
+          exit 1
+
+      - name: Run Playwright tests against Netlify
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
         run: npm run test:e2e
-      
+
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         if: always()
@@ -37,7 +76,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-      
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         if: always()

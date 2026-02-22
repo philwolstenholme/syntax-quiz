@@ -235,7 +235,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           )}
         >
         <div>
-          <div className="flex items-center gap-2 font-medium text-base leading-relaxed">
+          <div className="flex items-center gap-2 font-medium text-xl tracking-tight">
             {lastAnswer.skipped ? (
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
@@ -262,7 +262,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           </div>
           {lastAnswer.explanation && (
             <p className={clsx(
-              'mt-2 ml-7 text-sm leading-relaxed font-normal',
+              'mt-2 ml-7 leading-7',
               lastAnswer.skipped ? 'text-neutral-400' : lastAnswer.correct ? 'text-emerald-300/80' : 'text-red-300/80',
             )}>
               <ExplanationWithCode text={lastAnswer.explanation} />
@@ -284,7 +284,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 type="button"
                 onClick={completeFeedback}
                 className={clsx(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-xs transition-colors touch-manipulation cursor-pointer',
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors touch-manipulation cursor-pointer',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
                   lastAnswer.skipped
                     ? 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-neutral-500'

@@ -39,7 +39,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects (Chromium-only for faster e2e runs) */
   projects: [
     {
       name: 'chromium',

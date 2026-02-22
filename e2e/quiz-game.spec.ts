@@ -31,7 +31,7 @@ const buildOptionsToAnswerMap = (levelId: number): Map<string, string> => {
 };
 
 const pickLevel = async (page: Page, levelId: number) => {
-  await page.goto('/1');
+  await page.goto('/');
   await page.getByRole('link', { name: new RegExp(`Level ${levelId}`) }).click();
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
 };
@@ -183,6 +183,12 @@ const getScoreValue = async (page: Page): Promise<number> => {
   return Number.parseInt(scoreText.replace(/,/g, ''), 10);
 };
 
+
+const getStreakValue = async (page: Page): Promise<number> => {
+  const streakText = await page.locator('div.bg-orange-500 span').last().innerText();
+  return Number.parseInt(streakText.replace(/,/g, ''), 10);
+};
+
 test.describe('Syntax Quiz perfect-score runs', () => {
   for (const level of levels) {
     test(`scores 100% on ${level.name}`, async ({ page }) => {
@@ -277,10 +283,86 @@ test('save URL restores score and returns user to question flow', async ({ page 
 
   const savedUrl = await saveLink.getAttribute('href');
   expect(savedUrl).toBeTruthy();
+  expect(savedUrl).toContain('?s=');
 
   await page.goto(savedUrl!);
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions`));
+  expect(page.url()).not.toContain('?s=');
   const restoredScore = await getScoreValue(page);
   expect(restoredScore).toBe(scoreBeforeSave);
+});
+
+
+test('level selection page lists available levels and navigates to selected level', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByRole('heading', { name: 'Syntax Quiz' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 1/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 2/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 3/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /Level 2/i }).click();
+  await expect(page).toHaveURL(/\/level\/2\/questions$/);
+});
+
+test('can answer by dragging an option to the dropzone', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  const options = await getCurrentOptions(page);
+  const optionsKey = [...options].sort().join('||');
+  const correctAnswer = optionsToAnswerMap.get(optionsKey);
+  expect(correctAnswer).toBeDefined();
+
+  const answerButton = page.getByRole('button', { name: new RegExp(`^${escapeRegExp(correctAnswer!)}$`) });
+  await answerButton.dragTo(page.locator('[data-dropzone]'));
+
+  await expect(page.getByTestId('feedback-banner')).toBeVisible();
+  await waitForAndDismissFeedback(page);
+});
+
+test('hint flow eliminates answers, reveals hint text, and applies score penalty', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  await page.getByRole('button', { name: /Eliminate 2 Answers/i }).click();
+
+  const disabledOptions = page
+    .locator('button')
+    .filter({ has: page.locator('span.flex-1.min-w-0.text-left.wrap-break-word') })
+    .locator(':disabled');
+  await expect(disabledOptions).toHaveCount(2);
+
+  await page.getByRole('button', { name: /Show Hint/i }).click();
+  await expect(page.getByText(/This appears in the function declaration/i)).toBeVisible();
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  const score = await getScoreValue(page);
+  expect(score).toBe(3);
+});
+
+test('score and streak increment on consecutive correct answers', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  expect(await getScoreValue(page)).toBe(10);
+  expect(await getStreakValue(page)).toBe(1);
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  expect(await getScoreValue(page)).toBe(30);
+  expect(await getStreakValue(page)).toBe(2);
 });

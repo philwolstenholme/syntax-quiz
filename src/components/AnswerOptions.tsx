@@ -41,15 +41,15 @@ const DraggableOption = ({
       disabled={isDisabled}
       onClick={handleClick}
       className={clsx(
-        'flex items-center gap-3 p-4 rounded-xl border-2 border-gray-300',
-        'bg-white text-gray-800 font-semibold text-lg',
-        'transition-colors transition-transform transition-shadow duration-200 select-none',
-        eliminated && 'opacity-30 line-through cursor-not-allowed scale-95',
+        'flex items-center gap-3 p-3 rounded-lg border border-neutral-800',
+        'bg-neutral-900/50 text-neutral-200 font-medium text-base',
+        'transition-colors duration-150 select-none',
+        eliminated && 'opacity-25 line-through cursor-not-allowed',
         !isDisabled
-          ? 'hover:scale-105 hover:border-indigo-500 hover:shadow-lg'
-          : !eliminated && 'opacity-50 cursor-not-allowed',
-        isDragging && 'opacity-40',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50',
+          ? 'hover:bg-neutral-800/80 hover:border-neutral-700'
+          : !eliminated && 'opacity-40 cursor-not-allowed',
+        isDragging && 'opacity-30',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
         'touch-manipulation',
       )}
     >
@@ -61,7 +61,7 @@ const DraggableOption = ({
         )}
         style={!isDisabled ? { touchAction: 'none' } : undefined}
       >
-        <GripVertical className="text-gray-400" size={20} aria-hidden="true" />
+        <GripVertical className="text-neutral-600" size={16} aria-hidden="true" />
       </span>
       <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
     </button>

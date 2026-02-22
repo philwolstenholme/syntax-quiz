@@ -26,7 +26,7 @@ function App() {
   return (
     <QuizResultProvider>
       <LazyMotion features={domAnimation}>
-        <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="relative overflow-x-hidden bg-[#0a0a0a]">
           <AnimatePresence mode="popLayout">
             <m.div key={location} {...pageTransition}>
               <Switch>

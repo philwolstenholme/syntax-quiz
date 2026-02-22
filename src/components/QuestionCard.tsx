@@ -35,7 +35,7 @@ const TokenizedCode = ({
       const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
       const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
       elements.push(
-        <span key={key++} className={inHighlight ? 'bg-yellow-300' : undefined}>
+        <span key={key++} className={inHighlight ? 'bg-blue-500/20 text-blue-300' : undefined}>
           {'\n'}
         </span>,
       );
@@ -65,7 +65,7 @@ const TokenizedCode = ({
       const hlStart = Math.max(0, hlRange.start - tokenStart);
       const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
       elements.push(
-        <span key={key++} className="bg-yellow-300 text-gray-900 font-bold">
+        <span key={key++} className="bg-blue-500/20 text-blue-200">
           {token.content.substring(hlStart, hlEnd)}
         </span>,
       );
@@ -97,13 +97,13 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
 
   return (
     <div
-      className="bg-white rounded-3xl shadow-xl p-8 mb-6"
+      className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5 sm:p-6 mb-4"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-4 text-balance">
+      <h2 className="text-xl font-medium tracking-tight text-neutral-100 mb-2">
         {question.question}
       </h2>
-      <p id="question-instructions" className="text-gray-600 mb-6 text-lg">
-        💡 Drag an answer onto the code snippet or click an answer below
+      <p id="question-instructions" className="text-neutral-500 mb-4 text-base">
+        Drag an answer onto the code or click to select
       </p>
       <div
         ref={setNodeRef}
@@ -112,19 +112,19 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         aria-label="Answer dropzone"
         aria-describedby="question-instructions"
         className={clsx(
-          'relative rounded-xl overflow-hidden transition-transform transition-shadow duration-200',
-          isOver && 'ring-4 ring-indigo-500 scale-[1.02]',
+          'relative rounded-md overflow-hidden transition-all duration-150',
+          isOver && 'ring-1 ring-blue-500',
         )}
       >
         {isOver && (
-          <div className="absolute inset-0 bg-indigo-500 bg-opacity-10 flex items-center justify-center z-10">
-            <span className="text-2xl font-bold text-indigo-600">
-              Drop here! 🎯
+          <div className="absolute inset-0 bg-blue-500/5 flex items-center justify-center z-10">
+            <span className="text-sm font-medium text-blue-400">
+              Drop here
             </span>
           </div>
         )}
-        <pre className="bg-gray-900 p-6 rounded-xl overflow-x-auto text-base leading-relaxed">
-          <code className="font-mono">
+        <pre className="bg-neutral-950 border border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
+          <code className="font-mono text-neutral-300">
             <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
           </code>
         </pre>

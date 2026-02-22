@@ -17,37 +17,37 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
-      <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
-        <div className="flex items-center gap-1.5 sm:gap-4">
-          <span className={`flex items-center h-8 sm:h-9 text-sm px-2 sm:px-4 rounded-xl bg-gradient-to-r ${level.color} text-white font-bold`}>
+    <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-3 sm:p-4 mb-4">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <span className="flex items-center h-7 text-xs px-2.5 text-neutral-300 font-mono">
             {level.name}
           </span>
-          <div data-testid="streak-value" className="flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 bg-orange-500 text-white px-2 sm:px-3 rounded-xl font-bold tabular-nums">
-            <Flame size={16} aria-hidden="true" />
+          <div data-testid="streak-value" className="flex items-center gap-1 h-7 text-xs px-2 text-orange-400 font-mono tabular-nums">
+            <Flame size={12} aria-hidden="true" />
             <span>{formatNumber(streak)}</span>
           </div>
-          <div data-testid="score-value" className="flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 bg-yellow-500 text-white px-2 sm:px-3 rounded-xl font-bold tabular-nums">
-            <Star size={16} aria-hidden="true" />
+          <div data-testid="score-value" className="flex items-center gap-1 h-7 text-xs px-2 text-blue-400 font-mono tabular-nums">
+            <Star size={12} aria-hidden="true" />
             <span>{formatNumber(score)}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="text-gray-600 font-semibold tabular-nums text-sm sm:text-base">
-            {formatNumber(currentQuestionIndex + 1)} / {formatNumber(totalQuestions)}
+          <div className="text-xs text-neutral-400 font-mono tabular-nums">
+            {formatNumber(currentQuestionIndex + 1)}/{formatNumber(totalQuestions)}
           </div>
           <SaveModal onSave={onSave} disabled={isAnswering} />
         </div>
       </div>
       <div
-        className="w-full bg-gray-200 rounded-full h-3 overflow-hidden"
+        className="w-full bg-neutral-800 rounded-full h-1 overflow-hidden"
         role="progressbar"
         aria-valuenow={currentQuestionIndex + 1}
         aria-valuemin={1}
         aria-valuemax={totalQuestions}
       >
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-[width] duration-300"
+          className="h-full bg-neutral-100 rounded-full transition-[width] duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>

@@ -18,7 +18,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
   const allUsed = hintsUsed >= MAX_HINTS;
 
   return (
-    <div className="mb-6 flex flex-col items-center">
+    <div className="mb-4 flex flex-col items-center">
       <AnimatePresence mode="wait">
         {showHintText && (
           <m.div
@@ -27,10 +27,10 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: prefersReducedMotion ? 1 : 0 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-            className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mb-3 flex items-start gap-3 w-full"
+            className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 mb-3 flex items-start gap-2.5 w-full"
           >
-            <Lightbulb className="text-amber-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
-            <p className="text-amber-800 font-medium">{hint}</p>
+            <Lightbulb className="text-amber-500/80 shrink-0 mt-0.5" size={16} aria-hidden="true" />
+            <p className="text-amber-200/90 text-sm">{hint}</p>
           </m.div>
         )}
       </AnimatePresence>
@@ -41,11 +41,11 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           onClick={onUseHint}
           disabled={disabled}
           className={clsx(
-            'inline-flex items-center gap-2 px-4 py-2 h-9 rounded-xl font-bold text-sm border-2 transition-colors duration-200',
+            'inline-flex items-center gap-2 px-3 py-1.5 rounded-md font-medium text-xs border transition-colors duration-150',
             !disabled
-              ? 'border-amber-300 bg-white text-amber-700 hover:border-amber-400 hover:bg-amber-50 cursor-pointer'
-              : 'border-gray-200 bg-white text-gray-400 cursor-not-allowed opacity-50',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2',
+              ? 'border-neutral-700 bg-neutral-900/50 text-neutral-300 hover:border-neutral-600 hover:text-neutral-200 cursor-pointer'
+              : 'border-neutral-800 bg-neutral-900/30 text-neutral-600 cursor-not-allowed',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
             'touch-manipulation',
           )}
         >

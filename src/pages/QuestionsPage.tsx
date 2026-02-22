@@ -119,6 +119,7 @@ export const QuestionsPage = () => {
                 transition={{ duration: prefersReducedMotion ? 0 : 0.21, ease: [0, 0, 0.2, 1] }}
               >
                 <FeedbackBanner
+                  key={`${isRetryRound ? 'retry' : 'main'}-${currentQuestion.originalIndex}-${currentQuestionIndex}`}
                   lastAnswer={lastAnswer}
                   durationMs={lastAnswer?.correct ? FEEDBACK_DELAY_MS : undefined}
                   onCountdownComplete={handleFeedbackComplete}

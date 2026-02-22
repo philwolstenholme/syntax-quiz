@@ -18,6 +18,13 @@ export interface AnswerFeedback {
   explanation: string;
 }
 
+const renderWithCode = (text: string) => {
+  const parts = text.split(/`([^`]+)`/);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <code key={i}>{part}</code> : part
+  );
+};
+
 const MdnLink = ({ term, className }: { term: string; className: string }) => (
   <a
     href={getMdnUrl(term)}
@@ -278,7 +285,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               'mt-2 ml-9 text-sm font-normal leading-relaxed',
               lastAnswer.skipped ? 'text-slate-800' : lastAnswer.correct ? 'text-green-800' : 'text-red-800',
             )}>
-              {lastAnswer.explanation}
+              {renderWithCode(lastAnswer.explanation)}
             </p>
           )}
           {timerActive ? (

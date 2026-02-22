@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
-export interface QuizResult {
+interface QuizResult {
   score: number;
   correctAnswers: number;
   totalQuestions: number;

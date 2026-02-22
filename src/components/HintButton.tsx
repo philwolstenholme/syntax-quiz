@@ -1,8 +1,8 @@
 import { Lightbulb } from 'lucide-react';
-import clsx from 'clsx';
 import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { MAX_HINTS } from '../constants';
 import { formatNumber } from '../utils/format';
+import { SubtleButton } from './SubtleButton';
 
 interface HintButtonProps {
   hint: string;
@@ -36,25 +36,16 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
       </AnimatePresence>
 
       {!allUsed && (
-        <button
-          type="button"
+        <SubtleButton
           onClick={onUseHint}
           disabled={disabled}
-          className={clsx(
-            'inline-flex items-center gap-2 px-3 py-1.5 rounded-md font-medium text-xs border transition-colors duration-150',
-            !disabled
-              ? 'border-neutral-700 bg-neutral-900/50 text-neutral-300 hover:border-neutral-600 hover:text-neutral-200 cursor-pointer'
-              : 'border-neutral-800 bg-neutral-900/30 text-neutral-600 cursor-not-allowed',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
-            'touch-manipulation',
-          )}
         >
           <Lightbulb size={16} aria-hidden="true" />
           {showEliminate ? 'Eliminate 2 Answers (−50% Pts)' : 'Show Hint (−50% Pts)'}
           <span className="ml-1 text-xs opacity-70">
             {formatNumber(hintsUsed)}/{formatNumber(MAX_HINTS)}
           </span>
-        </button>
+        </SubtleButton>
       )}
     </div>
   );

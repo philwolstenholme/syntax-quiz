@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { Save, X, Check, Copy, Link } from 'lucide-react';
+import { SubtleButton } from './SubtleButton';
 
 interface SaveModalProps {
   onSave: () => string;
@@ -41,7 +42,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
     <Dialog.Root onOpenChange={handleOpenChange}>
       <Dialog.Trigger
         disabled={disabled}
-        className="flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-neutral-700 bg-neutral-800 text-neutral-300 text-xs font-medium hover:border-neutral-600 hover:text-neutral-200 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] touch-manipulation cursor-pointer"
+        render={<SubtleButton />}
       >
         <Save size={16} aria-hidden="true" />
         <span className="hidden sm:inline text-sm">Save</span>

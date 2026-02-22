@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { GripVertical, HelpCircle, RotateCcw } from 'lucide-react';
+import { SubtleButton } from '../components/SubtleButton';
 import { PageLayout } from '../components/PageLayout';
 import { QuizHeader } from '../components/QuizHeader';
 import { FeedbackBanner } from '../components/FeedbackBanner';
@@ -155,16 +156,14 @@ export const QuestionsPage = () => {
               />
 
               <div className="mt-4 text-center">
-                <button
-                  type="button"
+                <SubtleButton
                   data-testid="skip-question"
                   onClick={handleSkip}
                   disabled={isAnswering}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-300 hover:bg-neutral-900 rounded-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] touch-manipulation"
                 >
                   <HelpCircle size={16} aria-hidden="true" />
                   I don't know — show me the answer
-                </button>
+                </SubtleButton>
               </div>
 
               <div className="mt-4 text-center">

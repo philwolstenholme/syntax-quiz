@@ -1,320 +1,368 @@
-import { test, expect, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { levels } from '../src/data/questions';
 
-/**
- * Comprehensive E2E test for the Syntax Quiz game.
- * Tests all game functionality including:
- * - Level selection and navigation
- * - Quiz gameplay (clicking and dragging answers)
- * - Scoring system and streak calculation
- * - Hint system
- * - Feedback banner controls (pause, resume, skip)
- * - Quiz completion and results
- * - Save/restore game state
- * - URL updates and query parameters
- * - Handling of shuffled questions (order-independent)
- */
+const FEEDBACK_BUTTON_TIMEOUT_MS = 5_000;
 
-test.describe('Syntax Quiz E2E', () => {
-  test.beforeEach(async ({ page }) => {
-    // Start at the home page
-    await page.goto('/');
-  });
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-  test('should display correct UI elements on level selection page', async ({ page }) => {
-    // Check for main heading
-    await expect(page.locator('h1')).toContainText('Syntax Quiz');
-    
-    // Check that multiple level options are visible (at least 3)
-    const levelLinks = page.getByRole('link').filter({ hasText: /Level [1-9]/i });
-    const count = await levelLinks.count();
-    expect(count).toBeGreaterThanOrEqual(3);
-    
-    // Each level should have a subtitle
-    await expect(page.locator('text=/Easy|Medium|Hard/i').first()).toBeVisible();
-  });
+const formatNumber = (value: number): string => new Intl.NumberFormat('en-US').format(value);
 
-  test.skip('should navigate from home to quiz questions page', async ({ page }) => {
-    // Select Level 1 
-    const level1Button = page.getByRole('link', { name: /Level 1/i });
-    await expect(level1Button).toBeVisible();
-    await level1Button.click();
-    
-    // Verify navigation to questions page
-    await expect(page).toHaveURL(/\/syntax-quiz\/level\/1\/questions/);
-    
-    // Wait for page to fully load
-    await page.waitForLoadState('networkidle');
-    
-    // Verify quiz page loaded with question
-    await expect(page.locator('pre, code').first()).toBeVisible({ timeout: 10000 });
-    
-    // Check for answer buttons
-    const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ });
-    await expect(answerButtons.first()).toBeVisible();
-    
-    // Check for score and streak display
-    await expect(page.locator('text=/Score/i')).toBeVisible();
-    await expect(page.locator('text=/Streak/i')).toBeVisible();
-  });
+const buildOptionsToAnswerMap = (levelId: number): Map<string, string> => {
+  const level = levels.find((entry) => entry.id === levelId);
 
-  test.skip('should answer a question and display feedback', async ({ page }) => {
-    // Navigate to quiz
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await expect(page).toHaveURL(/\/questions/);
-    await page.waitForLoadState('networkidle');
-    
-    // Answer first question
-    const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ });
-    await answerButtons.first().click();
-    
-    // Feedback banner should appear (use data-testid for reliability)
-    const feedbackBanner = page.getByTestId('feedback-banner');
-    await expect(feedbackBanner).toBeVisible({ timeout: 3000 });
-    
-    // Should show either "Correct!" or "Wrong!"
-    await expect(feedbackBanner).toContainText(/Correct!|Wrong!/);
-  });
+  if (!level) {
+    throw new Error(`Level ${levelId} does not exist in question data.`);
+  }
 
-  test('should use pause and skip buttons on feedback banner', async ({ page }) => {
-    // Navigate to quiz and answer a question
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ }).first().click();
-    
-    // Wait for feedback banner
-    await expect(page.locator('[role="status"], [role="alert"]')).toBeVisible({ timeout: 2000 });
-    
-    // Test pause button
-    const pauseButton = page.getByRole('button', { name: /Pause Timer/i });
-    if (await pauseButton.isVisible()) {
-      await pauseButton.click();
-      
-      // Should change to resume
-      await expect(page.getByRole('button', { name: /Resume Timer/i })).toBeVisible();
-      
-      // Resume
-      await page.getByRole('button', { name: /Resume Timer/i }).click();
-      await expect(page.getByRole('button', { name: /Pause Timer/i })).toBeVisible();
+  const map = new Map<string, string>();
+
+  for (const question of level.questions) {
+    const optionsKey = [...question.options].sort().join('||');
+    const existing = map.get(optionsKey);
+
+    if (existing && existing !== question.correct) {
+      throw new Error(`Duplicate option set with conflicting answers for level ${levelId}.`);
     }
-    
-    // Test skip button
-    const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-    if (await skipButton.isVisible()) {
-      await skipButton.click();
-      
-      // Feedback should disappear
-      await expect(page.locator('[role="status"], [role="alert"]')).not.toBeVisible({ timeout: 2000 });
-      
-      // Should show next question or completion
-      await page.waitForTimeout(500);
-    }
-  });
 
-  test('should use hint system', async ({ page }) => {
-    // Navigate to quiz
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await expect(page).toHaveURL(/\/questions/);
-    
-    // Click hint button
-    const hintButton = page.getByRole('button', { name: /Hint/i }).or(
-      page.locator('button').filter({ hasText: /💡|hint|bulb/i })
-    );
-    
-    if (await hintButton.first().isVisible()) {
-      await hintButton.first().click();
-      await page.waitForTimeout(500);
-      
-      // Should have disabled some buttons
-      const disabledButtons = await page.getByRole('button', { disabled: true }).count();
-      expect(disabledButtons).toBeGreaterThanOrEqual(1);
-    }
-  });
+    map.set(optionsKey, question.correct);
+  }
 
-  test.skip('should display score and streak', async ({ page }) => {
-    // Navigate to quiz and answer questions
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await page.waitForLoadState('networkidle');
-    
-    // Answer first question
-    await page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ }).first().click();
-    
-    // Wait for feedback to appear
-    const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
-    await expect(feedbackBanner).toBeVisible({ timeout: 3000 });
-    
-    // Verify score and streak elements exist and contain numbers
-    const scoreElement = page.locator('text=/Score/i').locator('..');
-    const streakElement = page.locator('text=/Streak/i').locator('..');
-    
-    const scoreText = await scoreElement.textContent();
-    const streakText = await streakElement.textContent();
-    
-    expect(scoreText).toMatch(/\d+/);
-    expect(streakText).toMatch(/\d+/);
-  });
+  return map;
+};
 
-  test.skip('should complete quiz and show results page', async ({ page }) => {
-    // Navigate to quiz
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await page.waitForLoadState('networkidle');
-    
-    // Answer questions quickly until completion (limit to 35 to avoid infinite loop)
-    for (let i = 0; i < 35; i++) {
-      const currentUrl = page.url();
-      if (currentUrl.includes('/score')) {
-        break;
-      }
-      
-      // Answer a question
-      const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/, disabled: false });
-      const count = await answerButtons.count();
-      
-      if (count === 0) break;
-      
-      await answerButtons.first().click();
-      
-      // Wait for feedback banner to appear
-      const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
-      await feedbackBanner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
-      
-      // Skip feedback if available
-      const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-      if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await skipButton.click();
-        await page.waitForTimeout(300);
-      } else {
-        // Wait for timer to complete
-        await page.waitForTimeout(8500);
-      }
-    }
-    
-    // Should be on score page
-    await expect(page).toHaveURL(/\/score\?/, { timeout: 10000 });
-    
-    // Verify completion screen elements
-    await expect(page.locator('h1')).toContainText(/Quiz Complete|Complete|Finished/i);
-    
-    // Verify score is displayed
-    await expect(page.locator('text=/Total Score|Score/i')).toBeVisible();
-    
-    // Verify accuracy is shown
-    await expect(page.locator('text=/Accuracy/i')).toBeVisible();
-    
-    // Verify correct count
-    await expect(page.locator('text=/Correct/i')).toBeVisible();
-    
-    // Check URL has query parameters
-    expect(page.url()).toContain('completed=true');
-    expect(page.url()).toContain('score=');
-    
-    // Verify navigation buttons
-    await expect(page.getByRole('link', { name: /Try Again/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Choose Another Level|Back/i })).toBeVisible();
-  });
+const pickLevel = async (page: Page, levelId: number) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: new RegExp(`Level ${levelId}`) }).click();
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
+};
 
-  test.skip('should navigate back to home from score page', async ({ page }) => {
-    // Navigate to quiz and answer a few questions to get to score page
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await page.waitForLoadState('networkidle');
-    
-    // Answer questions quickly
-    for (let i = 0; i < 35; i++) {
-      if (page.url().includes('/score')) break;
-      
-      const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/, disabled: false });
-      if (await answerButtons.first().isVisible({ timeout: 1000 }).catch(() => false)) {
-        await answerButtons.first().click();
-        await page.waitForTimeout(200);
-        
-        const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-        if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-          await skipButton.click();
-          await page.waitForTimeout(200);
-        }
-      }
-    }
-    
-    // Should be on score page
-    await expect(page).toHaveURL(/\/score/, { timeout: 15000 });
-    
-    // Click back to levels
-    const backButton = page.getByRole('link', { name: /Choose Another Level|Back/i });
-    await backButton.click();
-    
-    // Should be back at home
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('h1')).toContainText('Syntax Quiz');
-  });
+const waitForAndDismissFeedback = async (page: Page) => {
+  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
 
-  test('should open save modal and display save URL', async ({ page }) => {
-    // Navigate to quiz
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await expect(page).toHaveURL(/\/questions/);
-    
-    // Answer at least one question
-    await page.getByRole('button').filter({ hasText: /^[a-zA-Z]/ }).first().click();
-    await page.waitForTimeout(500);
-    
-    // Skip feedback
-    const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-    if (await skipButton.isVisible()) {
-      await skipButton.click();
-    }
-    
-    // Find and click save button
-    const saveButton = page.getByRole('button', { name: /Save|Bookmark/i }).first();
-    if (await saveButton.isVisible()) {
-      await saveButton.click();
-      
-      // Modal should appear
-      await expect(page.locator('[role="dialog"], .modal').first()).toBeVisible({ timeout: 2000 });
-      
-      // Should contain a URL with save parameter
-      const modalText = await page.locator('[role="dialog"], .modal').first().textContent();
-      expect(modalText).toMatch(/https?:\/\//);
-      expect(modalText).toContain('?s=');
-    }
-  });
+  await Promise.race([
+    skipFeedback.waitFor({ state: 'visible', timeout: FEEDBACK_BUTTON_TIMEOUT_MS }),
+    nextQuestion.waitFor({ state: 'visible', timeout: FEEDBACK_BUTTON_TIMEOUT_MS }),
+  ]);
 
-  test.skip('should handle mix of correct and incorrect answers', async ({ page }) => {
-    // Navigate to quiz
-    await page.getByRole('link', { name: /Level 1/i }).click();
-    await page.waitForLoadState('networkidle');
-    
-    let correctCount = 0;
-    let incorrectCount = 0;
-    
-    // Answer several questions and track results
-    for (let i = 0; i < 5; i++) {
-      const answerButtons = page.getByRole('button').filter({ hasText: /^[a-zA-Z]/, disabled: false });
-      const count = await answerButtons.count();
-      
-      if (count === 0) break;
-      
-      // Try different options to get a mix
-      const index = i % count;
-      await answerButtons.nth(index).click();
-      
-      // Check feedback using a more specific selector
-      const feedbackBanner = page.locator('.rounded-2xl').filter({ hasText: /Correct!|Wrong!/i });
-      await feedbackBanner.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
-      
-      const feedbackText = await feedbackBanner.textContent().catch(() => '');
-      
-      if (feedbackText?.includes('Correct')) {
-        correctCount++;
-      } else if (feedbackText?.includes('Wrong')) {
-        incorrectCount++;
-      }
-      
-      // Skip
-      const skipButton = page.getByRole('button', { name: /Skip Feedback/i });
-      if (await skipButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await skipButton.click();
-        await page.waitForTimeout(300);
-      }
+  if (await skipFeedback.isVisible()) {
+    await skipFeedback.click();
+    return;
+  }
+
+  await nextQuestion.click();
+};
+
+const getCurrentOptions = async (page: Page): Promise<string[]> => {
+  const optionButtons = page
+    .locator('button')
+    .filter({
+      has: page.locator('span.flex-1.min-w-0.text-left.wrap-break-word'),
+      hasNot: page.locator('button[aria-label="Skip Feedback"]'),
+    });
+
+  return (await optionButtons.allInnerTexts()).map((text) => text.trim()).filter(Boolean);
+};
+
+const answerQuestionCorrectly = async (page: Page, optionsToAnswerMap: Map<string, string>) => {
+  const options = await getCurrentOptions(page);
+  const optionsKey = [...options].sort().join('||');
+  const correctAnswer = optionsToAnswerMap.get(optionsKey);
+
+  expect(correctAnswer, `Could not find correct answer for options: ${optionsKey}`).toBeDefined();
+
+  await page.getByRole('button', { name: new RegExp(`^${escapeRegExp(correctAnswer!)}$`) }).click();
+};
+
+const answerQuestionIncorrectly = async (page: Page, optionsToAnswerMap: Map<string, string>) => {
+  const options = await getCurrentOptions(page);
+  const optionsKey = [...options].sort().join('||');
+  const correctAnswer = optionsToAnswerMap.get(optionsKey);
+
+  expect(correctAnswer, `Could not find correct answer for options: ${optionsKey}`).toBeDefined();
+
+  const wrongAnswer = options.find((option) => option !== correctAnswer);
+  expect(wrongAnswer, `Could not find wrong answer for options: ${optionsKey}`).toBeDefined();
+
+  await page.getByRole('button', { name: new RegExp(`^${escapeRegExp(wrongAnswer!)}$`) }).click();
+};
+
+const runPerfectLevel = async (page: Page, levelId: number) => {
+  const level = levels.find((entry) => entry.id === levelId);
+  expect(level, `Missing level ${levelId}`).toBeDefined();
+
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  for (let index = 0; index < level!.questions.length; index += 1) {
+    await answerQuestionCorrectly(page, optionsToAnswerMap);
+    await waitForAndDismissFeedback(page);
+  }
+
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
+  await expect(page.getByRole('heading', { name: 'Quiz Complete!' })).toBeVisible();
+  await expect(page.locator('text=Total Score').locator('..')).toContainText(
+    formatNumber(10 * level!.questions.length * (level!.questions.length + 1) / 2),
+  );
+  await expect(page.getByText('Accuracy').locator('..')).toContainText('100%');
+  await expect(page.getByText('Correct').locator('..')).toContainText(String(level!.questions.length));
+};
+
+const getIncorrectlyAnsweredIndices = (totalQuestions: number): Set<number> => {
+  const wrongAnswerCount = Math.floor(totalQuestions * 0.25);
+  const result = new Set<number>();
+
+  for (let index = 0; index < wrongAnswerCount; index += 1) {
+    result.add(index * 4);
+  }
+
+  return result;
+};
+
+const calculateExpectedScoreWithRetry = (totalQuestions: number, incorrectlyAnswered: Set<number>): number => {
+  let score = 0;
+  let streak = 0;
+
+  for (let index = 0; index < totalQuestions; index += 1) {
+    if (incorrectlyAnswered.has(index)) {
+      streak = 0;
+      continue;
     }
-    
-    // Should have answered some questions
-    expect(correctCount + incorrectCount).toBeGreaterThan(0);
-  });
+
+    streak += 1;
+    score += 10 * streak;
+  }
+
+  for (let index = 0; index < incorrectlyAnswered.size; index += 1) {
+    streak += 1;
+    score += 10 * streak;
+  }
+
+  return score;
+};
+
+const runRetryRoundLevel = async (page: Page, levelId: number) => {
+  const level = levels.find((entry) => entry.id === levelId);
+  expect(level, `Missing level ${levelId}`).toBeDefined();
+
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+  const incorrectlyAnsweredIndices = getIncorrectlyAnsweredIndices(level!.questions.length);
+
+  await pickLevel(page, levelId);
+
+  for (let index = 0; index < level!.questions.length; index += 1) {
+    if (incorrectlyAnsweredIndices.has(index)) {
+      await answerQuestionIncorrectly(page, optionsToAnswerMap);
+      await waitForAndDismissFeedback(page);
+      continue;
+    }
+
+    await answerQuestionCorrectly(page, optionsToAnswerMap);
+    await waitForAndDismissFeedback(page);
+  }
+
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
+  await expect(page.getByText(new RegExp(`Retry Round — reviewing ${incorrectlyAnsweredIndices.size} missed`))).toBeVisible();
+
+  for (let index = 0; index < incorrectlyAnsweredIndices.size; index += 1) {
+    await answerQuestionCorrectly(page, optionsToAnswerMap);
+    await waitForAndDismissFeedback(page);
+  }
+
+  const expectedScore = calculateExpectedScoreWithRetry(level!.questions.length, incorrectlyAnsweredIndices);
+
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
+  await expect(page.getByRole('heading', { name: 'Quiz Complete!' })).toBeVisible();
+  await expect(page.locator('text=Total Score').locator('..')).toContainText(formatNumber(expectedScore));
+  await expect(page.getByText('Correct').locator('..')).toContainText(String(level!.questions.length));
+};
+
+const getScoreValue = async (page: Page): Promise<number> => {
+  const scoreText = await page.locator('div.bg-yellow-500 span').last().innerText();
+  return Number.parseInt(scoreText.replace(/,/g, ''), 10);
+};
+
+
+const getStreakValue = async (page: Page): Promise<number> => {
+  const streakText = await page.locator('div.bg-orange-500 span').last().innerText();
+  return Number.parseInt(streakText.replace(/,/g, ''), 10);
+};
+
+test.describe('Syntax Quiz perfect-score runs', () => {
+  for (const level of levels) {
+    test(`scores 100% on ${level.name}`, async ({ page }) => {
+      await runPerfectLevel(page, level.id);
+    });
+  }
+});
+
+test('requires retry round when 25% of answers are wrong on Level 1', async ({ page }) => {
+  await runRetryRoundLevel(page, 1);
+});
+
+test('correct answer shows feedback banner that can be paused/resumed and skipped', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+
+  const feedbackBanner = page.getByTestId('feedback-banner');
+  await expect(feedbackBanner).toBeVisible();
+
+  const pauseButton = page.getByRole('button', { name: 'Pause Timer' });
+  const resumeButton = page.getByRole('button', { name: 'Resume Timer' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
+
+  await expect(pauseButton).toBeVisible();
+  await expect(skipFeedback).toBeVisible();
+
+  await pauseButton.click();
+  await expect(resumeButton).toBeVisible();
+
+  await resumeButton.click();
+  await expect(pauseButton).toBeVisible();
+
+  await skipFeedback.click();
+  await expect(feedbackBanner).not.toBeVisible();
+});
+
+test('incorrect answer shows feedback banner that requires next question click', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+  await answerQuestionIncorrectly(page, optionsToAnswerMap);
+
+  const feedbackBanner = page.getByTestId('feedback-banner');
+  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
+
+  await expect(feedbackBanner).toBeVisible();
+  await expect(skipFeedback).not.toBeVisible();
+  await expect(nextQuestion).toBeVisible();
+
+  await nextQuestion.click();
+  await expect(feedbackBanner).not.toBeVisible();
+});
+
+test('skip question shows feedback banner that requires next question click', async ({ page }) => {
+  const levelId = 1;
+  await pickLevel(page, levelId);
+
+  await page.getByRole('button', { name: "I don't know — show me the answer" }).click();
+
+  const feedbackBanner = page.getByTestId('feedback-banner');
+  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
+
+  await expect(feedbackBanner).toBeVisible();
+  await expect(skipFeedback).not.toBeVisible();
+  await expect(nextQuestion).toBeVisible();
+
+  await nextQuestion.click();
+  await expect(feedbackBanner).not.toBeVisible();
+});
+
+test('save URL restores score and returns user to question flow', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  const scoreBeforeSave = await getScoreValue(page);
+  expect(scoreBeforeSave).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: /Save/i }).click();
+
+  const saveLink = page.locator('a').filter({ hasText: 'Open save link' });
+  await expect(saveLink).toBeVisible();
+
+  const savedUrl = await saveLink.getAttribute('href');
+  expect(savedUrl).toBeTruthy();
+  expect(savedUrl).toContain('?s=');
+
+  await page.goto(savedUrl!);
+
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions`));
+  expect(page.url()).not.toContain('?s=');
+  const restoredScore = await getScoreValue(page);
+  expect(restoredScore).toBe(scoreBeforeSave);
+});
+
+
+test('level selection page lists available levels and navigates to selected level', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByRole('heading', { name: 'Syntax Quiz' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 1/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 2/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 3/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /Level 2/i }).click();
+  await expect(page).toHaveURL(/\/level\/2\/questions$/);
+});
+
+test('can answer by dragging an option to the dropzone', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  const options = await getCurrentOptions(page);
+  const optionsKey = [...options].sort().join('||');
+  const correctAnswer = optionsToAnswerMap.get(optionsKey);
+  expect(correctAnswer).toBeDefined();
+
+  const answerButton = page.getByRole('button', { name: new RegExp(`^${escapeRegExp(correctAnswer!)}$`) });
+  await answerButton.dragTo(page.locator('[data-dropzone]'));
+
+  await expect(page.getByTestId('feedback-banner')).toBeVisible();
+  await waitForAndDismissFeedback(page);
+});
+
+test('hint flow eliminates answers, reveals hint text, and applies score penalty', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  await page.getByRole('button', { name: /Eliminate 2 Answers/i }).click();
+
+  const disabledOptions = page
+    .locator('button')
+    .filter({ has: page.locator('span.flex-1.min-w-0.text-left.wrap-break-word') })
+    .locator(':disabled');
+  await expect(disabledOptions).toHaveCount(2);
+
+  await page.getByRole('button', { name: /Show Hint/i }).click();
+  await expect(page.getByText(/This appears in the function declaration/i)).toBeVisible();
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  const score = await getScoreValue(page);
+  expect(score).toBe(3);
+});
+
+test('score and streak increment on consecutive correct answers', async ({ page }) => {
+  const levelId = 1;
+  const optionsToAnswerMap = buildOptionsToAnswerMap(levelId);
+
+  await pickLevel(page, levelId);
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  expect(await getScoreValue(page)).toBe(10);
+  expect(await getStreakValue(page)).toBe(1);
+
+  await answerQuestionCorrectly(page, optionsToAnswerMap);
+  await waitForAndDismissFeedback(page);
+
+  expect(await getScoreValue(page)).toBe(30);
+  expect(await getStreakValue(page)).toBe(2);
 });

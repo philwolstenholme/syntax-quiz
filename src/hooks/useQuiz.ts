@@ -1,10 +1,9 @@
-import { useCallback } from 'react';
 import { playCorrectSound, playIncorrectSound } from '../utils/sounds';
 import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
 import { encodeSaveState } from '../utils/saveState';
 import type { SaveState } from '../utils/saveState';
 import { ROUTES } from '../routes';
-import { useQuizResult } from '../context/QuizResultContext';
+import { useQuizResult } from '../context/useQuizResult';
 import type { AnswerFeedback } from '../components/FeedbackBanner';
 import type { Level } from '../data/questions';
 import type { QuestionWithIndex } from './types';
@@ -53,7 +52,7 @@ export function useQuiz(): UseQuizReturn {
     eliminatedOptions,
     canInteract,
     submitAnswer,
-    useHint,
+    applyHint,
     resetForNextQuestion,
   } = useAnswerInteraction({
     initialHintsUsed: saveState?.h,
@@ -75,7 +74,7 @@ export function useQuiz(): UseQuizReturn {
     startRetryRound,
   } = useQuestionProgression({ initialQuestions, level });
 
-  const handleFeedbackComplete = useCallback(() => {
+  const handleFeedbackComplete = () => {
     const { isPassComplete } = advanceQuestion();
     resetForNextQuestion();
 
@@ -89,9 +88,9 @@ export function useQuiz(): UseQuizReturn {
     // Quiz truly complete — navigate to score page via context
     setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
     setLocation(ROUTES.score(levelId));
-  }, [advanceQuestion, resetForNextQuestion, level, isRetryRound, missedQuestions, levelId, score, correctAnswers, totalLevelQuestions, setLocation, setResult, startRetryRound]);
+  };
 
-  const handleAnswer = useCallback((answer: string): void => {
+  const handleAnswer = (answer: string): void => {
     if (!canInteract || !currentQuestion) return;
 
     const correct = answer === currentQuestion.correct;
@@ -113,9 +112,9 @@ export function useQuiz(): UseQuizReturn {
       userAnswer: correct ? null : answer,
       explanation: currentQuestion.explanation,
     });
-  }, [canInteract, currentQuestion, hintsUsed, recordCorrect, recordIncorrect, addMissedQuestion, submitAnswer]);
+  };
 
-  const handleSkip = useCallback((): void => {
+  const handleSkip = (): void => {
     if (!canInteract || !currentQuestion) return;
 
     addMissedQuestion(currentQuestion);
@@ -127,17 +126,15 @@ export function useQuiz(): UseQuizReturn {
       userAnswer: null,
       explanation: currentQuestion.explanation,
     });
-  }, [canInteract, currentQuestion, addMissedQuestion, submitAnswer]);
+  };
 
-  const handleUseHint = useCallback((): void => {
+  const handleUseHint = (): void => {
     if (!canInteract || !currentQuestion) return;
-    useHint(currentQuestion);
-  }, [canInteract, currentQuestion, useHint]);
+    applyHint(currentQuestion);
+  };
 
-  const handleSave = useCallback((): string => {
-    const remainingIndices = questions
-      .slice(currentQuestionIndex)
-      .map(q => q.originalIndex);
+  const handleSave = (): string => {
+    const remainingIndices = questions.slice(currentQuestionIndex).map(q => q.originalIndex);
 
     const state: SaveState = {
       v: 1,
@@ -152,7 +149,7 @@ export function useQuiz(): UseQuizReturn {
 
     const encoded = encodeSaveState(state);
     return `${window.location.origin}${ROUTES.questions(levelId)}?s=${encoded}`;
-  }, [questions, currentQuestionIndex, levelId, score, streak, correctAnswers, hintsUsed, eliminatedOptions]);
+  };
 
   return {
     level,

@@ -64,7 +64,7 @@ export default defineConfig({
     tokenizePlugin(),
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler']],
+        plugins: ['babel-plugin-react-compiler'],
       },
     }),
   ],

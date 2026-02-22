@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { shuffle } from 'es-toolkit';
 import { MAX_HINTS, HINTS_TO_ELIMINATE } from '../constants';
 import type { AnswerFeedback } from '../components/FeedbackBanner';
@@ -16,7 +16,7 @@ interface UseAnswerInteractionReturn {
   eliminatedOptions: string[];
   canInteract: boolean;
   submitAnswer: (feedback: AnswerFeedback) => void;
-  useHint: (currentQuestion: QuestionWithIndex) => void;
+  applyHint: (currentQuestion: QuestionWithIndex) => void;
   resetForNextQuestion: () => void;
 }
 
@@ -31,15 +31,15 @@ export function useAnswerInteraction({
 
   const canInteract = !isAnswering;
 
-  const submitAnswer = useCallback((feedback: AnswerFeedback) => {
+  const submitAnswer = (feedback: AnswerFeedback) => {
     setIsAnswering(true);
     setLastAnswer(feedback);
-  }, []);
+  };
 
-  const useHint = useCallback((currentQuestion: QuestionWithIndex) => {
+  const applyHint = (currentQuestion: QuestionWithIndex) => {
     if (hintsUsed === 0) {
       const wrongOptions = currentQuestion.options.filter(
-        (opt: string) => opt !== currentQuestion.correct
+        (opt: string) => opt !== currentQuestion.correct,
       );
       const shuffledWrong = shuffle(wrongOptions);
       setEliminatedOptions(shuffledWrong.slice(0, HINTS_TO_ELIMINATE));
@@ -47,13 +47,13 @@ export function useAnswerInteraction({
     } else if (hintsUsed < MAX_HINTS) {
       setHintsUsed(MAX_HINTS);
     }
-  }, [hintsUsed]);
+  };
 
-  const resetForNextQuestion = useCallback(() => {
+  const resetForNextQuestion = () => {
     setIsAnswering(false);
     setHintsUsed(0);
     setEliminatedOptions([]);
-  }, []);
+  };
 
   return {
     lastAnswer,
@@ -62,7 +62,7 @@ export function useAnswerInteraction({
     eliminatedOptions,
     canInteract,
     submitAnswer,
-    useHint,
+    applyHint,
     resetForNextQuestion,
   };
 }

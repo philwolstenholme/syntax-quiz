@@ -98,12 +98,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const [paused, setPaused] = useState(false);
   const startTimeRef = useRef(0);
   const elapsedRef = useRef(0);
-  const rafRef = useRef<number>(undefined);
+  const rafRef = useRef<number | undefined>(undefined);
   const completedRef = useRef(false);
-  const lastAnswerRef = useRef<AnswerFeedback | null>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
   const [completed, setCompleted] = useState(false);
-  const [processedAnswer, setProcessedAnswer] = useState<AnswerFeedback | null>(null);
   const onCompleteRef = useRef(onCountdownComplete);
   const prefersReducedMotion = useReducedMotion();
 
@@ -118,36 +116,20 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     if (completedRef.current) return;
     completedRef.current = true;
     setCompleted(true);
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
     rafRef.current = undefined;
     setProgress(1);
     setPaused(false);
     onCompleteRef.current?.();
   }, []);
 
-  // Reset state when lastAnswer changes (render-time pattern)
-  if (lastAnswer && lastAnswer !== processedAnswer) {
-    setProcessedAnswer(lastAnswer);
-    setProgress(0);
-    setPaused(false);
-    setCompleted(false);
-  }
-
-  // Reset refs and focus when lastAnswer changes
   useEffect(() => {
-    if (lastAnswer && lastAnswer !== lastAnswerRef.current) {
-      lastAnswerRef.current = lastAnswer;
-      elapsedRef.current = 0;
-      completedRef.current = false;
-      startTimeRef.current = performance.now();
-      swipeX.set(0);
-      bannerRef.current?.focus();
-    }
-  }, [lastAnswer, swipeX]);
+    bannerRef.current?.focus();
+  }, []);
 
   // Animation loop
   useEffect(() => {
-    if (!lastAnswer || !durationMs || paused || completedRef.current) return;
+    if (!durationMs || paused || completedRef.current) return;
 
     startTimeRef.current = performance.now();
 
@@ -168,9 +150,9 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     rafRef.current = requestAnimationFrame(tick);
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
     };
-  }, [lastAnswer, durationMs, paused, completeFeedback]);
+  }, [durationMs, paused, completeFeedback]);
 
   const togglePause = useCallback(() => {
     if (completedRef.current) return;

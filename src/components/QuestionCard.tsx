@@ -4,23 +4,15 @@ import clsx from 'clsx';
 import type { Question } from '../data/questions';
 import tokenMap from 'virtual:tokens';
 
-interface Token {
-  content: string;
-  color?: string;
-  offset: number;
-}
-
 interface QuestionCardProps {
   question: Question;
 }
-
-const typedTokenMap = tokenMap as Record<string, Token[][]>;
 
 const TokenizedCode = ({
   tokenLines,
   hlRange,
 }: {
-  tokenLines: Token[][];
+  tokenLines: ShikiToken[][];
   hlRange: { start: number; end: number };
 }) => {
   const elements: React.ReactNode[] = [];
@@ -87,7 +79,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
   const { isOver, setNodeRef } = useDroppable({ id: 'dropzone' });
 
-  const tokenLines = useMemo(() => typedTokenMap[code] ?? [], [code]);
+  const tokenLines = useMemo(() => tokenMap[code] ?? [], [code]);
 
   const hlRange = useMemo(() => {
     const start = code.indexOf(highlight);

@@ -3,17 +3,9 @@ import { CheckCircle, XCircle, HelpCircle, Play, Pause, FastForward, ArrowRight 
 import clsx from 'clsx';
 import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import type { PanInfo } from 'motion/react';
+import type { AnswerFeedback } from '../hooks/types';
 // Swipe-to-dismiss configuration
 const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
-
-export interface AnswerFeedback {
-  correct: boolean;
-  skipped?: boolean;
-  term: string;
-  userAnswer: string | null;
-  explanation: string;
-  docsLink?: string;
-}
 
 const ExplanationWithCode = ({ text }: { text: string }) => {
   const parts = text.split(/`([^`]+)`/);

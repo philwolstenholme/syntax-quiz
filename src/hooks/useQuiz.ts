@@ -4,7 +4,7 @@ import { encodeSaveState } from '../utils/saveState';
 import type { SaveState } from '../utils/saveState';
 import { ROUTES } from '../routes';
 import { useQuizResult } from '../context/useQuizResult';
-import type { AnswerFeedback } from '../components/FeedbackBanner';
+import type { AnswerFeedback } from './types';
 import type { Level } from '../data/questions';
 import type { QuestionWithIndex } from './types';
 import { useQuizLevel } from './useQuizLevel';

@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "skills": {
+    "emilkowal-animations": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/pproenca/dot-skills.git",
+      "skillPath": "skills/.experimental/emilkowal-animations/SKILL.md",
+      "skillFolderHash": "c6a0414bbf7c2364b6a73b3a0edfa90356c89d4a",
+      "installedAt": "2026-02-25T22:04:25.098Z",
+      "updatedAt": "2026-02-25T22:04:25.098Z"
+    },
+    "playwright": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/pproenca/dot-skills.git",
+      "skillPath": "skills/.curated/playwright/SKILL.md",
+      "skillFolderHash": "b207dc562cf7503bbcd4deae42b6f788655abcfa",
+      "installedAt": "2026-02-25T22:04:56.214Z",
+      "updatedAt": "2026-02-25T22:04:56.214Z"
+    },
+    "typescript": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/pproenca/dot-skills.git",
+      "skillPath": "skills/.curated/typescript/SKILL.md",
+      "skillFolderHash": "75081c7dcfbd0488a8580c88cb559be9669d926d",
+      "installedAt": "2026-02-25T22:05:35.688Z",
+      "updatedAt": "2026-02-25T22:05:35.688Z"
+    }
+  },
+  "dismissed": {}
+}

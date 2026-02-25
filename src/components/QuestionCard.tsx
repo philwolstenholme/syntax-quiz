@@ -125,7 +125,8 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         )}
         <pre className="bg-neutral-950 border border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
           <div className={clsx(
-            isOver && 'scale-[98%] origin-center transition-transform'
+            'transition-transform duration-150 ease-out origin-center',
+            isOver && 'scale-[98%]'
           )}>
             <code className="font-mono text-neutral-300">
             <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />

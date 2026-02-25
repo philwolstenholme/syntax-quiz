@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { Save, X, Check, Copy, Link } from 'lucide-react';
 import { SubtleButton } from './SubtleButton';
@@ -11,6 +11,16 @@ interface SaveModalProps {
 export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
   const [saveUrl, setSaveUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(copiedTimerRef.current);
+  }, []);
+
+  const resetCopiedAfterDelay = () => {
+    clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleOpenChange = (open: boolean) => {
     if (open) {
@@ -25,7 +35,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
     try {
       await navigator.clipboard.writeText(saveUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      resetCopiedAfterDelay();
     } catch {
       const textArea = document.createElement('textarea');
       textArea.value = saveUrl;
@@ -34,7 +44,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       document.execCommand('copy');
       document.body.removeChild(textArea);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      resetCopiedAfterDelay();
     }
   };
 
@@ -49,9 +59,9 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200" />
+        <Dialog.Backdrop className="fixed inset-0 bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200 ease-out" />
         <Dialog.Viewport className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-800 bg-[#0a0a0a] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-all duration-200 origin-center">
+          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-800 bg-[#0a0a0a] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-[opacity,transform] duration-200 ease-out origin-center">
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-0">
               <Dialog.Title className="font-medium text-xl tracking-tight text-neutral-100">
@@ -83,7 +93,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium text-xs text-neutral-900 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] touch-manipulation cursor-pointer bg-neutral-100 hover:bg-white active:scale-[0.98]"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium text-xs text-neutral-900 transition-[color,background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] touch-manipulation cursor-pointer bg-neutral-100 hover:bg-white active:scale-[0.97]"
                   >
                     {copied ? (
                       <>

@@ -55,7 +55,7 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
         className="w-full bg-neutral-800 rounded-full h-1 overflow-hidden"
         role="progressbar"
         aria-valuenow={currentQuestionIndex + 1}
-        aria-valuemin={1}
+        aria-valuemin={0}
         aria-valuemax={totalQuestions}
       >
         <div

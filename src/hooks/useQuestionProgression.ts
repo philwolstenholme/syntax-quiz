@@ -51,16 +51,14 @@ export function useQuestionProgression({
   };
 
   const startRetryRound = () => {
-    setMissedQuestions(prev => {
-      const retryQuestions = shuffle([...prev]).map(q => ({
-        ...q,
-        options: shuffle(q.options),
-      }));
-      setQuestions(retryQuestions);
-      setCurrentQuestionIndex(0);
-      setIsRetryRound(true);
-      return [];
-    });
+    const retryQuestions = shuffle([...missedQuestions]).map(q => ({
+      ...q,
+      options: shuffle(q.options),
+    }));
+    setQuestions(retryQuestions);
+    setCurrentQuestionIndex(0);
+    setIsRetryRound(true);
+    setMissedQuestions([]);
   };
 
   return {

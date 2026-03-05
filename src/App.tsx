@@ -26,7 +26,7 @@ function App() {
   return (
     <QuizResultProvider>
       <LazyMotion features={domMax}>
-        <div className="app-shell relative overflow-x-hidden bg-[#0a0a0a] min-h-dvh">
+        <div className="app-shell relative overflow-x-hidden bg-surface min-h-dvh">
           <AnimatePresence mode="popLayout">
             <m.div key={location} {...pageTransition}>
               <Switch>

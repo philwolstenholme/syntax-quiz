@@ -96,7 +96,7 @@ export const QuestionsPage = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="sr-only">Syntax Quiz — {level.name}</h1>
           {isRetryRound && (
-            <div className="flex items-center gap-2 mb-3 px-3 py-2.5 border border-amber-500/20 bg-amber-500/5 rounded-lg text-amber-300 text-sm">
+            <div className="flex items-center gap-2 mb-3 px-3 py-2.5 border border-warning-border bg-warning-bg rounded-lg text-warning-text text-sm">
               <RotateCcw size={18} aria-hidden="true" />
               <span>Retry Round — reviewing {retryQuestionCount} missed {retryQuestionCount === 1 ? 'question' : 'questions'}</span>
             </div>
@@ -172,7 +172,7 @@ export const QuestionsPage = () => {
                   href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?template=incorrect-question.yml&title=${encodeURIComponent(`Incorrect or misleading question: ${currentQuestion.question}`)}&question_name=${encodeURIComponent(currentQuestion.question)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-md px-1 py-0.5 touch-manipulation"
+                  className="text-xs text-faint hover:text-tertiary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-md px-1 py-0.5 touch-manipulation"
                 >
                   Report an issue with this question
                 </a>
@@ -184,8 +184,8 @@ export const QuestionsPage = () => {
       </PageLayout>
       <DragOverlay>
         {activeId ? (
-          <div className="flex items-center gap-2 p-3 rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-200 font-medium text-sm shadow-2xl cursor-move">
-            <GripVertical className="text-neutral-500 shrink-0" size={16} aria-hidden="true" />
+          <div className="flex items-center gap-2 p-3 rounded-lg border border-line-hover bg-surface-raised text-body font-medium text-sm shadow-2xl cursor-move">
+            <GripVertical className="text-muted shrink-0" size={16} aria-hidden="true" />
             <span className="flex-1 text-left">{activeId}</span>
           </div>
         ) : null}

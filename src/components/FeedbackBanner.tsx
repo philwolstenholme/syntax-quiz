@@ -22,7 +22,7 @@ const DocsLink = ({ term, href, className }: { term: string; href?: string; clas
     href={href ?? getSearchUrl(term)}
     target="_blank"
     rel="noopener noreferrer"
-    className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
+    className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
   >
     {term}
   </a>
@@ -45,7 +45,7 @@ const CountdownButton = ({
     <button
       type="button"
       onClick={onToggle}
-      className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
+      className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-overlay-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:ring-current touch-manipulation"
       aria-label={paused ? 'Resume Timer' : 'Pause Timer'}
       aria-pressed={paused}
     >
@@ -72,7 +72,7 @@ const SkipButton = ({ onSkip }: SkipButtonProps) => (
   <button
     type="button"
     onClick={onSkip}
-    className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
+    className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-overlay-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:ring-current touch-manipulation"
     aria-label="Skip Feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">
@@ -182,7 +182,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
-  const ringColor = lastAnswer.correct ? '#34d399' : lastAnswer.skipped ? '#737373' : '#f87171';
+  const ringColor = lastAnswer.correct ? 'var(--c-timer-correct)' : lastAnswer.skipped ? 'var(--c-timer-skipped)' : 'var(--c-timer-incorrect)';
   const isIncorrect = !lastAnswer.correct && !lastAnswer.skipped;
 
   return (
@@ -211,12 +211,12 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           aria-live={isIncorrect ? 'assertive' : 'polite'}
           aria-atomic="true"
           className={clsx(
-            'rounded-lg p-3 sm:p-4 border scroll-mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+            'rounded-lg p-3 sm:p-4 border scroll-mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface',
             lastAnswer.skipped
-              ? 'bg-neutral-900/50 text-neutral-300 border-neutral-700 focus-visible:ring-neutral-500'
+              ? 'bg-surface-card text-secondary border-line-hover focus-visible:ring-neutral-500'
               : lastAnswer.correct
-                ? 'bg-emerald-500/5 text-emerald-300 border-emerald-500/20 focus-visible:ring-emerald-500'
-                : 'bg-red-500/5 text-red-300 border-red-500/20 focus-visible:ring-red-500',
+                ? 'bg-success-bg text-success-text border-success-border focus-visible:ring-emerald-500'
+                : 'bg-error-bg text-error-text border-error-border focus-visible:ring-red-500',
           )}
         >
         <div>
@@ -225,21 +225,21 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-100" />
+                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-heading" />
                 </span>
               </>
             ) : lastAnswer.correct ? (
               <>
                 <CheckCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Correct! <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-emerald-200" />
+                  Correct! <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-success-link" />
                 </span>
               </>
             ) : (
               <>
                 <XCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Wrong — it was <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-red-200" />, not{' '}
+                  Wrong — it was <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-error-link" />, not{' '}
                   {lastAnswer.userAnswer}
                 </span>
               </>
@@ -248,7 +248,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           {lastAnswer.explanation && (
             <p className={clsx(
               'mt-2 ml-7 text-base leading-7',
-              lastAnswer.skipped ? 'text-neutral-400' : lastAnswer.correct ? 'text-emerald-300/80' : 'text-red-300/80',
+              lastAnswer.skipped ? 'text-tertiary' : lastAnswer.correct ? 'text-success-muted' : 'text-error-muted',
             )}>
               <ExplanationWithCode text={lastAnswer.explanation} />
             </p>
@@ -270,10 +270,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 onClick={completeFeedback}
                 className={clsx(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors touch-manipulation cursor-pointer',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface',
                   lastAnswer.skipped
-                    ? 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-neutral-500'
-                    : 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-red-500',
+                    ? 'bg-surface-muted text-body hover:bg-surface-active focus-visible:ring-neutral-500'
+                    : 'bg-surface-muted text-body hover:bg-surface-active focus-visible:ring-red-500',
                 )}
                 aria-label="Next Question"
               >

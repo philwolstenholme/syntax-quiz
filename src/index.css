@@ -1,15 +1,214 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    -webkit-tap-highlight-color: transparent;
-    color-scheme: dark;
-  }
+@theme {
+  /* Surfaces */
+  --color-surface: var(--c-surface);
+  --color-surface-card: var(--c-surface-card);
+  --color-surface-inset: var(--c-surface-inset);
+  --color-surface-raised: var(--c-surface-raised);
+  --color-surface-hover: var(--c-surface-hover);
+  --color-surface-muted: var(--c-surface-muted);
+  --color-surface-active: var(--c-surface-active);
 
+  /* Buttons */
+  --color-btn-primary: var(--c-btn-primary);
+  --color-btn-primary-hover: var(--c-btn-primary-hover);
+
+  /* Overlays */
+  --color-overlay-subtle: var(--c-overlay-subtle);
+  --color-overlay-backdrop: var(--c-overlay-backdrop);
+
+  /* Borders */
+  --color-line: var(--c-border);
+  --color-line-hover: var(--c-border-hover);
+
+  /* Text */
+  --color-heading: var(--c-text-heading);
+  --color-body: var(--c-text-body);
+  --color-secondary: var(--c-text-secondary);
+  --color-tertiary: var(--c-text-tertiary);
+  --color-muted: var(--c-text-muted);
+  --color-faint: var(--c-text-faint);
+  --color-inverse: var(--c-text-inverse);
+
+  /* Accent icons */
+  --color-accent-blue: var(--c-accent-blue);
+  --color-accent-orange: var(--c-accent-orange);
+  --color-accent-amber: var(--c-accent-amber);
+  --color-accent-emerald: var(--c-accent-emerald);
+
+  /* Status - success */
+  --color-success-bg: var(--c-success-bg);
+  --color-success-border: var(--c-success-border);
+  --color-success-text: var(--c-success-text);
+  --color-success-link: var(--c-success-link);
+  --color-success-muted: var(--c-success-muted);
+
+  /* Status - error */
+  --color-error-bg: var(--c-error-bg);
+  --color-error-border: var(--c-error-border);
+  --color-error-text: var(--c-error-text);
+  --color-error-link: var(--c-error-link);
+  --color-error-muted: var(--c-error-muted);
+
+  /* Status - warning */
+  --color-warning-bg: var(--c-warning-bg);
+  --color-warning-border: var(--c-warning-border);
+  --color-warning-text: var(--c-warning-text);
+  --color-warning-hint: var(--c-warning-hint);
+  --color-warning-icon: var(--c-warning-icon);
+
+  /* Highlight (code) */
+  --color-highlight-bg: var(--c-highlight-bg);
+  --color-highlight-text: var(--c-highlight-text);
+
+  /* Dropzone */
+  --color-dropzone-pill-bg: var(--c-dropzone-pill-bg);
+  --color-dropzone-pill-text: var(--c-dropzone-pill-text);
+
+  /* Code in feedback banners */
+  --color-code-bg: var(--c-code-bg);
+  --color-code-border: var(--c-code-border);
+}
+
+/* ─── Light mode (default) ─── */
+:root {
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: light;
+
+  --c-surface: #fafafa;
+  --c-surface-card: #ffffff;
+  --c-surface-inset: #f5f5f5;
+  --c-surface-raised: #f5f5f5;
+  --c-surface-hover: rgba(0, 0, 0, 0.04);
+  --c-surface-muted: #e5e5e5;
+  --c-surface-active: #d4d4d4;
+
+  --c-btn-primary: #171717;
+  --c-btn-primary-hover: #000000;
+
+  --c-overlay-subtle: rgba(0, 0, 0, 0.03);
+  --c-overlay-backdrop: rgba(0, 0, 0, 0.4);
+
+  --c-border: #e5e5e5;
+  --c-border-hover: #d4d4d4;
+
+  --c-text-heading: #0a0a0a;
+  --c-text-body: #262626;
+  --c-text-secondary: #404040;
+  --c-text-tertiary: #525252;
+  --c-text-muted: #737373;
+  --c-text-faint: #a3a3a3;
+  --c-text-inverse: #fafafa;
+
+  --c-accent-blue: #2563eb;
+  --c-accent-orange: #ea580c;
+  --c-accent-amber: #d97706;
+  --c-accent-emerald: #059669;
+
+  --c-success-bg: #ecfdf5;
+  --c-success-border: #a7f3d0;
+  --c-success-text: #047857;
+  --c-success-link: #065f46;
+  --c-success-muted: rgba(4, 120, 87, 0.8);
+
+  --c-error-bg: #fef2f2;
+  --c-error-border: #fecaca;
+  --c-error-text: #b91c1c;
+  --c-error-link: #991b1b;
+  --c-error-muted: rgba(185, 28, 28, 0.8);
+
+  --c-warning-bg: #fffbeb;
+  --c-warning-border: #fde68a;
+  --c-warning-text: #b45309;
+  --c-warning-hint: #92400e;
+  --c-warning-icon: #d97706;
+
+  --c-highlight-bg: rgba(234, 179, 8, 0.15);
+  --c-highlight-text: #854d0e;
+
+  --c-timer-correct: #059669;
+  --c-timer-incorrect: #dc2626;
+  --c-timer-skipped: #737373;
+
+  --c-dropzone-pill-bg: #dbeafe;
+  --c-dropzone-pill-text: #2563eb;
+
+  --c-code-bg: rgba(0, 0, 0, 0.04);
+  --c-code-border: rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Dark mode ─── */
+.dark {
+  color-scheme: dark;
+
+  --c-surface: #0a0a0a;
+  --c-surface-card: rgba(23, 23, 23, 0.5);
+  --c-surface-inset: #0a0a0a;
+  --c-surface-raised: #171717;
+  --c-surface-hover: rgba(38, 38, 38, 0.8);
+  --c-surface-muted: #262626;
+  --c-surface-active: #404040;
+
+  --c-btn-primary: #f5f5f5;
+  --c-btn-primary-hover: #ffffff;
+
+  --c-overlay-subtle: rgba(255, 255, 255, 0.05);
+  --c-overlay-backdrop: rgba(0, 0, 0, 0.6);
+
+  --c-border: #262626;
+  --c-border-hover: #404040;
+
+  --c-text-heading: #f5f5f5;
+  --c-text-body: #e5e5e5;
+  --c-text-secondary: #d4d4d4;
+  --c-text-tertiary: #a3a3a3;
+  --c-text-muted: #737373;
+  --c-text-faint: #525252;
+  --c-text-inverse: #171717;
+
+  --c-accent-blue: #60a5fa;
+  --c-accent-orange: #fb923c;
+  --c-accent-amber: #fbbf24;
+  --c-accent-emerald: #34d399;
+
+  --c-success-bg: rgba(16, 185, 129, 0.05);
+  --c-success-border: rgba(16, 185, 129, 0.2);
+  --c-success-text: #6ee7b7;
+  --c-success-link: #a7f3d0;
+  --c-success-muted: rgba(110, 231, 183, 0.8);
+
+  --c-error-bg: rgba(239, 68, 68, 0.05);
+  --c-error-border: rgba(239, 68, 68, 0.2);
+  --c-error-text: #fca5a5;
+  --c-error-link: #fecaca;
+  --c-error-muted: rgba(252, 165, 165, 0.8);
+
+  --c-warning-bg: rgba(245, 158, 11, 0.05);
+  --c-warning-border: rgba(245, 158, 11, 0.2);
+  --c-warning-text: #b45309;
+  --c-warning-hint: rgba(253, 230, 138, 0.9);
+  --c-warning-icon: rgba(245, 158, 11, 0.8);
+
+  --c-highlight-bg: rgba(234, 179, 8, 0.2);
+  --c-highlight-text: #fef08a;
+
+  --c-timer-correct: #34d399;
+  --c-timer-incorrect: #f87171;
+  --c-timer-skipped: #737373;
+
+  --c-dropzone-pill-bg: #0f172a;
+  --c-dropzone-pill-text: #60a5fa;
+
+  --c-code-bg: rgba(255, 255, 255, 0.06);
+  --c-code-border: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
   body {
     font-family: "Geist", system-ui, -apple-system, sans-serif;
-    background-color: #0a0a0a;
-    color: #ededed;
+    background-color: var(--c-surface);
+    color: var(--c-text-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -17,10 +216,10 @@
   .feedback-banner code {
     font-family: "Geist Mono", ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
     font-size: 0.875em;
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--c-code-bg);
     padding: 0.2em 0.4em;
     border-radius: 0.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--c-code-border);
   }
 
   button {

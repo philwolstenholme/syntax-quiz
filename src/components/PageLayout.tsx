@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
+import { ThemeSwitcher } from './ThemeSwitcher';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -13,10 +14,13 @@ export const PageLayout = ({ children, centered = false }: PageLayoutProps) => (
   )}>
     <a
       href="#main-content"
-      className="sr-only focus:not-sr-only focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-neutral-200 transition-colors touch-manipulation"
+      className="sr-only focus:not-sr-only focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-md bg-surface-raised px-3 py-2 text-sm font-medium text-body transition-colors touch-manipulation"
     >
       Skip to content
     </a>
+    <div className="fixed top-[calc(0.75rem+env(safe-area-inset-top))] right-[calc(0.75rem+env(safe-area-inset-right))] z-50">
+      <ThemeSwitcher />
+    </div>
     <main id="main-content" className={clsx('w-full max-w-3xl mx-auto', centered && 'flex flex-col items-center')}>
       {children}
     </main>

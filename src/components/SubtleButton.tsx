@@ -11,10 +11,10 @@ export const SubtleButton = ({ children, className, ...props }: SubtleButtonProp
     {...props}
     className={clsx(
       'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium',
-      'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-900 rounded-md',
+      'text-muted hover:text-secondary hover:bg-surface-hover rounded-md',
       'transition-colors cursor-pointer',
       'disabled:opacity-40 disabled:cursor-not-allowed',
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface',
       'touch-manipulation',
       className,
     )}

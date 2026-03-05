@@ -27,10 +27,10 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: prefersReducedMotion ? 1 : 0 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: [0, 0, 0.2, 1] }}
-            className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 mb-3 flex items-start gap-2.5 w-full"
+            className="rounded-lg border border-warning-border bg-warning-bg p-3 mb-3 flex items-start gap-2.5 w-full"
           >
-            <Lightbulb className="text-amber-500/80 shrink-0 mt-0.5" size={16} aria-hidden="true" />
-            <p className="text-amber-200/90 text-sm">{hint}</p>
+            <Lightbulb className="text-warning-icon shrink-0 mt-0.5" size={16} aria-hidden="true" />
+            <p className="text-warning-hint text-sm">{hint}</p>
           </m.div>
         )}
       </AnimatePresence>

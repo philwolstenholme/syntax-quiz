@@ -41,15 +41,15 @@ const DraggableOption = ({
       disabled={isDisabled}
       onClick={handleClick}
       className={clsx(
-        'flex items-center gap-3 p-3 rounded-lg border border-neutral-800',
-        'bg-neutral-900/50 text-neutral-200 font-medium text-base',
+        'flex items-center gap-3 p-3 rounded-lg border border-line',
+        'bg-surface-card text-body font-medium text-base',
         'transition-colors duration-150 select-none',
         eliminated && 'opacity-25 line-through cursor-not-allowed',
         !isDisabled
-          ? 'hover:bg-neutral-800/80 hover:border-neutral-700'
+          ? 'hover:bg-surface-hover hover:border-line-hover'
           : !eliminated && 'opacity-40 cursor-not-allowed',
         isDragging && 'opacity-30',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface',
         'touch-manipulation',
         'overflow-hidden'
       )}
@@ -62,7 +62,7 @@ const DraggableOption = ({
         )}
         style={!isDisabled ? { touchAction: 'none'  } : {pointerEvents: 'none'}}
       >
-        <GripVertical className="text-neutral-600" size={16} aria-hidden="true" />
+        <GripVertical className="text-faint" size={16} aria-hidden="true" />
       </span>
       <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
     </button>

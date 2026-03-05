@@ -23,6 +23,15 @@
     <title>Syntax Quiz — TypeScript & JavaScript Practice</title>
   </head>
   <body>
+    <script>
+      (function() {
+        var t = null;
+        try { t = localStorage.getItem('theme'); } catch(e) {}
+        if (t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

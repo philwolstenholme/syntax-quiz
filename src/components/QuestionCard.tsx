@@ -89,12 +89,12 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
 
   return (
     <div
-      className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5 sm:p-6 mb-4"
+      className="rounded-lg border border-line bg-surface-card p-5 sm:p-6 mb-4"
     >
-      <h2 className="text-xl font-medium tracking-tight text-neutral-100 mb-2">
+      <h2 className="text-xl font-medium tracking-tight text-heading mb-2">
         {question.question}
       </h2>
-      <p id="question-instructions" className="text-neutral-500 mb-4 text-base">
+      <p id="question-instructions" className="text-muted mb-4 text-base">
         Drag an answer onto the code or click to select
       </p>
       <div
@@ -110,17 +110,17 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
       >
         {isOver && (
           <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-[5px] flex items-center justify-center z-10">
-            <span className="text-sm font-medium text-blue-400 bg-slate-900 rounded-full px-3 py-1">
+            <span className="text-sm font-medium text-dropzone-pill-text bg-dropzone-pill-bg rounded-full px-3 py-1">
               Drop here
             </span>
           </div>
         )}
-        <pre className="bg-neutral-950 border border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
+        <pre className="bg-[#0a0a0a] border border-[#262626] p-4 rounded-md overflow-x-auto text-base leading-relaxed">
           <div className={clsx(
             'transition-transform duration-150 ease-out origin-center',
             isOver && 'scale-[98%]'
           )}>
-            <code className="font-mono text-neutral-300">
+            <code className="font-mono text-[#d4d4d4]">
             <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
           </code>
           </div>

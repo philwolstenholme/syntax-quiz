@@ -59,15 +59,15 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200 ease-out" />
+        <Dialog.Backdrop className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200 ease-out" />
         <Dialog.Viewport className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-800 bg-[#0a0a0a] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-[opacity,transform] duration-200 ease-out origin-center">
+          <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-[#0a0a0a] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-[opacity,transform] duration-200 ease-out origin-center">
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-0">
-              <Dialog.Title className="font-medium text-xl tracking-tight text-neutral-100">
+              <Dialog.Title className="font-medium text-xl tracking-tight text-neutral-900 dark:text-neutral-100">
                 Save game
               </Dialog.Title>
-              <Dialog.Close className="flex items-center justify-center w-7 h-7 rounded-md text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 touch-manipulation cursor-pointer">
+              <Dialog.Close className="flex items-center justify-center w-7 h-7 rounded-md text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-300 dark:hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 touch-manipulation cursor-pointer">
                 <X size={18} aria-hidden="true" />
                 <span className="sr-only">Close</span>
               </Dialog.Close>
@@ -82,9 +82,9 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
               {saveUrl && (
                 <div className="space-y-3">
                   {/* URL display */}
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-neutral-900 border border-neutral-800">
-                    <Link size={12} className="shrink-0 text-neutral-500" aria-hidden="true" />
-                    <span className="flex-1 text-xs text-neutral-400 truncate font-mono min-w-0 select-all">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+                    <Link size={12} className="shrink-0 text-neutral-400 dark:text-neutral-500" aria-hidden="true" />
+                    <span className="flex-1 text-xs text-neutral-600 dark:text-neutral-400 truncate font-mono min-w-0 select-all">
                       {saveUrl}
                     </span>
                   </div>
@@ -93,7 +93,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium text-xs text-neutral-900 transition-[color,background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] touch-manipulation cursor-pointer bg-neutral-100 hover:bg-white active:scale-[0.97]"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium text-xs transition-[color,background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation cursor-pointer bg-neutral-900 text-neutral-100 hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white active:scale-[0.97]"
                   >
                     {copied ? (
                       <>

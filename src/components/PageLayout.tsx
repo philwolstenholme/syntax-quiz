@@ -13,7 +13,7 @@ export const PageLayout = ({ children, centered = false }: PageLayoutProps) => (
   )}>
     <a
       href="#main-content"
-      className="sr-only focus:not-sr-only focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-neutral-200 transition-colors touch-manipulation"
+      className="sr-only focus:not-sr-only focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] rounded-md bg-neutral-100 dark:bg-neutral-900 px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 transition-colors touch-manipulation"
     >
       Skip to content
     </a>

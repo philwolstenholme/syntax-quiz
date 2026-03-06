@@ -13,7 +13,7 @@ export const ThemeToggle = () => {
 
   return (
     <div
-      className="fixed top-3 right-3 z-50 flex items-center gap-0.5 rounded-lg border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+      className="fixed bottom-3 right-3 z-50 flex items-center gap-0.5 rounded-lg border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:bottom-auto sm:top-3"
       role="group"
       aria-label="Theme preference"
     >

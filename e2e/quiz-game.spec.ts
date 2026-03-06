@@ -37,8 +37,8 @@ const getCurrentQuestion = async (page: Page, levelId: number) => {
 
 const waitForAndDismissFeedback = async (page: Page) => {
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
-  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
 
@@ -86,8 +86,8 @@ const runPerfectLevel = async (page: Page, levelId: number) => {
   }
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
-  await expect(page.getByRole('heading', { name: 'Quiz Complete!' }).first()).toBeVisible();
-  await expect(page.locator('text=Total Score').locator('..').first()).toContainText(/\d/);
+  await expect(page.getByRole('heading', { name: 'Quiz complete!' }).first()).toBeVisible();
+  await expect(page.locator('text=Total score').locator('..').first()).toContainText(/\d/);
   await expect(page.getByText('Accuracy').locator('..').first()).toContainText('100%');
   await expect(page.getByText('Correct').locator('..').first()).toContainText(String(level.questions.length));
 };
@@ -123,7 +123,7 @@ const runRetryRoundLevel = async (page: Page, levelId: number) => {
   }
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
-  await expect(page.getByText(new RegExp(`Retry Round — reviewing ${incorrectlyAnsweredIndices.size} missed`))).toBeVisible();
+  await expect(page.getByText(new RegExp(`Retry round — reviewing ${incorrectlyAnsweredIndices.size} missed`))).toBeVisible();
 
   for (let index = 0; index < incorrectlyAnsweredIndices.size; index += 1) {
     await answerQuestionCorrectly(page, levelId);
@@ -131,8 +131,8 @@ const runRetryRoundLevel = async (page: Page, levelId: number) => {
   }
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
-  await expect(page.getByRole('heading', { name: 'Quiz Complete!' }).first()).toBeVisible();
-  await expect(page.locator('text=Total Score').locator('..').first()).toContainText(/\d/);
+  await expect(page.getByRole('heading', { name: 'Quiz complete!' }).first()).toBeVisible();
+  await expect(page.locator('text=Total score').locator('..').first()).toContainText(/\d/);
   await expect(page.getByText('Correct').locator('..').first()).toContainText(String(level.questions.length));
 };
 
@@ -168,9 +168,9 @@ test('correct answer shows feedback banner that can be paused/resumed and skippe
   const feedbackBanner = page.getByTestId('feedback-banner');
   await expect(feedbackBanner).toBeVisible();
 
-  const pauseButton = page.getByRole('button', { name: 'Pause Timer' });
-  const resumeButton = page.getByRole('button', { name: 'Resume Timer' });
-  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
+  const pauseButton = page.getByRole('button', { name: 'Pause timer' });
+  const resumeButton = page.getByRole('button', { name: 'Resume timer' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
 
   await expect(pauseButton).toBeVisible();
   await expect(skipFeedback).toBeVisible();
@@ -192,8 +192,8 @@ test('incorrect answer shows feedback banner that requires next question click',
   await answerQuestionIncorrectly(page, levelId);
 
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
-  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
   await expect(skipFeedback).not.toBeVisible();
@@ -210,8 +210,8 @@ test('skip question shows feedback banner that requires next question click', as
   await currentQuestionPanel(page).getByTestId('skip-question').click();
 
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip Feedback' });
-  const nextQuestion = page.getByRole('button', { name: 'Next Question' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
   await expect(skipFeedback).not.toBeVisible();

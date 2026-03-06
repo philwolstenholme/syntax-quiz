@@ -14,7 +14,7 @@ export const LevelSelect = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
               <Code2 className="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
             </div>
-            <span className="text-sm text-neutral-500 font-mono">syntax-quiz</span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400 font-mono">syntax-quiz</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
             Syntax Quiz
@@ -40,17 +40,17 @@ export const LevelSelect = () => {
                     <h2 className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
                       {level.name}
                     </h2>
-                    <span className="shrink-0 text-xs font-medium text-neutral-500 border border-neutral-200 dark:border-neutral-800 rounded-full px-2 py-0.5">
+                    <span className="shrink-0 text-xs font-medium text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 rounded-full px-2 py-0.5">
                       {level.subtitle}
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-0.5 truncate">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">
                     {level.description}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <span className="text-xs text-neutral-500 font-mono tabular-nums">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono tabular-nums">
                   {formatNumber(level.questions.length)}
                 </span>
                 <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-colors" aria-hidden="true" />

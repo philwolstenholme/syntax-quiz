@@ -35,7 +35,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
 
         <div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6">
           <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(score)}</div>
-          <div className="text-sm text-neutral-500">Total Score</div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">Total Score</div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">

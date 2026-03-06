@@ -172,7 +172,7 @@ export const QuestionsPage = () => {
                   href={`https://github.com/philwolstenholme/syntax-quiz/issues/new?template=incorrect-question.yml&title=${encodeURIComponent(`Incorrect or misleading question: ${currentQuestion.question}`)}&question_name=${encodeURIComponent(currentQuestion.question)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] rounded-md px-1 py-0.5 touch-manipulation"
+                  className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] rounded-md px-1 py-0.5 touch-manipulation"
                 >
                   Report an issue with this question
                 </a>

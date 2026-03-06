@@ -1,15 +1,5 @@
-import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-
-export type ThemePreference = 'system' | 'light' | 'dark';
-type ResolvedTheme = 'light' | 'dark';
-
-export interface ThemeContextValue {
-  theme: ThemePreference;
-  resolvedTheme: ResolvedTheme;
-  setTheme: (theme: ThemePreference) => void;
-}
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { ThemeContext, type ThemePreference, type ResolvedTheme } from './themeContextValue';
 
 const STORAGE_KEY = 'syntax-quiz-theme';
 

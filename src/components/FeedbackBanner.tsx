@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import type { PanInfo } from 'motion/react';
 import type { AnswerFeedback } from '../hooks/types';
+import { useTheme } from '../context/useTheme';
 // Swipe-to-dismiss configuration
 const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 
@@ -22,7 +23,7 @@ const DocsLink = ({ term, href, className }: { term: string; href?: string; clas
     href={href ?? getSearchUrl(term)}
     target="_blank"
     rel="noopener noreferrer"
-    className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
+    className={`underline decoration-1 underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current rounded-sm touch-manipulation ${className}`}
   >
     {term}
   </a>
@@ -45,7 +46,7 @@ const CountdownButton = ({
     <button
       type="button"
       onClick={onToggle}
-      className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
+      className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
       aria-label={paused ? 'Resume Timer' : 'Pause Timer'}
       aria-pressed={paused}
     >
@@ -72,7 +73,7 @@ const SkipButton = ({ onSkip }: SkipButtonProps) => (
   <button
     type="button"
     onClick={onSkip}
-    className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] focus-visible:ring-current touch-manipulation"
+    className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
     aria-label="Skip Feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">
@@ -97,6 +98,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   const [completed, setCompleted] = useState(false);
   const onCompleteRef = useRef(onCountdownComplete);
   const prefersReducedMotion = useReducedMotion();
+  const { resolvedTheme } = useTheme();
 
   // Swipe-to-dismiss: track horizontal position with a motion value
   const swipeX = useMotionValue(0);
@@ -182,7 +184,12 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
   if (!lastAnswer) return null;
 
   const timerActive = durationMs && !completed;
-  const ringColor = lastAnswer.correct ? '#34d399' : lastAnswer.skipped ? '#737373' : '#f87171';
+  const isDark = resolvedTheme === 'dark';
+  const ringColor = lastAnswer.correct
+    ? (isDark ? '#34d399' : '#059669')
+    : lastAnswer.skipped
+      ? '#737373'
+      : (isDark ? '#f87171' : '#dc2626');
   const isIncorrect = !lastAnswer.correct && !lastAnswer.skipped;
 
   return (
@@ -211,12 +218,12 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           aria-live={isIncorrect ? 'assertive' : 'polite'}
           aria-atomic="true"
           className={clsx(
-            'rounded-lg p-3 sm:p-4 border scroll-mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+            'rounded-lg p-3 sm:p-4 border scroll-mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
             lastAnswer.skipped
-              ? 'bg-neutral-900/50 text-neutral-300 border-neutral-700 focus-visible:ring-neutral-500'
+              ? 'bg-neutral-100 dark:bg-neutral-900/50 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-700 focus-visible:ring-neutral-500'
               : lastAnswer.correct
-                ? 'bg-emerald-500/5 text-emerald-300 border-emerald-500/20 focus-visible:ring-emerald-500'
-                : 'bg-red-500/5 text-red-300 border-red-500/20 focus-visible:ring-red-500',
+                ? 'bg-emerald-50 dark:bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20 focus-visible:ring-emerald-500'
+                : 'bg-red-50 dark:bg-red-500/5 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/20 focus-visible:ring-red-500',
           )}
         >
         <div>
@@ -225,21 +232,21 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-100" />
+                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-900 dark:text-neutral-100" />
                 </span>
               </>
             ) : lastAnswer.correct ? (
               <>
                 <CheckCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Correct! <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-emerald-200" />
+                  Correct! <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-emerald-800 dark:text-emerald-200" />
                 </span>
               </>
             ) : (
               <>
                 <XCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  Wrong — it was <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-red-200" />, not{' '}
+                  Wrong — it was <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-red-800 dark:text-red-200" />, not{' '}
                   {lastAnswer.userAnswer}
                 </span>
               </>
@@ -248,7 +255,11 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           {lastAnswer.explanation && (
             <p className={clsx(
               'mt-2 ml-7 text-base leading-7',
-              lastAnswer.skipped ? 'text-neutral-400' : lastAnswer.correct ? 'text-emerald-300/80' : 'text-red-300/80',
+              lastAnswer.skipped
+                ? 'text-neutral-600 dark:text-neutral-400'
+                : lastAnswer.correct
+                  ? 'text-emerald-700/80 dark:text-emerald-300/80'
+                  : 'text-red-700/80 dark:text-red-300/80',
             )}>
               <ExplanationWithCode text={lastAnswer.explanation} />
             </p>
@@ -270,10 +281,10 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 onClick={completeFeedback}
                 className={clsx(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors touch-manipulation cursor-pointer',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
                   lastAnswer.skipped
-                    ? 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-neutral-500'
-                    : 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700 focus-visible:ring-red-500',
+                    ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-neutral-500'
+                    : 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-red-500',
                 )}
                 aria-label="Next Question"
               >

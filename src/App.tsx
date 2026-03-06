@@ -5,6 +5,8 @@ import { QuestionsPage } from './pages/QuestionsPage';
 import { ScorePage } from './pages/ScorePage';
 import { ROUTES, ROUTE_PATTERNS } from './routes';
 import { QuizResultProvider } from './context/QuizResultContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
 
 function App() {
   const [location] = useLocation();
@@ -24,22 +26,25 @@ function App() {
     };
 
   return (
-    <QuizResultProvider>
-      <LazyMotion features={domMax}>
-        <div className="app-shell relative overflow-x-hidden bg-[#0a0a0a] min-h-dvh">
-          <AnimatePresence mode="popLayout">
-            <m.div key={location} {...pageTransition}>
-              <Switch>
-                <Route path={ROUTES.home} component={LevelSelect} />
-                <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
-                <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
-                <Route><LevelSelect /></Route>
-              </Switch>
-            </m.div>
-          </AnimatePresence>
-        </div>
-      </LazyMotion>
-    </QuizResultProvider>
+    <ThemeProvider>
+      <QuizResultProvider>
+        <LazyMotion features={domMax}>
+          <div className="app-shell relative overflow-x-hidden bg-[var(--bg)] min-h-dvh">
+            <ThemeToggle />
+            <AnimatePresence mode="popLayout">
+              <m.div key={location} {...pageTransition}>
+                <Switch>
+                  <Route path={ROUTES.home} component={LevelSelect} />
+                  <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
+                  <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
+                  <Route><LevelSelect /></Route>
+                </Switch>
+              </m.div>
+            </AnimatePresence>
+          </div>
+        </LazyMotion>
+      </QuizResultProvider>
+    </ThemeProvider>
   );
 }
 

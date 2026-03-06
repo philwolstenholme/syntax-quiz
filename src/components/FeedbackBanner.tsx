@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { m, useMotionValue, animate, useReducedMotion } from 'motion/react';
 import type { PanInfo } from 'motion/react';
 import type { AnswerFeedback } from '../hooks/types';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
 // Swipe-to-dismiss configuration
 const SWIPE_DISTANCE_THRESHOLD = 40; // px — minimum drag distance to dismiss
 

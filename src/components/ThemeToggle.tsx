@@ -1,5 +1,6 @@
 import { Monitor, Sun, Moon } from 'lucide-react';
-import { useTheme, type ThemePreference } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
+import type { ThemePreference } from '../context/ThemeContext';
 
 const options: { value: ThemePreference; icon: typeof Sun; label: string }[] = [
   { value: 'system', icon: Monitor, label: 'System theme' },

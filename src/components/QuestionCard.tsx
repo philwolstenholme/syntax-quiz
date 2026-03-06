@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { Question } from '../data/questions';
 import { darkTokenMap, lightTokenMap } from 'virtual:tokens';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
 
 interface QuestionCardProps {
   question: Question;

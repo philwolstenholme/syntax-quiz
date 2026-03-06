@@ -41,7 +41,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           disabled={disabled}
         >
           <Lightbulb size={16} aria-hidden="true" />
-          {showEliminate ? 'Eliminate 2 Answers (−50% Pts)' : 'Show Hint (−50% Pts)'}
+          {showEliminate ? 'Eliminate 2 answers (−50% pts)' : 'Show hint (−50% pts)'}
           <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">
             {formatNumber(hintsUsed)}/{formatNumber(MAX_HINTS)}
           </span>

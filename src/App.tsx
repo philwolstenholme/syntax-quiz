@@ -30,6 +30,7 @@ function App() {
       <QuizResultProvider>
         <LazyMotion features={domMax}>
           <div className="app-shell relative overflow-x-hidden bg-[var(--bg)] min-h-dvh">
+            <ThemeToggle />
             <AnimatePresence mode="popLayout">
               <m.div key={location} {...pageTransition}>
                 <Switch>
@@ -40,7 +41,6 @@ function App() {
                 </Switch>
               </m.div>
             </AnimatePresence>
-            <ThemeToggle />
           </div>
         </LazyMotion>
       </QuizResultProvider>

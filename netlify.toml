@@ -4,6 +4,9 @@
   publish = "dist"
   command = "npm run build"
 
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/syntax-quiz/level/1/questions"
   to = "/level/1/questions"
@@ -33,6 +36,13 @@
   from = "/syntax-quiz/level/3/score"
   to = "/level/3/score"
   status = 301
+
+# Route API requests to the Netlify function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
 
 # Redirect all requests to index.html for client-side routing
 [[redirects]]

@@ -1,0 +1,116 @@
+import { ORPCError, os } from '@orpc/server'
+import { OpenAPIHandler } from '@orpc/openapi/fetch'
+import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
+import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
+import { Hono } from 'hono'
+import { handle } from 'hono/aws-lambda'
+import { z } from 'zod'
+import { levels } from '../../src/data/questions.js'
+
+// --- Output schemas ---
+
+const LevelMetaSchema = z.object({
+  id: z.number().int().min(1).max(3),
+  name: z.string(),
+  subtitle: z.string(),
+  description: z.string(),
+  color: z.string(),
+  questionCount: z.number().int(),
+})
+
+const QuestionSchema = z.object({
+  code: z.string().describe('The code snippet shown to the player'),
+  highlight: z.string().describe('The portion of code to highlight'),
+  question: z.string(),
+  answers: z.array(z.string()).describe('All possible answer choices'),
+  metadata: z.object({
+    correct: z.string().describe('The correct answer'),
+    hint: z.string().describe('A hint that eliminates two wrong answer options'),
+    explanation: z.string(),
+    docsLink: z.string().url().optional(),
+  }),
+})
+
+// --- oRPC router ---
+
+const router = {
+  levels: os
+    .route({ method: 'GET', path: '/levels' })
+    .output(z.array(LevelMetaSchema))
+    .handler(async () =>
+      levels.map((l) => ({
+        id: l.id,
+        name: l.name,
+        subtitle: l.subtitle,
+        description: l.description,
+        color: l.color,
+        questionCount: l.questions.length,
+      }))
+    ),
+
+  questions: os
+    .route({ method: 'GET', path: '/questions' })
+    .input(
+      z.object({
+        level: z
+          .number()
+          .int()
+          .min(1)
+          .max(3)
+          .describe('Level number (1 = Easy, 2 = Medium, 3 = Hard)'),
+      })
+    )
+    .output(z.array(QuestionSchema))
+    .handler(async ({ input }) => {
+      const levelData = levels.find((l) => l.id === input.level)
+      if (!levelData) {
+        throw new ORPCError('NOT_FOUND', { message: `Level ${input.level} not found` })
+      }
+      return levelData.questions.map((q) => ({
+        code: q.code,
+        highlight: q.highlight,
+        question: q.question,
+        answers: q.options,
+        metadata: {
+          correct: q.correct,
+          hint: q.hint,
+          explanation: q.explanation,
+          docsLink: q.docsLink,
+        },
+      }))
+    }),
+}
+
+// --- OpenAPI handler with Scalar docs ---
+
+const openAPIHandler = new OpenAPIHandler(router, {
+  plugins: [
+    new experimental_ZodSmartCoercionPlugin(),
+    new OpenAPIReferencePlugin({
+      docsProvider: 'scalar',
+      schemaConverters: [new ZodToJsonSchemaConverter()],
+      specGenerateOptions: {
+        info: {
+          title: 'Syntax Quiz API',
+          version: '1.0.0',
+          description: 'Retrieve quiz questions and levels for the Syntax Quiz game',
+        },
+        servers: [{ url: '/api' }],
+      },
+    }),
+  ],
+})
+
+// --- Hono app with AWS Lambda adapter ---
+
+const app = new Hono()
+
+app.all('/*', async (c) => {
+  const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+    context: {},
+  })
+  if (matched) return response!
+  return c.notFound()
+})
+
+export const handler = handle(app)

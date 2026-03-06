@@ -47,7 +47,7 @@ const CountdownButton = ({
       type="button"
       onClick={onToggle}
       className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
-      aria-label={paused ? 'Resume Timer' : 'Pause Timer'}
+      aria-label={paused ? 'Resume timer' : 'Pause timer'}
       aria-pressed={paused}
     >
       <div
@@ -74,7 +74,7 @@ const SkipButton = ({ onSkip }: SkipButtonProps) => (
     type="button"
     onClick={onSkip}
     className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
-    aria-label="Skip Feedback"
+    aria-label="Skip feedback"
   >
     <div className="absolute inset-0 flex items-center justify-center">
       <FastForward size={14} aria-hidden="true" />
@@ -286,7 +286,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                     ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-neutral-500'
                     : 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-red-500',
                 )}
-                aria-label="Next Question"
+                aria-label="Next question"
               >
                 Next <ArrowRight size={16} aria-hidden="true" />
               </button>

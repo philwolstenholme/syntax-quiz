@@ -24,7 +24,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
         </div>
 
         <h1 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
-          Quiz Complete!
+          Quiz complete!
         </h1>
 
         <div className="mb-6">
@@ -35,7 +35,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
 
         <div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6">
           <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(score)}</div>
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">Total Score</div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">Total score</div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
@@ -49,7 +49,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
             className="w-full bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-700 dark:hover:bg-white transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
           >
             <RotateCcw className="w-5 h-5" aria-hidden="true" />
-            Try Again
+            Try again
           </Link>
 
           <Link
@@ -57,7 +57,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
             className="w-full bg-transparent border border-neutral-300 text-neutral-700 dark:border-neutral-800 dark:text-neutral-300 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-100 hover:border-neutral-400 dark:hover:bg-neutral-900 dark:hover:border-neutral-700 transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
           >
             <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-            Choose Another Level
+            Choose another level
           </Link>
         </div>
       </div>

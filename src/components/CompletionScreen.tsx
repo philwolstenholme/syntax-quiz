@@ -6,6 +6,7 @@ import { StatCard } from './StatCard';
 import type { Level } from '../data/questions';
 import { ROUTES } from '../routes';
 import { formatNumber, formatPercent } from '../utils/format';
+import { useCountUp } from '../hooks/useCountUp';
 
 interface CompletionScreenProps {
   score: number;
@@ -15,6 +16,9 @@ interface CompletionScreenProps {
 }
 
 export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level }: CompletionScreenProps) => {
+  const animatedScore = useCountUp(score, 1000);
+  const animatedCorrect = useCountUp(correctAnswers, 800);
+  const isPerfect = correctAnswers === totalQuestions;
   const accuracy = formatPercent(correctAnswers / totalQuestions);
   const prefersReducedMotion = useReducedMotion();
 
@@ -35,7 +39,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
         </m.div>
 
         <m.h1 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2" {...stagger(1)}>
-          Quiz complete!
+          {isPerfect ? 'Flawless.' : 'Quiz complete!'}
         </m.h1>
 
         <m.div className="mb-6" {...stagger(2)}>
@@ -45,13 +49,13 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
         </m.div>
 
         <m.div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6" {...stagger(3)}>
-          <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(score)}</div>
+          <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(animatedScore)}</div>
           <div className="text-sm text-neutral-500 dark:text-neutral-400">Total score</div>
         </m.div>
 
         <m.div className="grid grid-cols-2 gap-3 mb-6" {...stagger(4)}>
           <StatCard icon={Target} iconColor="text-blue-500 dark:text-blue-400" value={accuracy} label="Accuracy" />
-          <StatCard icon={CheckCircle} iconColor="text-emerald-500 dark:text-emerald-400" value={formatNumber(correctAnswers)} label="Correct" />
+          <StatCard icon={CheckCircle} iconColor="text-emerald-500 dark:text-emerald-400" value={formatNumber(animatedCorrect)} label="Correct" />
         </m.div>
 
         <m.div className="space-y-3" {...stagger(5)}>

@@ -5,6 +5,7 @@ import { useDraggable } from '@dnd-kit/core';
 
 interface DraggableOptionProps {
   option: string;
+  keyHint: number | null;
   disabled: boolean;
   eliminated: boolean;
   onAnswer: (answer: string) => void;
@@ -12,6 +13,7 @@ interface DraggableOptionProps {
 
 const DraggableOption = ({
   option,
+  keyHint,
   disabled,
   eliminated,
   onAnswer,
@@ -65,6 +67,11 @@ const DraggableOption = ({
         <GripVertical className="text-neutral-400 dark:text-neutral-600" size={16} aria-hidden="true" />
       </span>
       <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
+      {keyHint !== null && !isDisabled && (
+        <kbd className="hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
+          {keyHint}
+        </kbd>
+      )}
     </button>
   );
 };
@@ -84,12 +91,21 @@ export const AnswerOptions = ({
   disabled,
   eliminatedOptions = EMPTY_ELIMINATED,
 }: AnswerOptionsProps) => {
+  // Compute keyboard hint numbers: non-eliminated options get sequential 1, 2, 3…
+  let keyCounter = 0;
+  const keyHints = options.map((option) => {
+    if (eliminatedOptions.includes(option)) return null;
+    keyCounter += 1;
+    return keyCounter;
+  });
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
-      {options.map((option) => (
+      {options.map((option, i) => (
         <DraggableOption
           key={option}
           option={option}
+          keyHint={keyHints[i] ?? null}
           disabled={disabled}
           eliminated={eliminatedOptions.includes(option)}
           onAnswer={onAnswer}

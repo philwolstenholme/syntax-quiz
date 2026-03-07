@@ -2,9 +2,9 @@ import { ORPCError, os } from '@orpc/server'
 import { shuffle } from 'es-toolkit'
 import { z } from 'zod'
 import { levels } from '../../../src/data/questions.js'
-import { FeedbackSchema, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
+import { FeedbackSchema, flattenCode, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
 
-const BASE_SCORE_POINTS = 10
+export const BASE_SCORE_POINTS = 10
 
 const GAME_STATE_COOKIE = 'gameState'
 const COOKIE_ATTRS = 'Path=/api/play; SameSite=Strict'
@@ -36,14 +36,14 @@ const PlayStateSchema = z.object({
 
 function encodePlayState(state: PlayState): string {
   return btoa(JSON.stringify(state))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
     .replace(/=+$/, '')
 }
 
 function decodePlayState(encoded: string): PlayState | null {
   try {
-    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/')
+    let base64 = encoded.replaceAll('-', '+').replaceAll('_', '/')
     while (base64.length % 4) base64 += '='
     const result = PlayStateSchema.safeParse(JSON.parse(atob(base64)))
     return result.success ? result.data : null
@@ -72,7 +72,7 @@ function buildPlayQuestion(state: PlayState) {
   const levelData = levels.find((l) => l.id === state.l)!
   const q = levelData.questions[state.q[0]!]!
   return {
-    code: q.code,
+    code: flattenCode(q.code),
     highlight: q.highlight,
     question: q.question,
     answers: shuffle([...q.options]) as string[],

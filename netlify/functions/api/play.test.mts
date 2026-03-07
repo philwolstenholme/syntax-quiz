@@ -2,7 +2,8 @@ import { call } from '@orpc/server'
 import { describe, expect, it } from 'vitest'
 import type { Question } from '../../../src/data/questions.js'
 import { levels } from '../../../src/data/questions.js'
-import { playRoute } from './play.mjs'
+import { BASE_SCORE_POINTS, playRoute } from './play.mjs'
+import { flattenCode } from './schemas.mjs'
 
 const dummyRequest = new Request('http://localhost')
 
@@ -13,7 +14,7 @@ function findSourceQuestion(
 ): Question {
   const levelData = levels.find((l) => l.id === levelId)!
   const match = levelData.questions.find(
-    (q) => q.code === playQ.code && q.highlight === playQ.highlight && q.question === playQ.question,
+    (q) => flattenCode(q.code) === playQ.code && q.highlight === playQ.highlight && q.question === playQ.question,
   )
   if (!match) throw new Error('Could not find matching source question')
   return match
@@ -31,6 +32,7 @@ describe('POST /play/start', () => {
       answers: expect.any(Array),
     })
     expect(result.question.answers).toHaveLength(4)
+    expect(result.question.code).not.toContain('\n')
     expect(result.progress).toMatchObject({
       score: 0,
       streak: 0,
@@ -67,8 +69,8 @@ describe('POST /play/answer', () => {
     expect(result.feedback.skipped).toBe(false)
     expect(result.feedback.correctAnswer).toBe(sourceQ.correct)
     expect(result.feedback.userAnswer).toBe(sourceQ.correct)
-    expect(result.feedback.pointsEarned).toBe(10) // first correct = 10 * (0 + 1)
-    expect(result.progress.score).toBe(10)
+    expect(result.feedback.pointsEarned).toBe(BASE_SCORE_POINTS) // first correct = 10 * (0 + 1)
+    expect(result.progress.score).toBe(BASE_SCORE_POINTS)
     expect(result.progress.streak).toBe(1)
     expect(result.progress.correctAnswers).toBe(1)
     expect(result.complete).toBe(false)
@@ -156,9 +158,9 @@ describe('POST /play/answer', () => {
         { context: { request: dummyRequest } },
       )
       // streak was i before answering, so points = 10 * (i + 1)
-      expect(result.feedback.pointsEarned).toBe(10 * (i + 1))
+      expect(result.feedback.pointsEarned).toBe(BASE_SCORE_POINTS * (i + 1))
       expect(result.progress.streak).toBe(i + 1)
-      expectedScore += 10 * (i + 1)
+      expectedScore += BASE_SCORE_POINTS * (i + 1)
       expect(result.progress.score).toBe(expectedScore)
       if (!result.complete) {
         gameState = result.gameState!

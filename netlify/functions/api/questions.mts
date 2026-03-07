@@ -1,7 +1,7 @@
 import { ORPCError, os } from '@orpc/server'
 import { z } from 'zod'
 import { levels } from '../../../src/data/questions.js'
-import { levelParamSchema, QuestionSchema } from './schemas.mjs'
+import { flattenCode, levelParamSchema, QuestionSchema } from './schemas.mjs'
 
 export const questionsRoute = os
   .route({ method: 'GET', path: '/questions', tags: ['Reference'], summary: 'Get all questions for a level' })
@@ -17,7 +17,7 @@ export const questionsRoute = os
       throw new ORPCError('NOT_FOUND', { message: `Level ${input.level} not found` })
     }
     return levelData.questions.map((q) => ({
-      code: q.code,
+      code: flattenCode(q.code),
       highlight: q.highlight,
       question: q.question,
       answers: q.options,

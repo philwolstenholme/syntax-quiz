@@ -1,4 +1,3 @@
-import type { OpenAPIV3_1 } from 'openapi-types'
 import { ORPCError, os } from '@orpc/server'
 import { shuffle } from 'es-toolkit'
 import { z } from 'zod'
@@ -6,6 +5,12 @@ import { levels } from '../../../src/data/questions.js'
 import { FeedbackSchema, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
 
 const BASE_SCORE_POINTS = 10
+
+const GAME_STATE_COOKIE = 'gameState'
+const COOKIE_ATTRS = 'Path=/api/play; HttpOnly; SameSite=Strict'
+
+// oRPC server with typed context — play handlers receive the raw request to read cookies
+const playOs = os.$context<{ request: Request }>()
 
 interface PlayState {
   v: 1
@@ -47,6 +52,22 @@ function decodePlayState(encoded: string): PlayState | null {
   }
 }
 
+function parseCookies(header: string | null): Record<string, string> {
+  if (!header) return {}
+  const cookies: Record<string, string> = {}
+  for (const part of header.split(';')) {
+    const [key, ...rest] = part.trim().split('=')
+    if (key) cookies[key] = rest.join('=')
+  }
+  return cookies
+}
+
+/** Build the Set-Cookie header value for a gameState (or clear it). */
+export function gameStateCookie(gameState: string | null): string {
+  if (gameState) return `${GAME_STATE_COOKIE}=${gameState}; ${COOKIE_ATTRS}`
+  return `${GAME_STATE_COOKIE}=; ${COOKIE_ATTRS}; Max-Age=0`
+}
+
 function buildPlayQuestion(state: PlayState) {
   const levelData = levels.find((l) => l.id === state.l)!
   const q = levelData.questions[state.q[0]!]!
@@ -69,28 +90,13 @@ function buildProgress(state: PlayState, totalQuestions: number) {
   }
 }
 
+// --- OpenAPI spec helpers ---
+
 const SET_COOKIE_HEADER = {
   'Set-Cookie': {
     schema: { type: 'string' as const },
     description: 'Sets the `gameState` cookie (Path=/api/play; HttpOnly; SameSite=Strict). Cleared when the game is complete.',
   },
-}
-
-function addHeadersToResponses(
-  responses: OpenAPIV3_1.ResponsesObject | undefined,
-  headers: Record<string, OpenAPIV3_1.HeaderObject>,
-): OpenAPIV3_1.ResponsesObject {
-  if (!responses) return {}
-  const result: OpenAPIV3_1.ResponsesObject = {}
-  for (const [status, res] of Object.entries(responses)) {
-    if ('$ref' in (res as object)) {
-      result[status] = res
-    } else {
-      const response = res as OpenAPIV3_1.ResponseObject
-      result[status] = { ...response, headers: { ...response.headers, ...headers } }
-    }
-  }
-  return result
 }
 
 const GAME_STATE_COOKIE_PARAM = {
@@ -101,7 +107,20 @@ const GAME_STATE_COOKIE_PARAM = {
   description: 'The game state token, automatically sent by the browser if the cookie was set by a previous response.',
 }
 
-const start = os
+function withSetCookieHeader(current: Record<string, unknown>): Record<string, unknown> {
+  const responses = current.responses as Record<string, unknown> | undefined
+  if (!responses) return current
+  const patched: Record<string, unknown> = {}
+  for (const [status, res] of Object.entries(responses)) {
+    const response = res as Record<string, unknown>
+    patched[status] = { ...response, headers: { ...(response.headers as Record<string, unknown> ?? {}), ...SET_COOKIE_HEADER } }
+  }
+  return { ...current, responses: patched }
+}
+
+// --- Routes ---
+
+const start = playOs
   .route({
     method: 'POST',
     path: '/play/start',
@@ -126,10 +145,7 @@ const start = os
       'When playing from the Scalar docs UI, you don\'t need to copy-paste the `gameState` token. ' +
       'It is automatically stored as a cookie and sent with subsequent requests. ' +
       'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.',
-    spec: (current) => {
-      const responses = addHeadersToResponses(current.responses, SET_COOKIE_HEADER)
-      return { ...current, responses }
-    },
+    spec: (current) => withSetCookieHeader(current as Record<string, unknown>) as typeof current,
   })
   .input(z.object({ level: levelParamSchema }))
   .output(z.object({
@@ -162,7 +178,7 @@ const start = os
     }
   })
 
-const answer = os
+const answer = playOs
   .route({
     method: 'POST',
     path: '/play/answer',
@@ -177,12 +193,11 @@ const answer = os
       '- **complete** — `true` when the game is over (all questions answered, including retries).\n' +
       '- **gameState** — the updated token to send with your next request (`null` when complete).',
     spec: (current) => {
-      const responses = addHeadersToResponses(current.responses, SET_COOKIE_HEADER)
+      const patched = withSetCookieHeader(current as Record<string, unknown>)
       return {
-        ...current,
-        parameters: [...(current.parameters ?? []), GAME_STATE_COOKIE_PARAM],
-        responses,
-      }
+        ...patched,
+        parameters: [...((current as Record<string, unknown>).parameters as unknown[] ?? []), GAME_STATE_COOKIE_PARAM],
+      } as typeof current
     },
   })
   .input(z.object({
@@ -196,11 +211,13 @@ const answer = os
     progress: ProgressSchema.describe('Updated score, streak, and remaining question count'),
     complete: z.boolean().describe('True when the game is over — no more questions to answer'),
   }))
-  .handler(async ({ input }) => {
-    if (!input.gameState) {
+  .handler(async ({ input, context }) => {
+    // Read gameState from body, falling back to the cookie
+    const gameStateToken = input.gameState ?? parseCookies(context.request.headers.get('cookie'))[GAME_STATE_COOKIE]
+    if (!gameStateToken) {
       throw new ORPCError('BAD_REQUEST', { message: 'Missing game state — provide gameState in the request body or start a game first to set the cookie' })
     }
-    const state = decodePlayState(input.gameState)
+    const state = decodePlayState(gameStateToken)
     if (!state) {
       throw new ORPCError('BAD_REQUEST', { message: 'Invalid game state' })
     }

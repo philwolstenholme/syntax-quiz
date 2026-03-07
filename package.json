@@ -18,8 +18,12 @@
   "dependencies": {
     "@base-ui/react": "^1.2.0",
     "@dnd-kit/core": "^6.3.1",
+    "@orpc/openapi": "^1.13.6",
+    "@orpc/server": "^1.13.6",
+    "@orpc/zod": "^1.13.6",
     "clsx": "^2.1.1",
     "es-toolkit": "^1.44.0",
+    "hono": "^4.12.5",
     "lucide-react": "^0.577.0",
     "motion": "^12.31.0",
     "react": "^19.2.3",

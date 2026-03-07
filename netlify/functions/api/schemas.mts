@@ -2,7 +2,7 @@ import { JSON_SCHEMA_INPUT_REGISTRY } from '@orpc/zod/zod4'
 import { z } from 'zod'
 
 // Runtime: smart coercion converts "1" → 1 from query params
-// OpenAPI: registry override adds enum so Scalar shows a dropdown
+// OpenAPI: registry override adds enum so the docs site shows a dropdown
 export const levelParamSchema = z
   .number()
   .int()

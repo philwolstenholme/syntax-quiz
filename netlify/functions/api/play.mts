@@ -141,12 +141,12 @@ const start = playOs
       'After you finish all questions, any you missed are reshuffled into a retry round. The game is only complete once every question has been answered correctly (or the retry round ends).\n\n' +
       '## Game state\n\n' +
       'The `gameState` token is opaque — receive it from the response and send it back unchanged with your next request. Do not modify or inspect it.\n\n' +
-      '## Playing via Scalar / browser\n\n' +
-      'When playing from the Scalar docs UI, you don\'t need to copy-paste the `gameState` token. ' +
+      '## Playing via the docs site\n\n' +
+      'When playing from the docs site, you don\'t need to copy-paste the `gameState` token. ' +
       'It is automatically stored as a cookie and sent with subsequent requests. ' +
       'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.\n\n' +
-      '> **Note:** The `Set-Cookie` response header and `Cookie` request header will not appear in Scalar\'s UI. ' +
-      'This is a browser security limitation — `Set-Cookie` is a forbidden response header that JavaScript (and therefore Scalar\'s fetch client) cannot read. ' +
+      '> **Note:** The `Set-Cookie` response header and `Cookie` request header will not appear in the docs site UI. ' +
+      'This is a browser security limitation — `Set-Cookie` is a forbidden response header that browser-based API clients cannot read. ' +
       'The cookie is still being set and sent by the browser. You can verify this in your browser\'s DevTools under the Network tab → select a `/play/` request → look at the Response Headers and Request Headers (look for the cookie).',
     spec: (current) => withSetCookieHeader(current as Record<string, unknown>) as typeof current,
   })

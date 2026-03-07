@@ -88,7 +88,11 @@ const start = os
       '## Retry round\n\n' +
       'After you finish all questions, any you missed are reshuffled into a retry round. The game is only complete once every question has been answered correctly (or the retry round ends).\n\n' +
       '## Game state\n\n' +
-      'The `gameState` token is opaque — receive it from the response and send it back unchanged with your next request. Do not modify or inspect it.',
+      'The `gameState` token is opaque — receive it from the response and send it back unchanged with your next request. Do not modify or inspect it.\n\n' +
+      '## Playing via Scalar / browser\n\n' +
+      'When playing from the Scalar docs UI, you don\'t need to copy-paste the `gameState` token. ' +
+      'It is automatically stored as a cookie and sent with subsequent requests. ' +
+      'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.',
   })
   .input(z.object({ level: levelParamSchema }))
   .output(z.object({
@@ -137,7 +141,7 @@ const answer = os
       '- **gameState** — the updated token to send with your next request (`null` when complete).',
   })
   .input(z.object({
-    gameState: z.string().describe('The opaque game state token from the previous response'),
+    gameState: z.string().optional().describe('The opaque game state token from the previous response. Optional when playing via the browser — the cookie is used automatically.'),
     answer: z.string().nullable().describe('Your answer choice (must match one of the provided answers exactly), or null to skip'),
   }))
   .output(z.object({
@@ -148,6 +152,9 @@ const answer = os
     complete: z.boolean().describe('True when the game is over — no more questions to answer'),
   }))
   .handler(async ({ input }) => {
+    if (!input.gameState) {
+      throw new ORPCError('BAD_REQUEST', { message: 'Missing game state — provide gameState in the request body or start a game first to set the cookie' })
+    }
     const state = decodePlayState(input.gameState)
     if (!state) {
       throw new ORPCError('BAD_REQUEST', { message: 'Invalid game state' })

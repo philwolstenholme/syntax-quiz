@@ -60,7 +60,7 @@ export const LevelSelect = () => {
                 <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono tabular-nums">
                   {formatNumber(level.questions.length)}
                 </span>
-                <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-colors" aria-hidden="true" />
+                <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-[color,transform] duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
               </div>
             </Link>
           ))}

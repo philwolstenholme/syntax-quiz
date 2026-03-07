@@ -1,6 +1,11 @@
 import { JSON_SCHEMA_INPUT_REGISTRY } from '@orpc/zod/zod4'
 import { z } from 'zod'
 
+/** Collapse multi-line code snippets to a single line for JSON responses. */
+export function flattenCode(code: string): string {
+  return code.replaceAll('\n', ' ')
+}
+
 // Runtime: smart coercion converts "1" → 1 from query params
 // OpenAPI: registry override adds enum so the docs site shows a dropdown
 export const levelParamSchema = z

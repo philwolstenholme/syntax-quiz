@@ -1,20 +1,23 @@
 import { call } from '@orpc/server'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { levels } from '../../../src/data/questions.js'
 import { questionsRoute } from './questions.mjs'
 
 describe('GET /questions', () => {
-  it('returns all questions for a valid level', async () => {
-    const result = await call(questionsRoute, { level: 1 })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let level1Result: any[]
 
-    const sourceLevel = levels.find((l) => l.id === 1)!
-    expect(result).toHaveLength(sourceLevel.questions.length)
+  beforeAll(async () => {
+    level1Result = await call(questionsRoute, { level: 1 })
   })
 
-  it('returns questions with the correct shape', async () => {
-    const result = await call(questionsRoute, { level: 1 })
+  it('returns all questions for a valid level', () => {
+    const sourceLevel = levels.find((l) => l.id === 1)!
+    expect(level1Result).toHaveLength(sourceLevel.questions.length)
+  })
 
-    for (const q of result) {
+  it('returns questions with the correct shape', () => {
+    for (const q of level1Result) {
       expect(q).toMatchObject({
         code: expect.any(String),
         highlight: expect.any(String),
@@ -30,10 +33,14 @@ describe('GET /questions', () => {
     }
   })
 
-  it('includes the correct answer in the answers array', async () => {
-    const result = await call(questionsRoute, { level: 1 })
+  it('flattens newlines in code snippets', () => {
+    for (const q of level1Result) {
+      expect(q.code).not.toContain('\n')
+    }
+  })
 
-    for (const q of result) {
+  it('includes the correct answer in the answers array', () => {
+    for (const q of level1Result) {
       expect(q.answers).toContain(q.metadata.correct)
     }
   })

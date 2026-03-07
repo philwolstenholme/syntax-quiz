@@ -47,7 +47,7 @@ const CountdownButton = ({
       type="button"
       onClick={onToggle}
       className="relative w-9 h-9 shrink-0 cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
-      aria-label={paused ? 'Resume timer' : 'Pause timer'}
+      aria-label={paused ? `Resume timer (${Math.ceil((1 - progress) * 100)}% remaining)` : `Pause timer (${Math.ceil((1 - progress) * 100)}% remaining)`}
       aria-pressed={paused}
     >
       <div
@@ -74,7 +74,7 @@ const SkipButton = ({ onSkip }: SkipButtonProps) => (
     type="button"
     onClick={onSkip}
     className="relative w-9 h-9 shrink-0 rounded-md text-current hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] focus-visible:ring-current touch-manipulation"
-    aria-label="Skip feedback"
+    aria-label="Skip to next question"
   >
     <div className="absolute inset-0 flex items-center justify-center">
       <FastForward size={14} aria-hidden="true" />
@@ -232,7 +232,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>
-                  The answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-900 dark:text-neutral-100" />
+                  Skipped — the answer is <DocsLink term={lastAnswer.term} href={lastAnswer.docsLink} className="text-neutral-900 dark:text-neutral-100" />
                 </span>
               </>
             ) : lastAnswer.correct ? (

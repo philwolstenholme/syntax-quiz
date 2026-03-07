@@ -98,13 +98,13 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         {question.question}
       </h2>
       <p id="question-instructions" className="text-neutral-500 dark:text-neutral-400 mb-4 text-base">
-        Drag an answer onto the code or click to select
+        Drag an answer onto the code or tap to select
       </p>
       <div
         ref={setNodeRef}
         data-dropzone
         role="region"
-        aria-label="Answer dropzone"
+        aria-label="Code snippet — drop an answer here"
         aria-describedby="question-instructions"
         className={clsx(
           'relative rounded-md overflow-hidden transition-all duration-150',
@@ -113,20 +113,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
       >
         {isOver && (
           <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-[5px] flex items-center justify-center z-10">
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 border border-blue-200 dark:border-transparent rounded-full px-3 py-1">
+            <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-900 border border-blue-200 dark:border-transparent rounded-full px-3 py-1">
               Drop here
             </span>
           </div>
         )}
         <pre className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
-          <div className={clsx(
-            'transition-transform duration-150 ease-out origin-center',
+          <span className={clsx(
+            'block transition-transform duration-150 ease-out origin-center',
             isOver && 'scale-[98%]'
           )}>
             <code className="font-mono text-neutral-700 dark:text-neutral-300">
             <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
           </code>
-          </div>
+          </span>
         </pre>
       </div>
     </div>

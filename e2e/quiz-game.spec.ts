@@ -37,7 +37,7 @@ const getCurrentQuestion = async (page: Page, levelId: number) => {
 
 const waitForAndDismissFeedback = async (page: Page) => {
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip to next question' });
   const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
@@ -170,7 +170,7 @@ test('correct answer shows feedback banner that can be paused/resumed and skippe
 
   const pauseButton = page.getByRole('button', { name: 'Pause timer' });
   const resumeButton = page.getByRole('button', { name: 'Resume timer' });
-  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip to next question' });
 
   await expect(pauseButton).toBeVisible();
   await expect(skipFeedback).toBeVisible();
@@ -192,7 +192,7 @@ test('incorrect answer shows feedback banner that requires next question click',
   await answerQuestionIncorrectly(page, levelId);
 
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip to next question' });
   const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
@@ -210,7 +210,7 @@ test('skip question shows feedback banner that requires next question click', as
   await currentQuestionPanel(page).getByTestId('skip-question').click();
 
   const feedbackBanner = page.getByTestId('feedback-banner');
-  const skipFeedback = page.getByRole('button', { name: 'Skip feedback' });
+  const skipFeedback = page.getByRole('button', { name: 'Skip to next question' });
   const nextQuestion = page.getByRole('button', { name: 'Next question' });
 
   await expect(feedbackBanner).toBeVisible();
@@ -242,6 +242,8 @@ test('save URL restores score and returns user to question flow', async ({ page 
 
   await page.goto(savedUrl!);
 
+  // Wait for the lazy-loaded QuestionsPage to mount and strip the ?s= param
+  await expect(page.getByTestId('question-panel')).toBeVisible();
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions`));
   expect(page.url()).not.toContain('?s=');
   const restoredScore = await getScoreValue(page);

@@ -5,26 +5,24 @@
 
 @layer base {
   :root {
-    --bg: #fafafa;
+    --bg: theme(--color-neutral-50);
+    --text: theme(--color-neutral-900);
     -webkit-tap-highlight-color: transparent;
     color-scheme: light;
   }
 
   .dark {
-    --bg: #0a0a0a;
+    --bg: theme(--color-neutral-950);
+    --text: theme(--color-neutral-200);
     color-scheme: dark;
   }
 
   body {
     font-family: "Geist", system-ui, -apple-system, sans-serif;
     background-color: var(--bg);
-    color: #171717;
+    color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  .dark body {
-    color: #ededed;
   }
 
   .feedback-banner code {
@@ -46,7 +44,7 @@
   }
 
   ::selection {
-    background-color: rgba(0, 112, 243, 0.3);
+    background-color: color-mix(in srgb, theme(--color-blue-500) 30%, transparent);
   }
 }
 

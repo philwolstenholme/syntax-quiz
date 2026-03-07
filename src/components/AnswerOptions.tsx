@@ -43,10 +43,10 @@ const DraggableOption = ({
       className={clsx(
         'flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800',
         'bg-white dark:bg-neutral-900/50 text-neutral-800 dark:text-neutral-200 font-medium text-base',
-        'transition-colors duration-150 select-none',
+        'transition-[color,background-color,border-color,opacity] duration-150 select-none',
         eliminated && 'opacity-25 line-through cursor-not-allowed',
         !isDisabled
-          ? 'hover:bg-neutral-100 hover:border-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:border-neutral-700'
+          ? 'hover:bg-neutral-100 hover:border-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:border-neutral-700 active:scale-[0.98]'
           : !eliminated && 'opacity-40 cursor-not-allowed',
         isDragging && 'opacity-30',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',

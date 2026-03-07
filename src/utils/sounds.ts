@@ -3,23 +3,30 @@ const SOUND_URLS = {
   incorrect: 'https://cdn.freesound.org/previews/625/625687_13682949-lq.mp3',
 };
 
-const createAudio = (url: string): HTMLAudioElement => {
+let correctSound: HTMLAudioElement | null = null;
+let incorrectSound: HTMLAudioElement | null = null;
+
+const getOrCreate = (current: HTMLAudioElement | null, url: string): HTMLAudioElement => {
+  if (current) return current;
   const audio = new Audio(url);
   audio.preload = 'auto';
   return audio;
 };
 
-const correctSound = createAudio(SOUND_URLS.correct);
-const incorrectSound = createAudio(SOUND_URLS.incorrect);
-
 const playSound = (audio: HTMLAudioElement): void => {
   try {
-    // Reset and reuse the element instead of cloning (avoids orphaned DOM nodes)
     audio.currentTime = 0;
     audio.volume = 0.5;
     audio.play().catch(() => {});
   } catch { /* audio unsupported */ }
 };
 
-export const playCorrectSound = (): void => playSound(correctSound);
-export const playIncorrectSound = (): void => playSound(incorrectSound);
+export const playCorrectSound = (): void => {
+  correctSound = getOrCreate(correctSound, SOUND_URLS.correct);
+  playSound(correctSound);
+};
+
+export const playIncorrectSound = (): void => {
+  incorrectSound = getOrCreate(incorrectSound, SOUND_URLS.incorrect);
+  playSound(incorrectSound);
+};

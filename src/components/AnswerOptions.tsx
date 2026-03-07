@@ -92,12 +92,15 @@ export const AnswerOptions = ({
   eliminatedOptions = EMPTY_ELIMINATED,
 }: AnswerOptionsProps) => {
   // Compute keyboard hint numbers: non-eliminated options get sequential 1, 2, 3…
-  let keyCounter = 0;
-  const keyHints = options.map((option) => {
-    if (eliminatedOptions.includes(option)) return null;
-    keyCounter += 1;
-    return keyCounter;
-  });
+  const keyHints = options.reduce<(number | null)[]>((acc, option) => {
+    if (eliminatedOptions.includes(option)) {
+      acc.push(null);
+    } else {
+      const prev = acc.filter((v) => v !== null).length;
+      acc.push(prev + 1);
+    }
+    return acc;
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">

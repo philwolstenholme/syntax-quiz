@@ -1,6 +1,5 @@
 import { ChevronRight, Flame, Home, Star } from 'lucide-react';
 import { Link } from 'wouter';
-import { useEffect, useRef, useState } from 'react';
 import type { Level } from '../data/questions';
 import { ROUTES } from '../routes';
 import { formatNumber } from '../utils/format';
@@ -20,29 +19,6 @@ interface QuizHeaderProps {
 
 export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level, onSave, isAnswering }: QuizHeaderProps) => {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-  const prevStreakRef = useRef(streak);
-  const prevScoreRef = useRef(score);
-  const [streakPulse, setStreakPulse] = useState(false);
-  const [scorePop, setScorePop] = useState(false);
-
-  useEffect(() => {
-    if (streak > prevStreakRef.current && STREAK_MILESTONES.has(streak)) {
-      setStreakPulse(true);
-      const timer = setTimeout(() => setStreakPulse(false), 600);
-      return () => clearTimeout(timer);
-    }
-    prevStreakRef.current = streak;
-  }, [streak]);
-
-  useEffect(() => {
-    if (score > prevScoreRef.current) {
-      setScorePop(true);
-      const timer = setTimeout(() => setScorePop(false), 300);
-      prevScoreRef.current = score;
-      return () => clearTimeout(timer);
-    }
-    prevScoreRef.current = score;
-  }, [score]);
 
   return (
     <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900/50 p-3 sm:p-4 mb-4">
@@ -61,21 +37,23 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
               {level.name}
             </span>
           </div>
-          <div
-            data-testid="streak-value"
-            className="flex items-center gap-1 h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums"
-            style={streakPulse ? { animation: 'streak-pulse 0.6s ease-out' } : undefined}
-          >
+          <div data-testid="streak-value" className="flex items-center gap-1 h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums">
             <Flame size={12} aria-hidden="true" />
-            <span>{formatNumber(streak)}</span>
+            <span
+              key={streak}
+              style={STREAK_MILESTONES.has(streak) && streak > 0 ? { animation: 'streak-pulse 0.6s ease-out' } : undefined}
+            >
+              {formatNumber(streak)}
+            </span>
           </div>
-          <div
-            data-testid="score-value"
-            className="flex items-center gap-1 h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums"
-            style={scorePop ? { animation: 'score-pop 0.3s ease-out' } : undefined}
-          >
+          <div data-testid="score-value" className="flex items-center gap-1 h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums">
             <Star size={12} aria-hidden="true" />
-            <span>{formatNumber(score)}</span>
+            <span
+              key={score}
+              style={score > 0 ? { animation: 'score-pop 0.3s ease-out' } : undefined}
+            >
+              {formatNumber(score)}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">

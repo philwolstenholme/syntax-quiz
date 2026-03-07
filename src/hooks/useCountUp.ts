@@ -10,10 +10,7 @@ export function useCountUp(target: number, durationMs = 800): number {
   const [value, setValue] = useState(prefersReducedMotion ? target : 0);
 
   useEffect(() => {
-    if (prefersReducedMotion || target === 0) {
-      setValue(target);
-      return;
-    }
+    if (prefersReducedMotion || target === 0) return;
 
     const start = performance.now();
 
@@ -32,6 +29,9 @@ export function useCountUp(target: number, durationMs = 800): number {
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [target, durationMs, prefersReducedMotion]);
+
+  // Skip animation when reduced motion is preferred or target is zero
+  if (prefersReducedMotion || target === 0) return target;
 
   return value;
 }

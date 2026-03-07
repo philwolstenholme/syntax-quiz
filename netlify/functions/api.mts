@@ -52,10 +52,7 @@ const router = {
     .input(
       z.object({
         level: z
-          .number()
-          .int()
-          .min(1)
-          .max(3)
+          .union([z.literal(1), z.literal(2), z.literal(3)])
           .describe('Level number (1 = Easy, 2 = Medium, 3 = Hard)'),
       })
     )

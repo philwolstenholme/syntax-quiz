@@ -68,7 +68,7 @@ const DraggableOption = ({
       </span>
       <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
       {keyHint !== null && !isDisabled && (
-        <kbd className="hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
+        <kbd aria-hidden="true" className="hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
           {keyHint}
         </kbd>
       )}

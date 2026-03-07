@@ -26,9 +26,6 @@ const openAPIHandler = new OpenAPIHandler(router, {
         },
         servers: [{ url: '/api' }],
       },
-      docsConfig: {
-        proxyUrl: 'https://proxy.scalar.com',
-      },
     }),
   ],
 })

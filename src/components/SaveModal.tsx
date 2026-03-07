@@ -60,8 +60,8 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200 ease-out" />
-        <Dialog.Viewport className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-sm opacity-0 data-open:opacity-100 transition-opacity duration-200 ease-out" />
+        <Dialog.Viewport className="fixed inset-0 flex items-center justify-center p-4 z-[51] pointer-events-none">
           <Dialog.Popup className="pointer-events-auto w-full max-w-md rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-[var(--bg)] opacity-0 scale-95 data-open:opacity-100 data-open:scale-100 transition-[opacity,transform] duration-200 ease-out origin-center">
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-0">

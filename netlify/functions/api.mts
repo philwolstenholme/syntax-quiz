@@ -1,8 +1,8 @@
 import { OpenAPIHandler } from '@orpc/openapi/fetch'
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
 import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
-import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import { Hono } from 'hono'
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import { levelsRoute } from './api/levels.mjs'
 import { playRoute } from './api/play.mjs'
 import { questionsRoute } from './api/questions.mjs'
@@ -44,54 +44,55 @@ app.use('/*', async (c, next) => {
   }
 })
 
-// Cookie convenience layer for play endpoints — allows playing via Scalar without manual copy-paste.
-// If the request body omits gameState, inject it from the cookie before forwarding to oRPC.
-// After oRPC responds, sync the cookie with the gameState in the response body.
-app.post('/play/answer', async (c, next) => {
-  const body = await c.req.json()
-  if (!body.gameState) {
-    const cookie = getCookie(c, GAME_STATE_COOKIE)
-    if (cookie) {
-      body.gameState = cookie
-      // Replace the request with the patched body so oRPC sees it
-      const patchedRequest = new Request(c.req.raw, {
-        body: JSON.stringify(body),
-        headers: c.req.raw.headers,
-      })
-      // Swap out the raw request on the context
-      c.req.raw = patchedRequest
+app.all('/*', async (c) => {
+  const url = new URL(c.req.url)
+  const isPlayAnswer = c.req.method === 'POST' && url.pathname === '/api/play/answer'
+  const isPlay = c.req.method === 'POST' && url.pathname.startsWith('/api/play/')
+
+  // Cookie convenience layer for play endpoints — allows playing via Scalar without manual copy-paste.
+  // If the answer request body omits gameState, inject it from the cookie before forwarding to oRPC.
+  let request = c.req.raw
+  if (isPlayAnswer) {
+    try {
+      const body = await request.clone().json()
+      if (!body.gameState) {
+        const cookie = getCookie(c, GAME_STATE_COOKIE)
+        if (cookie) {
+          body.gameState = cookie
+          request = new Request(request, {
+            body: JSON.stringify(body),
+            headers: request.headers,
+          })
+        }
+      }
+    } catch {
+      // Not valid JSON — let oRPC handle the error
     }
   }
-  await next()
-})
 
-app.post('/play/*', async (c, next) => {
-  await next()
-  if (!c.res.ok) return
-
-  const resBody = await c.res.json()
-  const newRes = c.newResponse(JSON.stringify(resBody), c.res)
-
-  if (resBody.gameState) {
-    setCookie(c, GAME_STATE_COOKIE, resBody.gameState, {
-      path: '/api/play',
-      httpOnly: true,
-      sameSite: 'Strict',
-    })
-  } else {
-    deleteCookie(c, GAME_STATE_COOKIE, { path: '/api/play' })
-  }
-
-  c.res = newRes
-})
-
-app.all('/*', async (c) => {
-  const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+  const { matched, response } = await openAPIHandler.handle(request, {
     prefix: '/api',
     context: {},
   })
-  if (matched) return response!
-  return c.notFound()
+
+  if (!matched) return c.notFound()
+
+  // After oRPC responds, sync the cookie with the gameState in the response body.
+  if (isPlay && response!.ok) {
+    const resBody = await response!.json()
+    if (resBody.gameState) {
+      setCookie(c, GAME_STATE_COOKIE, resBody.gameState, {
+        path: '/api/play',
+        httpOnly: true,
+        sameSite: 'Strict',
+      })
+    } else {
+      deleteCookie(c, GAME_STATE_COOKIE, { path: '/api/play' })
+    }
+    return c.json(resBody)
+  }
+
+  return response!
 })
 
 export default (request: Request) => app.fetch(request)

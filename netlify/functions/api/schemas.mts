@@ -33,27 +33,27 @@ export const QuestionSchema = z.object({
 })
 
 export const PlayQuestionSchema = z.object({
-  code: z.string(),
-  highlight: z.string(),
-  question: z.string(),
-  answers: z.array(z.string()),
+  code: z.string().describe('The code snippet to display'),
+  highlight: z.string().describe('The portion of the code to highlight'),
+  question: z.string().describe('The question to ask about the highlighted code'),
+  answers: z.array(z.string()).describe('Four shuffled answer choices — exactly one is correct'),
 })
 
 export const FeedbackSchema = z.object({
-  correct: z.boolean(),
-  skipped: z.boolean(),
-  correctAnswer: z.string(),
-  userAnswer: z.string().nullable(),
-  explanation: z.string(),
-  docsLink: z.string().url().optional(),
-  pointsEarned: z.number().int(),
+  correct: z.boolean().describe('Whether the submitted answer was correct'),
+  skipped: z.boolean().describe('Whether the question was skipped (answer was null)'),
+  correctAnswer: z.string().describe('The correct answer for this question'),
+  userAnswer: z.string().nullable().describe('The answer that was submitted, or null if skipped'),
+  explanation: z.string().describe('An explanation of why the correct answer is correct'),
+  docsLink: z.string().url().optional().describe('Link to relevant documentation'),
+  pointsEarned: z.number().int().min(0).describe('Points earned for this answer (0 if wrong or skipped)'),
 })
 
 export const ProgressSchema = z.object({
-  score: z.number().int(),
-  streak: z.number().int(),
-  correctAnswers: z.number().int(),
-  totalQuestions: z.number().int(),
-  questionsRemaining: z.number().int(),
-  isRetryRound: z.boolean(),
+  score: z.number().int().min(0).describe('Cumulative score'),
+  streak: z.number().int().min(0).describe('Current consecutive correct answer streak'),
+  correctAnswers: z.number().int().min(0).describe('Total number of questions answered correctly'),
+  totalQuestions: z.number().int().min(0).describe('Total number of questions in this level'),
+  questionsRemaining: z.number().int().min(0).describe('Number of questions left to answer in this pass'),
+  isRetryRound: z.boolean().describe('True if this is a retry round for previously missed questions'),
 })

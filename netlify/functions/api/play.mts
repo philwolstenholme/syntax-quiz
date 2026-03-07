@@ -69,12 +69,32 @@ function buildProgress(state: PlayState, totalQuestions: number) {
 }
 
 const start = os
-  .route({ method: 'POST', path: '/play/start' })
+  .route({
+    method: 'POST',
+    path: '/play/start',
+    tags: ['Play'],
+    summary: 'Start a new game',
+    description:
+      'Begins a new quiz game for the chosen level. Returns a shuffled first question and an opaque `gameState` token.\n\n' +
+      '## How to play\n\n' +
+      '1. Call this endpoint with a level (1 = Easy, 2 = Medium, 3 = Hard) to get your first question and a `gameState` token.\n' +
+      '2. Read the `question` object — it contains a code snippet, a highlighted portion, and four shuffled answer choices.\n' +
+      '3. Submit your answer (or `null` to skip) to `POST /play/answer` along with the `gameState` token.\n' +
+      '4. The response includes feedback on whether you were correct, the next question, and an updated `gameState`. Pass the new token back with your next answer.\n' +
+      '5. Keep answering until `complete` is `true`.\n\n' +
+      '## Scoring\n\n' +
+      '- Each correct answer earns `10 × (current streak + 1)` points — consecutive correct answers build a streak multiplier.\n' +
+      '- Wrong answers and skips reset the streak to 0 and queue the question for a retry round.\n\n' +
+      '## Retry round\n\n' +
+      'After you finish all questions, any you missed are reshuffled into a retry round. The game is only complete once every question has been answered correctly (or the retry round ends).\n\n' +
+      '## Game state\n\n' +
+      'The `gameState` token is opaque — receive it from the response and send it back unchanged with your next request. Do not modify or inspect it.',
+  })
   .input(z.object({ level: levelParamSchema }))
   .output(z.object({
-    gameState: z.string(),
-    question: PlayQuestionSchema,
-    progress: ProgressSchema,
+    gameState: z.string().describe('Opaque token encoding the game state — send this back with your next answer'),
+    question: PlayQuestionSchema.describe('The first question to answer'),
+    progress: ProgressSchema.describe('Initial progress (score 0, streak 0)'),
   }))
   .handler(async ({ input }) => {
     const levelData = levels.find((l) => l.id === input.level)
@@ -102,17 +122,30 @@ const start = os
   })
 
 const answer = os
-  .route({ method: 'POST', path: '/play/answer' })
+  .route({
+    method: 'POST',
+    path: '/play/answer',
+    tags: ['Play'],
+    summary: 'Submit an answer or skip',
+    description:
+      'Submit your answer to the current question. Send `answer: null` to skip.\n\n' +
+      'The response includes:\n' +
+      '- **feedback** — whether you were correct, the correct answer, an explanation, and points earned.\n' +
+      '- **question** — the next question (or `null` if the game is complete).\n' +
+      '- **progress** — your running score, streak, and how many questions remain.\n' +
+      '- **complete** — `true` when the game is over (all questions answered, including retries).\n' +
+      '- **gameState** — the updated token to send with your next request (`null` when complete).',
+  })
   .input(z.object({
-    gameState: z.string(),
-    answer: z.string().nullable(),
+    gameState: z.string().describe('The opaque game state token from the previous response'),
+    answer: z.string().nullable().describe('Your answer choice (must match one of the provided answers exactly), or null to skip'),
   }))
   .output(z.object({
-    gameState: z.string().nullable(),
-    feedback: FeedbackSchema,
-    question: PlayQuestionSchema.nullable(),
-    progress: ProgressSchema,
-    complete: z.boolean(),
+    gameState: z.string().nullable().describe('Updated game state token for the next request, or null when the game is complete'),
+    feedback: FeedbackSchema.describe('Feedback on the question you just answered'),
+    question: PlayQuestionSchema.nullable().describe('The next question, or null when the game is complete'),
+    progress: ProgressSchema.describe('Updated score, streak, and remaining question count'),
+    complete: z.boolean().describe('True when the game is over — no more questions to answer'),
   }))
   .handler(async ({ input }) => {
     const state = decodePlayState(input.gameState)

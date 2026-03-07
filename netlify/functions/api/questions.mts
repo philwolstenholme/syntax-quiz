@@ -4,7 +4,7 @@ import { levels } from '../../../src/data/questions.js'
 import { levelParamSchema, QuestionSchema } from './schemas.mjs'
 
 export const questionsRoute = os
-  .route({ method: 'GET', path: '/questions' })
+  .route({ method: 'GET', path: '/questions', tags: ['Reference'], summary: 'Get all questions for a level' })
   .input(
     z.object({
       level: levelParamSchema,

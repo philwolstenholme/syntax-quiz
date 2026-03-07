@@ -4,7 +4,7 @@ import { levels } from '../../../src/data/questions.js'
 import { LevelMetaSchema } from './schemas.mjs'
 
 export const levelsRoute = os
-  .route({ method: 'GET', path: '/levels' })
+  .route({ method: 'GET', path: '/levels', tags: ['Reference'], summary: 'List all levels' })
   .output(z.array(LevelMetaSchema))
   .handler(async () =>
     levels.map((l) => ({

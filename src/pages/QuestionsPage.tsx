@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   DndContext,
@@ -54,11 +54,29 @@ export const QuestionsPage = () => {
   });
   const sensors = useSensors(pointerSensor, touchSensor);
 
+  // Keyboard shortcuts: 1-4 to pick an answer, or press the visible option number
+  const handleKeyboardAnswer = useCallback((e: KeyboardEvent) => {
+    if (isAnswering || !currentQuestion) return;
+    const key = e.key;
+    if (key >= '1' && key <= '4') {
+      const index = parseInt(key, 10) - 1;
+      const visibleOptions = currentQuestion.options.filter(
+        (opt) => !eliminatedOptions.includes(opt),
+      );
+      const selected = visibleOptions[index];
+      if (selected) {
+        handleAnswer(selected);
+      }
+    }
+  }, [isAnswering, currentQuestion, eliminatedOptions, handleAnswer]);
+
   useEffect(() => {
+    document.addEventListener('keydown', handleKeyboardAnswer);
     return () => {
+      document.removeEventListener('keydown', handleKeyboardAnswer);
       document.body.style.userSelect = '';
     };
-  }, []);
+  }, [handleKeyboardAnswer]);
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);

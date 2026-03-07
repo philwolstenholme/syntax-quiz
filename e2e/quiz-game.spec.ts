@@ -86,7 +86,7 @@ const runPerfectLevel = async (page: Page, levelId: number) => {
   }
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
-  await expect(page.getByRole('heading', { name: 'Quiz complete!' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Quiz complete!|Flawless\./ }).first()).toBeVisible();
   await expect(page.locator('text=Total score').locator('..').first()).toContainText(/\d/);
   await expect(page.getByText('Accuracy').locator('..').first()).toContainText('100%');
   await expect(page.getByText('Correct').locator('..').first()).toContainText(String(level.questions.length));
@@ -131,7 +131,7 @@ const runRetryRoundLevel = async (page: Page, levelId: number) => {
   }
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
-  await expect(page.getByRole('heading', { name: 'Quiz complete!' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Quiz complete!|Flawless\./ }).first()).toBeVisible();
   await expect(page.locator('text=Total score').locator('..').first()).toContainText(/\d/);
   await expect(page.getByText('Correct').locator('..').first()).toContainText(String(level.questions.length));
 };

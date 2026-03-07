@@ -104,6 +104,13 @@ const openAPIHandler = new OpenAPIHandler(router, {
 
 const app = new Hono()
 
+// No client caching; Netlify CDN caches until next deploy (auto-purged on each deploy)
+app.use('/*', async (c, next) => {
+  await next()
+  c.res.headers.set('Cache-Control', 'no-store')
+  c.res.headers.set('Netlify-CDN-Cache-Control', 'public, max-age=31536000')
+})
+
 app.all('/*', async (c) => {
   const { matched, response } = await openAPIHandler.handle(c.req.raw, {
     prefix: '/api',

@@ -1,5 +1,6 @@
 import { Code2, ChevronRight } from 'lucide-react';
 import { Link } from 'wouter';
+import clsx from 'clsx';
 import { levels } from '../data/questions';
 import { PageLayout } from './PageLayout';
 import { ROUTES } from '../routes';
@@ -29,7 +30,13 @@ export const LevelSelect = () => {
             <Link
               key={level.id}
               to={ROUTES.questions(level.id)}
-              className={`group flex items-center justify-between gap-4 py-4 px-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] rounded-md touch-manipulation ${index < levels.length - 1 ? 'border-b border-neutral-200 dark:border-neutral-800' : ''}`}
+              className={clsx(
+                'group flex items-center justify-between gap-4 py-4 px-1 rounded-md',
+                'transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
+                'touch-manipulation',
+                index < levels.length - 1 && 'border-b border-neutral-200 dark:border-neutral-800',
+              )}
             >
               <div className="flex items-center gap-4 min-w-0">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 text-sm font-mono text-neutral-600 dark:text-neutral-300 tabular-nums">

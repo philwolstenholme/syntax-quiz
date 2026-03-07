@@ -26,8 +26,8 @@ export const ThemeToggle = () => {
           aria-pressed={theme === value}
           className={
             theme === value
-              ? 'flex h-7 w-7 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 transition-colors dark:bg-neutral-800 dark:text-neutral-100'
-              : 'flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
+              ? 'flex h-7 w-7 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 transition-colors dark:bg-neutral-800 dark:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]'
+              : 'flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]'
           }
         >
           <Icon size={14} aria-hidden="true" />

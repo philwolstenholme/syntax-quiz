@@ -93,7 +93,7 @@ export const QuestionsPage = () => {
       onDragCancel={handleDragCancel}
     >
       <PageLayout>
-        <div className="max-w-4xl mx-auto">
+        <div>
           <h1 className="sr-only">Syntax Quiz — {level.name}</h1>
           {isRetryRound && (
             <div className="flex items-center gap-2 mb-3 px-3 py-2.5 border border-amber-300 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/5 rounded-lg text-amber-700 dark:text-amber-300 text-sm">

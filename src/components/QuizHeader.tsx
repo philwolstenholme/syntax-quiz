@@ -25,7 +25,7 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
           <div className="flex items-center gap-0.5">
             <Link
               to={ROUTES.home}
-              className="flex items-center justify-center h-7 w-7 text-neutral-800 dark:text-neutral-100 hover:text-neutral-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex items-center justify-center h-7 w-7 text-neutral-800 dark:text-neutral-100 hover:text-neutral-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
             >
               <Home size={14} aria-hidden="true" />
               <span className="sr-only">Home</span>
@@ -54,8 +54,9 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
       <div
         className="w-full bg-neutral-200 dark:bg-neutral-800 rounded-full h-1 overflow-hidden"
         role="progressbar"
+        aria-label="Quiz progress"
         aria-valuenow={currentQuestionIndex + 1}
-        aria-valuemin={0}
+        aria-valuemin={1}
         aria-valuemax={totalQuestions}
       >
         <div

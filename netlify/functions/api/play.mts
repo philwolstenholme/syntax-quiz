@@ -1,3 +1,4 @@
+import type { OpenAPIV3_1 } from 'openapi-types'
 import { ORPCError, os } from '@orpc/server'
 import { shuffle } from 'es-toolkit'
 import { z } from 'zod'
@@ -68,6 +69,38 @@ function buildProgress(state: PlayState, totalQuestions: number) {
   }
 }
 
+const SET_COOKIE_HEADER = {
+  'Set-Cookie': {
+    schema: { type: 'string' as const },
+    description: 'Sets the `gameState` cookie (Path=/api/play; HttpOnly; SameSite=Strict). Cleared when the game is complete.',
+  },
+}
+
+function addHeadersToResponses(
+  responses: OpenAPIV3_1.ResponsesObject | undefined,
+  headers: Record<string, OpenAPIV3_1.HeaderObject>,
+): OpenAPIV3_1.ResponsesObject {
+  if (!responses) return {}
+  const result: OpenAPIV3_1.ResponsesObject = {}
+  for (const [status, res] of Object.entries(responses)) {
+    if ('$ref' in (res as object)) {
+      result[status] = res
+    } else {
+      const response = res as OpenAPIV3_1.ResponseObject
+      result[status] = { ...response, headers: { ...response.headers, ...headers } }
+    }
+  }
+  return result
+}
+
+const GAME_STATE_COOKIE_PARAM = {
+  name: 'gameState',
+  in: 'cookie' as const,
+  required: false,
+  schema: { type: 'string' as const },
+  description: 'The game state token, automatically sent by the browser if the cookie was set by a previous response.',
+}
+
 const start = os
   .route({
     method: 'POST',
@@ -93,6 +126,10 @@ const start = os
       'When playing from the Scalar docs UI, you don\'t need to copy-paste the `gameState` token. ' +
       'It is automatically stored as a cookie and sent with subsequent requests. ' +
       'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.',
+    spec: (current) => {
+      const responses = addHeadersToResponses(current.responses, SET_COOKIE_HEADER)
+      return { ...current, responses }
+    },
   })
   .input(z.object({ level: levelParamSchema }))
   .output(z.object({
@@ -139,6 +176,14 @@ const answer = os
       '- **progress** — your running score, streak, and how many questions remain.\n' +
       '- **complete** — `true` when the game is over (all questions answered, including retries).\n' +
       '- **gameState** — the updated token to send with your next request (`null` when complete).',
+    spec: (current) => {
+      const responses = addHeadersToResponses(current.responses, SET_COOKIE_HEADER)
+      return {
+        ...current,
+        parameters: [...(current.parameters ?? []), GAME_STATE_COOKIE_PARAM],
+        responses,
+      }
+    },
   })
   .input(z.object({
     gameState: z.string().optional().describe('The opaque game state token from the previous response. Optional when playing via the browser — the cookie is used automatically.'),

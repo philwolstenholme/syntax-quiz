@@ -242,6 +242,8 @@ test('save URL restores score and returns user to question flow', async ({ page 
 
   await page.goto(savedUrl!);
 
+  // Wait for the lazy-loaded QuestionsPage to mount and strip the ?s= param
+  await expect(page.getByTestId('question-panel')).toBeVisible();
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions`));
   expect(page.url()).not.toContain('?s=');
   const restoredScore = await getScoreValue(page);

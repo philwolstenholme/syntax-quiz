@@ -3,7 +3,6 @@ import { OpenAPIHandler } from '@orpc/openapi/fetch'
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
 import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
 import { Hono } from 'hono'
-import { handle } from 'hono/aws-lambda'
 import { z } from 'zod'
 import { levels } from '../../src/data/questions.js'
 
@@ -101,16 +100,17 @@ const openAPIHandler = new OpenAPIHandler(router, {
   ],
 })
 
-// --- Hono app with AWS Lambda adapter ---
+// --- Hono app (modern Netlify Functions v2 format) ---
 
 const app = new Hono()
 
 app.all('/*', async (c) => {
   const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+    prefix: '/api',
     context: {},
   })
   if (matched) return response!
   return c.notFound()
 })
 
-export const handler = handle(app)
+export default (request: Request) => app.fetch(request)

@@ -7,7 +7,7 @@ import { FeedbackSchema, levelParamSchema, PlayQuestionSchema, ProgressSchema } 
 const BASE_SCORE_POINTS = 10
 
 const GAME_STATE_COOKIE = 'gameState'
-const COOKIE_ATTRS = 'Path=/api/play; HttpOnly; SameSite=Strict'
+const COOKIE_ATTRS = 'Path=/api/play; SameSite=Strict'
 
 // oRPC server with typed context — play handlers receive the raw request to read cookies
 const playOs = os.$context<{ request: Request }>()
@@ -95,7 +95,7 @@ function buildProgress(state: PlayState, totalQuestions: number) {
 const SET_COOKIE_HEADER = {
   'Set-Cookie': {
     schema: { type: 'string' as const },
-    description: 'Sets the `gameState` cookie (Path=/api/play; HttpOnly; SameSite=Strict). Cleared when the game is complete.',
+    description: 'Sets the `gameState` cookie (Path=/api/play; SameSite=Strict). Cleared when the game is complete.',
   },
 }
 

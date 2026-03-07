@@ -144,7 +144,10 @@ const start = playOs
       '## Playing via Scalar / browser\n\n' +
       'When playing from the Scalar docs UI, you don\'t need to copy-paste the `gameState` token. ' +
       'It is automatically stored as a cookie and sent with subsequent requests. ' +
-      'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.',
+      'Just call `/play/start`, then repeatedly call `/play/answer` with only `{ "answer": "your choice" }` — the game state is handled for you.\n\n' +
+      '> **Note:** The `Set-Cookie` response header and `Cookie` request header will not appear in Scalar\'s UI. ' +
+      'This is a browser security limitation — `Set-Cookie` is a forbidden response header that JavaScript (and therefore Scalar\'s fetch client) cannot read. ' +
+      'The cookie is still being set and sent by the browser. You can verify this in your browser\'s DevTools under the Network tab → select a `/play/` request → look at the Response Headers and Request Headers (look for the cookie).',
     spec: (current) => withSetCookieHeader(current as Record<string, unknown>) as typeof current,
   })
   .input(z.object({ level: levelParamSchema }))

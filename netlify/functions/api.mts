@@ -13,7 +13,6 @@ const LevelMetaSchema = z.object({
   name: z.string(),
   subtitle: z.string(),
   description: z.string(),
-  color: z.string(),
   questionCount: z.number().int().min(0),
 })
 
@@ -52,7 +51,6 @@ const router = {
         name: l.name,
         subtitle: l.subtitle,
         description: l.description,
-        color: l.color,
         questionCount: l.questions.length,
       }))
     ),

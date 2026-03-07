@@ -213,7 +213,7 @@ const answer = playOs
   }))
   .handler(async ({ input, context }) => {
     // Read gameState from body, falling back to the cookie
-    const gameStateToken = input.gameState ?? parseCookies(context.request.headers.get('cookie'))[GAME_STATE_COOKIE]
+    const gameStateToken = input.gameState || parseCookies(context.request.headers.get('cookie'))[GAME_STATE_COOKIE]
     if (!gameStateToken) {
       throw new ORPCError('BAD_REQUEST', { message: 'Missing game state — provide gameState in the request body or start a game first to set the cookie' })
     }

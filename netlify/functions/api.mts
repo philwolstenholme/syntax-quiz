@@ -1,7 +1,7 @@
 import { ORPCError, os } from '@orpc/server'
 import { OpenAPIHandler } from '@orpc/openapi/fetch'
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
-import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
+import { JSON_SCHEMA_INPUT_REGISTRY, experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { levels } from '../../src/data/questions.js'
@@ -14,7 +14,7 @@ const LevelMetaSchema = z.object({
   subtitle: z.string(),
   description: z.string(),
   color: z.string(),
-  questionCount: z.number().int(),
+  questionCount: z.number().int().min(0),
 })
 
 const QuestionSchema = z.object({
@@ -29,6 +29,16 @@ const QuestionSchema = z.object({
     docsLink: z.string().url().optional(),
   }),
 })
+
+// Runtime: smart coercion converts "1" → 1 from query params
+// OpenAPI: registry override adds enum so Scalar shows a dropdown
+const levelParamSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(3)
+  .describe('Level number (1 = Easy, 2 = Medium, 3 = Hard)')
+JSON_SCHEMA_INPUT_REGISTRY.add(levelParamSchema, { type: 'integer', enum: [1, 2, 3] })
 
 // --- oRPC router ---
 
@@ -51,9 +61,7 @@ const router = {
     .route({ method: 'GET', path: '/questions' })
     .input(
       z.object({
-        level: z
-          .union([z.literal(1), z.literal(2), z.literal(3)])
-          .describe('Level number (1 = Easy, 2 = Medium, 3 = Hard)'),
+        level: levelParamSchema,
       })
     )
     .output(z.array(QuestionSchema))

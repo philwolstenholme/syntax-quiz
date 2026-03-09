@@ -1,12 +1,9 @@
-import { fromBase64url, toBase64url } from '@exodus/bytes/base64.js'
-
-const encoder = new TextEncoder()
-const decoder = new TextDecoder()
-
 export function toBase64Url(data: string): string {
-  return toBase64url(encoder.encode(data))
+  return btoa(data).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '')
 }
 
 export function fromBase64Url(encoded: string): string {
-  return decoder.decode(fromBase64url(encoded))
+  let b64 = encoded.replaceAll('-', '+').replaceAll('_', '/')
+  while (b64.length % 4) b64 += '='
+  return atob(b64)
 }

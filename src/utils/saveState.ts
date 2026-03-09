@@ -1,8 +1,5 @@
-import { fromBase64url, toBase64url } from '@exodus/bytes/base64.js';
 import { z } from 'zod/v4/mini';
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+import { fromBase64Url, toBase64Url } from './base64url';
 
 const SaveStateSchema = z.object({
   v: z.literal(1),
@@ -18,12 +15,12 @@ const SaveStateSchema = z.object({
 export type SaveState = z.infer<typeof SaveStateSchema>;
 
 export function encodeSaveState(state: SaveState): string {
-  return toBase64url(encoder.encode(JSON.stringify(state)));
+  return toBase64Url(JSON.stringify(state));
 }
 
 export function decodeSaveState(encoded: string): SaveState | null {
   try {
-    const result = SaveStateSchema.safeParse(JSON.parse(decoder.decode(fromBase64url(encoded))));
+    const result = SaveStateSchema.safeParse(JSON.parse(fromBase64Url(encoded)));
     return result.success ? result.data : null;
   } catch {
     return null;

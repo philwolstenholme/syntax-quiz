@@ -2,8 +2,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 import { ORPCError, os } from '@orpc/server'
 import { shuffle } from 'es-toolkit'
 import { type CookieOptions, parse as parseCookies } from 'hono/utils/cookie'
-import { fromBase64url, toBase64url } from '@exodus/bytes/base64.js'
 import { z } from 'zod'
+import { fromBase64Url, toBase64Url } from '../../../src/utils/base64url.js'
 import { levelMap } from './data.mjs'
 import { FeedbackSchema, flattenCode, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
 
@@ -48,7 +48,7 @@ function sign(payload: string): string {
 }
 
 function encodePlayState(state: PlayState): string {
-  const payload = toBase64url(new TextEncoder().encode(JSON.stringify(state)))
+  const payload = toBase64Url(JSON.stringify(state))
   return `${payload}.${sign(payload)}`
 }
 
@@ -63,7 +63,7 @@ function decodePlayState(encoded: string): PlayState | null {
     const expBuf = Buffer.from(expected)
     if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null
 
-    const result = PlayStateSchema.safeParse(JSON.parse(new TextDecoder().decode(fromBase64url(payload))))
+    const result = PlayStateSchema.safeParse(JSON.parse(fromBase64Url(payload)))
     return result.success ? result.data : null
   } catch {
     return null

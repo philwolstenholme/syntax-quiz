@@ -116,19 +116,18 @@ export const AnswerOptions = ({
       keyHints.push(++keyCount);
     }
   }
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
-      {options.map((option, i) => (
-        <DraggableOption
-          key={option}
-          option={option}
-          keyHint={keyHints[i] ?? null}
-          disabled={disabled}
-          eliminated={eliminatedOptions.includes(option)}
-          onAnswer={onAnswer}
-        />
-      ))}
-    </div>
-  );
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
+    {options.map((option, i) => (
+      <DraggableOption
+        key={option}
+        option={option}
+        keyHint={keyHints[i] ?? null}
+        disabled={disabled}
+        eliminated={eliminatedOptions.includes(option)}
+        onAnswer={onAnswer}
+      />
+    ))}
+  </div>
+);
 };

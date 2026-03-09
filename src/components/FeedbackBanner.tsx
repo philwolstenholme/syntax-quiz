@@ -281,10 +281,9 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 onClick={completeFeedback}
                 className={clsx(
                   'flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors touch-manipulation cursor-pointer',
+                  'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
-                  lastAnswer.skipped
-                    ? 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-neutral-500'
-                    : 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 focus-visible:ring-red-500',
+                  lastAnswer.skipped ? 'focus-visible:ring-neutral-500' : 'focus-visible:ring-red-500',
                 )}
                 aria-label="Next question"
               >

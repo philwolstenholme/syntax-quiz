@@ -14,13 +14,12 @@ interface HintButtonProps {
 export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonProps) => {
   const prefersReducedMotion = useReducedMotion();
   const showEliminate = hintsUsed === 0;
-  const showHintText = hintsUsed >= MAX_HINTS;
   const allUsed = hintsUsed >= MAX_HINTS;
 
   return (
     <div className="mb-4 flex flex-col items-center">
       <AnimatePresence mode="wait">
-        {showHintText && (
+        {allUsed && (
           <m.div
             key="hint-text"
             initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}

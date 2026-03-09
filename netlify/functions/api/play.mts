@@ -1,13 +1,22 @@
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import { ORPCError, os } from '@orpc/server'
 import { shuffle } from 'es-toolkit'
+import { type CookieOptions, parse as parseCookies } from 'hono/utils/cookie'
 import { z } from 'zod'
-import { levels } from '../../../src/data/questions.js'
+import { fromBase64Url, toBase64Url } from '../../../src/utils/base64url.js'
+import { levelMap } from './data.mjs'
 import { FeedbackSchema, flattenCode, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
 
 export const BASE_SCORE_POINTS = 10
 
-const GAME_STATE_COOKIE = 'gameState'
-const COOKIE_ATTRS = 'Path=/api/play; SameSite=Strict'
+export const GAME_STATE_COOKIE = 'gameState'
+const GAME_STATE_SECRET = process.env.GAME_STATE_SECRET || 'dev-secret'
+
+export const COOKIE_OPTIONS: CookieOptions = {
+  path: '/api/play',
+  sameSite: 'Strict',
+  secure: true,
+}
 
 // oRPC server with typed context — play handlers receive the raw request to read cookies
 const playOs = os.$context<{ request: Request }>()
@@ -34,42 +43,35 @@ const PlayStateSchema = z.object({
   r: z.boolean(),
 })
 
+function sign(payload: string): string {
+  return createHmac('sha256', GAME_STATE_SECRET).update(payload).digest('base64url')
+}
+
 function encodePlayState(state: PlayState): string {
-  return btoa(JSON.stringify(state))
-    .replaceAll('+', '-')
-    .replaceAll('/', '_')
-    .replace(/=+$/, '')
+  const payload = toBase64Url(JSON.stringify(state))
+  return `${payload}.${sign(payload)}`
 }
 
 function decodePlayState(encoded: string): PlayState | null {
   try {
-    let base64 = encoded.replaceAll('-', '+').replaceAll('_', '/')
-    while (base64.length % 4) base64 += '='
-    const result = PlayStateSchema.safeParse(JSON.parse(atob(base64)))
+    const dotIndex = encoded.lastIndexOf('.')
+    if (dotIndex === -1) return null
+    const payload = encoded.slice(0, dotIndex)
+    const sig = encoded.slice(dotIndex + 1)
+    const expected = sign(payload)
+    const sigBuf = Buffer.from(sig)
+    const expBuf = Buffer.from(expected)
+    if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null
+
+    const result = PlayStateSchema.safeParse(JSON.parse(fromBase64Url(payload)))
     return result.success ? result.data : null
   } catch {
     return null
   }
 }
 
-function parseCookies(header: string | null): Record<string, string> {
-  if (!header) return {}
-  const cookies: Record<string, string> = {}
-  for (const part of header.split(';')) {
-    const [key, ...rest] = part.trim().split('=')
-    if (key) cookies[key] = rest.join('=')
-  }
-  return cookies
-}
-
-/** Build the Set-Cookie header value for a gameState (or clear it). */
-export function gameStateCookie(gameState: string | null): string {
-  if (gameState) return `${GAME_STATE_COOKIE}=${gameState}; ${COOKIE_ATTRS}`
-  return `${GAME_STATE_COOKIE}=; ${COOKIE_ATTRS}; Max-Age=0`
-}
-
 function buildPlayQuestion(state: PlayState) {
-  const levelData = levels.find((l) => l.id === state.l)!
+  const levelData = levelMap.get(state.l)!
   const q = levelData.questions[state.q[0]!]!
   return {
     code: flattenCode(q.code),
@@ -157,7 +159,7 @@ const start = playOs
     progress: ProgressSchema.describe('Initial progress (score 0, streak 0)'),
   }))
   .handler(async ({ input }) => {
-    const levelData = levels.find((l) => l.id === input.level)
+    const levelData = levelMap.get(input.level)
     if (!levelData) {
       throw new ORPCError('NOT_FOUND', { message: `Level ${input.level} not found` })
     }
@@ -216,7 +218,8 @@ const answer = playOs
   }))
   .handler(async ({ input, context }) => {
     // Read gameState from body, falling back to the cookie
-    const gameStateToken = input.gameState || parseCookies(context.request.headers.get('cookie'))[GAME_STATE_COOKIE]
+    const cookies = parseCookies(context.request.headers.get('cookie') ?? '')
+    const gameStateToken = input.gameState || cookies[GAME_STATE_COOKIE]
     if (!gameStateToken) {
       throw new ORPCError('BAD_REQUEST', { message: 'Missing game state — provide gameState in the request body or start a game first to set the cookie' })
     }
@@ -228,7 +231,7 @@ const answer = playOs
       throw new ORPCError('BAD_REQUEST', { message: 'Game is already complete' })
     }
 
-    const levelData = levels.find((l) => l.id === state.l)
+    const levelData = levelMap.get(state.l)
     if (!levelData) {
       throw new ORPCError('BAD_REQUEST', { message: 'Invalid level in game state' })
     }

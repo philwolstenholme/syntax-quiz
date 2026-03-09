@@ -1,6 +1,6 @@
 import { ORPCError, os } from '@orpc/server'
 import { z } from 'zod'
-import { levels } from '../../../src/data/questions.js'
+import { levelMap } from './data.mjs'
 import { flattenCode, levelParamSchema, QuestionSchema } from './schemas.mjs'
 
 export const questionsRoute = os
@@ -12,7 +12,7 @@ export const questionsRoute = os
   )
   .output(z.array(QuestionSchema))
   .handler(async ({ input }) => {
-    const levelData = levels.find((l) => l.id === input.level)
+    const levelData = levelMap.get(input.level)
     if (!levelData) {
       throw new ORPCError('NOT_FOUND', { message: `Level ${input.level} not found` })
     }

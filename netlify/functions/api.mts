@@ -2,8 +2,9 @@ import { OpenAPIHandler } from '@orpc/openapi/fetch'
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
 import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
 import { Hono } from 'hono'
+import { serialize } from 'hono/utils/cookie'
 import { levelsRoute } from './api/levels.mjs'
-import { gameStateCookie, playRoute } from './api/play.mjs'
+import { COOKIE_OPTIONS, GAME_STATE_COOKIE, playRoute } from './api/play.mjs'
 import { questionsRoute } from './api/questions.mjs'
 
 const router = {
@@ -52,9 +53,18 @@ app.all('/*', async (c) => {
   // Set the gameState cookie on play endpoint responses
   const url = new URL(c.req.url)
   if (c.req.method === 'POST' && url.pathname.startsWith('/api/play/') && response!.ok) {
-    const body = await response!.json()
-    const res = Response.json(body, { status: response!.status, headers: response!.headers })
-    res.headers.set('Set-Cookie', gameStateCookie(body.gameState))
+    // Read gameState from the response to set the cookie, without full re-serialization
+    const clone = response!.clone()
+    const body = await clone.json()
+    const res = new Response(response!.body, {
+      status: response!.status,
+      headers: new Headers(response!.headers),
+    })
+    if (body.gameState) {
+      res.headers.set('Set-Cookie', serialize(GAME_STATE_COOKIE, body.gameState, COOKIE_OPTIONS))
+    } else {
+      res.headers.set('Set-Cookie', serialize(GAME_STATE_COOKIE, '', { ...COOKIE_OPTIONS, maxAge: 0 }))
+    }
     return res
   }
 

@@ -1,0 +1,41 @@
+meta {
+  name: Submit Answer
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/play/answer
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "gameState": "{{gameState}}",
+    "answer": "{{answer}}"
+  }
+}
+
+vars:pre-request {
+  answer:
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body && body.gameState) {
+    bru.setVar("gameState", body.gameState);
+  }
+  if (body && body.question) {
+    bru.setVar("currentQuestion", JSON.stringify(body.question));
+    bru.setVar("answers", body.question.answers.join(", "));
+  } else {
+    bru.setVar("currentQuestion", "");
+    bru.setVar("answers", "");
+  }
+  if (body && body.progress) {
+    bru.setVar("questionsRemaining", body.progress.questionsRemaining);
+    bru.setVar("score", body.progress.score);
+    bru.setVar("streak", body.progress.streak);
+  }
+}

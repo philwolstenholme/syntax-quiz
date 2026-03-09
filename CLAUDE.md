@@ -25,3 +25,7 @@ JavaScript and TypeScript developers at all levels practicing syntax terminology
 3. **Accessible by default** — Keyboard navigation, screen reader support, touch targets, reduced motion, and color contrast are not afterthoughts. They are the baseline.
 4. **Polish is in the details** — The difference between good and great lives in consistent spacing, aligned elements, smooth transitions, and thoughtful micro-interactions. Sweat the small stuff.
 5. **Developer-native aesthetic** — Monospace where it matters, syntax highlighting done right, and a visual language that feels at home in a developer's workflow. Sharp, not soft.
+
+## API Development
+
+When adding, modifying, or removing API routes in `netlify/functions/api/`, you **must** update the Bruno collection in `bruno/` to match. This includes updating request paths, methods, body schemas, and post-response scripts that handle game state propagation.

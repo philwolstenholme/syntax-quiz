@@ -1,0 +1,37 @@
+meta {
+  name: Start Game
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/play/start
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "level": {{level}}
+  }
+}
+
+vars:pre-request {
+  level: 1
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body && body.gameState) {
+    bru.setVar("gameState", body.gameState);
+  }
+  if (body && body.question) {
+    bru.setVar("currentQuestion", JSON.stringify(body.question));
+    bru.setVar("answers", body.question.answers.join(", "));
+  }
+  if (body && body.progress) {
+    bru.setVar("questionsRemaining", body.progress.questionsRemaining);
+    bru.setVar("score", body.progress.score);
+    bru.setVar("streak", body.progress.streak);
+  }
+}

@@ -80,7 +80,7 @@ const DraggableOption = ({
           <Tooltip.Portal>
             <Tooltip.Positioner sideOffset={6}>
               <Tooltip.Popup className="rounded-md px-2.5 py-1.5 text-xs font-medium bg-neutral-800 dark:bg-neutral-200 text-white dark:text-neutral-900 shadow-lg animate-in fade-in zoom-in-95 duration-150">
-                Press {keyHint} to pick this answer
+                Press {keyHint} on your keyboard to pick this answer
                 <Tooltip.Arrow className="fill-neutral-800 dark:fill-neutral-200" />
               </Tooltip.Popup>
             </Tooltip.Positioner>

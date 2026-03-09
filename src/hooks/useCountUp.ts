@@ -14,12 +14,18 @@ export function useCountUp(target: number, durationMs = 800): number {
 
     const start = performance.now();
 
+    let prev = 0;
+
     const tick = () => {
       const elapsed = performance.now() - start;
       const progress = Math.min(elapsed / durationMs, 1);
       // ease-out-quart for a satisfying deceleration
       const eased = 1 - Math.pow(1 - progress, 4);
-      setValue(Math.round(eased * target));
+      const rounded = Math.round(eased * target);
+      if (rounded !== prev) {
+        prev = rounded;
+        setValue(rounded);
+      }
 
       if (progress < 1) {
         requestAnimationFrame(tick);

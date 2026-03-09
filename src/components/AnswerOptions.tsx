@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import { GripVertical } from 'lucide-react';
 import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
+import { Tooltip } from '@base-ui/react/tooltip';
 
 interface DraggableOptionProps {
   option: string;
@@ -68,9 +69,23 @@ const DraggableOption = ({
       </span>
       <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
       {keyHint !== null && !isDisabled && (
-        <kbd aria-hidden="true" className="hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
-          {keyHint}
-        </kbd>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <kbd aria-hidden="true" className="relative z-10 hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
+                {keyHint}
+              </kbd>
+            }
+          />
+          <Tooltip.Portal>
+            <Tooltip.Positioner sideOffset={6}>
+              <Tooltip.Popup className="rounded-md px-2.5 py-1.5 text-xs font-medium bg-neutral-800 dark:bg-neutral-200 text-white dark:text-neutral-900 shadow-lg animate-in fade-in zoom-in-95 duration-150">
+                Press {keyHint} on your keyboard to pick this answer
+                <Tooltip.Arrow className="fill-neutral-800 dark:fill-neutral-200" />
+              </Tooltip.Popup>
+            </Tooltip.Positioner>
+          </Tooltip.Portal>
+        </Tooltip.Root>
       )}
     </button>
   );
@@ -92,28 +107,27 @@ export const AnswerOptions = ({
   eliminatedOptions = EMPTY_ELIMINATED,
 }: AnswerOptionsProps) => {
   // Compute keyboard hint numbers: non-eliminated options get sequential 1, 2, 3…
-  const keyHints = options.reduce<(number | null)[]>((acc, option) => {
+  const keyHints: (number | null)[] = [];
+  let keyCount = 0;
+  for (const option of options) {
     if (eliminatedOptions.includes(option)) {
-      acc.push(null);
+      keyHints.push(null);
     } else {
-      const prev = acc.filter((v) => v !== null).length;
-      acc.push(prev + 1);
+      keyHints.push(++keyCount);
     }
-    return acc;
-  }, []);
-
+  }
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
-      {options.map((option, i) => (
-        <DraggableOption
-          key={option}
-          option={option}
-          keyHint={keyHints[i] ?? null}
-          disabled={disabled}
-          eliminated={eliminatedOptions.includes(option)}
-          onAnswer={onAnswer}
-        />
-      ))}
-    </div>
-  );
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
+    {options.map((option, i) => (
+      <DraggableOption
+        key={option}
+        option={option}
+        keyHint={keyHints[i] ?? null}
+        disabled={disabled}
+        eliminated={eliminatedOptions.includes(option)}
+        onAnswer={onAnswer}
+      />
+    ))}
+  </div>
+);
 };

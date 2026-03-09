@@ -4,7 +4,7 @@ export interface QuizResult {
   score: number;
   correctAnswers: number;
   totalQuestions: number;
-  levelId: number;
+  levelId: number | string;
 }
 
 export interface QuizResultContextValue {

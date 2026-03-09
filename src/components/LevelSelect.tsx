@@ -1,7 +1,8 @@
-import { Code2, ChevronRight } from 'lucide-react';
+import { Code2, Puzzle, ChevronRight } from 'lucide-react';
 import { Link } from 'wouter';
 import clsx from 'clsx';
 import { levels } from '../data/questions';
+import { constructionLevels } from '../data/constructionQuestions';
 import { PageLayout } from './PageLayout';
 import { ROUTES } from '../routes';
 import { formatNumber } from '../utils/format';
@@ -64,6 +65,64 @@ export const LevelSelect = () => {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Build the Syntax mode */}
+        <div className="mt-12">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/30">
+              <Puzzle className="w-4 h-4 text-blue-500 dark:text-blue-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h2 className="text-lg font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+                Build the Syntax
+              </h2>
+              <p className="text-neutral-500 dark:text-neutral-400 text-xs">
+                Arrange code tokens to construct valid syntax from a description.
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t border-neutral-200 dark:border-neutral-800">
+            {constructionLevels.map((level, index) => (
+              <Link
+                key={level.id}
+                to={ROUTES.build(level.id)}
+                className={clsx(
+                  'group flex items-center justify-between gap-4 py-4 px-1 rounded-md',
+                  'transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
+                  'touch-manipulation',
+                  index < constructionLevels.length - 1 && 'border-b border-neutral-200 dark:border-neutral-800',
+                )}
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/30 text-sm font-mono text-blue-600 dark:text-blue-300 tabular-nums">
+                    <Puzzle size={14} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
+                        {level.name}
+                      </h3>
+                      <span className="shrink-0 text-xs font-medium text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 rounded-full px-2 py-0.5">
+                        {level.subtitle}
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">
+                      {level.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono tabular-nums">
+                    {formatNumber(level.questions.length)}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-[color,transform] duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </PageLayout>

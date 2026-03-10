@@ -9,6 +9,8 @@ import { ThemeToggle } from './components/ThemeToggle';
 
 const QuestionsPage = lazy(() => import('./pages/QuestionsPage').then(m => ({ default: m.QuestionsPage })));
 const ScorePage = lazy(() => import('./pages/ScorePage').then(m => ({ default: m.ScorePage })));
+const BuildPage = lazy(() => import('./pages/BuildPage').then(m => ({ default: m.BuildPage })));
+const BuildScorePage = lazy(() => import('./pages/BuildScorePage').then(m => ({ default: m.BuildScorePage })));
 
 function App() {
   const [location] = useLocation();
@@ -40,6 +42,8 @@ function App() {
                     <Route path={ROUTES.home} component={LevelSelect} />
                     <Route path={ROUTE_PATTERNS.questions} component={QuestionsPage} />
                     <Route path={ROUTE_PATTERNS.score} component={ScorePage} />
+                    <Route path={ROUTE_PATTERNS.build} component={BuildPage} />
+                    <Route path={ROUTE_PATTERNS.buildScore} component={BuildScorePage} />
                     <Route><LevelSelect /></Route>
                   </Switch>
                 </Suspense>

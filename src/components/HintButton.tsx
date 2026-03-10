@@ -9,9 +9,10 @@ interface HintButtonProps {
   hintsUsed: number;
   onUseHint: () => void;
   disabled: boolean;
+  eliminateLabel?: string;
 }
 
-export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonProps) => {
+export const HintButton = ({ hint, hintsUsed, onUseHint, disabled, eliminateLabel }: HintButtonProps) => {
   const prefersReducedMotion = useReducedMotion();
   const showEliminate = hintsUsed === 0;
   const allUsed = hintsUsed >= MAX_HINTS;
@@ -40,7 +41,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
           disabled={disabled}
         >
           <Lightbulb size={16} aria-hidden="true" />
-          {showEliminate ? 'Eliminate 2 answers (−50% points)' : 'Show hint (−50% points)'}
+          {showEliminate ? (eliminateLabel ?? 'Eliminate 2 answers (−50% points)') : 'Show hint (−50% points)'}
           <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">
             {formatNumber(hintsUsed)}/{formatNumber(MAX_HINTS)}
           </span>

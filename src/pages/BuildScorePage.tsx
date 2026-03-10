@@ -1,0 +1,107 @@
+import { useEffect } from 'react';
+import { useParams, useLocation } from 'wouter';
+import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Link } from 'wouter';
+import { m, useReducedMotion } from 'motion/react';
+import { PageLayout } from '../components/PageLayout';
+import { StatCard } from '../components/StatCard';
+import { ROUTES } from '../routes';
+import { useQuizResult } from '../context/useQuizResult';
+import { useCountUp } from '../hooks/useCountUp';
+import { formatNumber, formatPercent } from '../utils/format';
+import { constructionLevels } from '../data/constructionQuestions';
+
+export const BuildScorePage = () => {
+  const params = useParams();
+  const [, setLocation] = useLocation();
+  const { result } = useQuizResult();
+
+  const levelId = params.levelId ?? '';
+  const level = constructionLevels.find(l => l.id === levelId);
+
+  const isValidAccess = result !== null && result.levelId === levelId && level;
+
+  useEffect(() => {
+    if (!isValidAccess) {
+      setLocation(ROUTES.home);
+    }
+  }, [isValidAccess, setLocation]);
+
+  if (!isValidAccess) {
+    return null;
+  }
+
+  return <BuildCompletionScreen score={result.score} correctAnswers={result.correctAnswers} totalQuestions={result.totalQuestions} level={level} />;
+};
+
+interface BuildCompletionScreenProps {
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  level: { id: string; name: string; subtitle: string };
+}
+
+const BuildCompletionScreen = ({ score, correctAnswers, totalQuestions, level }: BuildCompletionScreenProps) => {
+  const animatedScore = useCountUp(score, 1000);
+  const animatedCorrect = useCountUp(correctAnswers, 800);
+  const isPerfect = correctAnswers === totalQuestions;
+  const accuracy = formatPercent(correctAnswers / totalQuestions);
+  const prefersReducedMotion = useReducedMotion();
+
+  const stagger = (i: number) =>
+    prefersReducedMotion
+      ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
+      : {
+          initial: { opacity: 0, y: 8 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.35, delay: i * 0.08, ease: [0.25, 1, 0.5, 1] as const },
+        };
+
+  return (
+    <PageLayout centered>
+      <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900/50 p-8 sm:p-10 max-w-md w-full text-center">
+        <m.div className="mb-6" {...stagger(0)}>
+          <Trophy className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto" aria-hidden="true" />
+        </m.div>
+
+        <m.h1 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2" {...stagger(1)}>
+          {isPerfect ? 'Flawless build.' : 'Build complete!'}
+        </m.h1>
+
+        <m.div className="mb-6" {...stagger(2)}>
+          <span className="inline-block text-xs font-medium px-2.5 py-0.5 rounded-full border border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-mono">
+            {level.name} — {level.subtitle}
+          </span>
+        </m.div>
+
+        <m.div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6" {...stagger(3)}>
+          <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(animatedScore)}</div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">Total score</div>
+        </m.div>
+
+        <m.div className="grid grid-cols-2 gap-3 mb-6" {...stagger(4)}>
+          <StatCard icon={Target} iconColor="text-blue-500 dark:text-blue-400" value={accuracy} label="Accuracy" />
+          <StatCard icon={CheckCircle} iconColor="text-emerald-500 dark:text-emerald-400" value={formatNumber(animatedCorrect)} label="Correct" />
+        </m.div>
+
+        <m.div className="space-y-3" {...stagger(5)}>
+          <Link
+            to={ROUTES.build(level.id)}
+            className="w-full bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-700 dark:hover:bg-white transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
+          >
+            <RotateCcw className="w-5 h-5" aria-hidden="true" />
+            Try again
+          </Link>
+
+          <Link
+            to={ROUTES.home}
+            className="w-full bg-transparent border border-neutral-300 text-neutral-700 dark:border-neutral-800 dark:text-neutral-300 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-100 hover:border-neutral-400 dark:hover:bg-neutral-900 dark:hover:border-neutral-700 transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
+          >
+            <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+            Choose another level
+          </Link>
+        </m.div>
+      </div>
+    </PageLayout>
+  );
+};

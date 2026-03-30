@@ -4,11 +4,22 @@ import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
 import { Tooltip } from '@base-ui/react/tooltip';
 
+// Detects if a string looks like a code expression (e.g. TypeScript type syntax)
+function looksLikeCode(s: string): boolean {
+  return /\[\]|=>|`|\{[^}]|\|\s*['"\d(]|'\w*'\s*[[(|]/.test(s);
+}
+
+// If any option in the set looks like code, treat all as code (handles keywords like `never`)
+function anyOptionIsCode(options: string[]): boolean {
+  return options.some(looksLikeCode);
+}
+
 interface DraggableOptionProps {
   option: string;
   keyHint: number | null;
   disabled: boolean;
   eliminated: boolean;
+  isCode: boolean;
   onAnswer: (answer: string) => void;
 }
 
@@ -17,6 +28,7 @@ const DraggableOption = ({
   keyHint,
   disabled,
   eliminated,
+  isCode,
   onAnswer,
 }: DraggableOptionProps) => {
   const isDisabled = disabled || eliminated;
@@ -67,7 +79,7 @@ const DraggableOption = ({
       >
         <GripVertical className="text-neutral-400 dark:text-neutral-600" size={16} aria-hidden="true" />
       </span>
-      <span className="flex-1 min-w-0 text-left wrap-break-word">{option}</span>
+      <span className={clsx('flex-1 min-w-0 text-left wrap-break-word', isCode && 'font-mono')}>{option}</span>
       {keyHint !== null && !isDisabled && (
         <Tooltip.Root>
           <Tooltip.Trigger
@@ -116,6 +128,7 @@ export const AnswerOptions = ({
       keyHints.push(++keyCount);
     }
   }
+  const isCode = anyOptionIsCode(options);
   return (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
     {options.map((option, i) => (
@@ -125,6 +138,7 @@ export const AnswerOptions = ({
         keyHint={keyHints[i] ?? null}
         disabled={disabled}
         eliminated={eliminatedOptions.includes(option)}
+        isCode={isCode}
         onAnswer={onAnswer}
       />
     ))}

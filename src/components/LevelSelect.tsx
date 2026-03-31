@@ -9,13 +9,15 @@ import { formatNumber } from '../utils/format';
 import { CRTBackground } from './CRTBackground';
 
 export const LevelSelect = () => {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLAnchorElement>(null);
+  const lastIndex = levels.length - 1;
 
   return (
     <PageLayout>
-      <CRTBackground excludeRef={contentRef} />
-      <div ref={contentRef} className="relative py-12 sm:py-20">
-        <div className="mb-10">
+      <CRTBackground excludeStartRef={topRef} excludeEndRef={bottomRef} />
+      <div className="relative py-12 sm:py-20">
+        <div ref={topRef} className="mb-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
               <Code2 className="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
@@ -35,6 +37,7 @@ export const LevelSelect = () => {
             <Link
               key={level.id}
               to={ROUTES.questions(level.id)}
+              ref={index === lastIndex ? bottomRef : undefined}
               className={clsx(
                 'group flex items-center justify-between gap-4 py-4 px-1 rounded-md',
                 'transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50',

@@ -38,7 +38,10 @@ const EXCLUDE_MARGIN = 32; // px of padding around the excluded element
 const EXCLUDE_FADE = 48; // px of soft gradient falloff outside the margin
 
 interface CRTBackgroundProps {
-  excludeRef?: RefObject<HTMLElement | null>;
+  /** Top element — exclusion zone starts at its top edge */
+  excludeStartRef?: RefObject<HTMLElement | null>;
+  /** Bottom element — exclusion zone ends at its bottom edge */
+  excludeEndRef?: RefObject<HTMLElement | null>;
 }
 
 interface FloatingChar {
@@ -85,7 +88,7 @@ function exclusionMask(
   return t * t * (3 - 2 * t); // smoothstep
 }
 
-export const CRTBackground = ({ excludeRef }: CRTBackgroundProps) => {
+export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { resolvedTheme } = useTheme();
@@ -396,9 +399,19 @@ export const CRTBackground = ({ excludeRef }: CRTBackgroundProps) => {
       const width = canvas.width / dprRef.current;
       frameRef.current++;
 
-      // Update exclusion rect from the DOM element
-      if (excludeRef?.current) {
-        const r = excludeRef.current.getBoundingClientRect();
+      // Compute exclusion rect spanning from start element's top to end element's bottom
+      const startEl = excludeStartRef?.current;
+      const endEl = excludeEndRef?.current;
+      if (startEl && endEl) {
+        const sr = startEl.getBoundingClientRect();
+        const er = endEl.getBoundingClientRect();
+        const top = sr.top;
+        const bottom = er.bottom;
+        const left = Math.min(sr.left, er.left);
+        const right = Math.max(sr.right, er.right);
+        excludeRect.current = { x: left, y: top, w: right - left, h: bottom - top };
+      } else if (startEl) {
+        const r = startEl.getBoundingClientRect();
         excludeRect.current = { x: r.left, y: r.top, w: r.width, h: r.height };
       } else {
         excludeRect.current = null;

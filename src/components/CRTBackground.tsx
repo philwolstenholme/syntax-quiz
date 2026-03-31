@@ -16,8 +16,8 @@ const DOT_BASE_RADIUS = 1;
 
 // Speed variation
 const SPEED_VARIATION = 0.25;
-const SPEED_SMOOTHING = 0.03;
-const MOUSE_SPEED_INFLUENCE = 0.35;
+const SPEED_SMOOTHING = 0.06; // faster easing so mouse effect feels responsive
+const MOUSE_SPEED_INFLUENCE = 0.8; // strong mouse Y influence on scan speed
 
 // Characters (only spawn on primary beam)
 const CHAR_DENSITY = 0.035;

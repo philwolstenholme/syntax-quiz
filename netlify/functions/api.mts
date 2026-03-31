@@ -33,12 +33,16 @@ const openAPIHandler = new OpenAPIHandler(router, {
 
 const app = new Hono()
 
-// No client caching; Netlify CDN caches GET responses until next deploy (auto-purged on each deploy)
+// Durable CDN cache: survives deploy-time purges and serves stale while revalidating,
+// so users never wait for a cold function invocation after a deploy.
 app.use('/*', async (c, next) => {
   await next()
   if (c.req.method === 'GET') {
     c.res.headers.set('Cache-Control', 'no-store')
-    c.res.headers.set('Netlify-CDN-Cache-Control', 'public, max-age=31536000')
+    c.res.headers.set(
+      'Netlify-CDN-Cache-Control',
+      'public, durable, s-maxage=31536000, stale-while-revalidate=31536000',
+    )
   }
 })
 

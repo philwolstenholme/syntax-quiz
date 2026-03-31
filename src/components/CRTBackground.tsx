@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, type RefObject } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { useTheme } from '../context/useTheme';
 
@@ -33,6 +33,14 @@ const CHAR_LIFETIME_MAX = 75;
 const NOISE_DENSITY = 0.002; // fraction of pixels that get noise per frame
 const GLITCH_CHANCE = 0.003; // chance per frame of a glitch line
 
+// Exclusion zone
+const EXCLUDE_MARGIN = 32; // px of padding around the excluded element
+const EXCLUDE_FADE = 48; // px of soft gradient falloff outside the margin
+
+interface CRTBackgroundProps {
+  excludeRef?: RefObject<HTMLElement | null>;
+}
+
 interface FloatingChar {
   x: number;
   y: number;
@@ -57,7 +65,27 @@ function dotHash(x: number, y: number): number {
   return ((h >> 16) ^ h) & 0xff;
 }
 
-export const CRTBackground = () => {
+// Returns 0 (fully excluded) to 1 (fully visible) based on distance from exclusion zone
+function exclusionMask(
+  px: number, py: number,
+  ex: number, ey: number, ew: number, eh: number,
+): number {
+  // Distance from the exclusion rect (with margin already baked in)
+  // Negative = inside rect, positive = outside
+  const dx = Math.max(ex - px, 0, px - (ex + ew));
+  const dy = Math.max(ey - py, 0, py - (ey + eh));
+
+  if (dx === 0 && dy === 0) return 0; // inside exclusion zone
+
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist >= EXCLUDE_FADE) return 1;
+
+  // Smooth ease-in (cubic) for natural falloff
+  const t = dist / EXCLUDE_FADE;
+  return t * t * (3 - 2 * t); // smoothstep
+}
+
+export const CRTBackground = ({ excludeRef }: CRTBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { resolvedTheme } = useTheme();
@@ -69,6 +97,9 @@ export const CRTBackground = () => {
   const chars = useRef<FloatingChar[]>([]);
   const glitches = useRef<GlitchLine[]>([]);
   const dprRef = useRef(1);
+  // Cached exclusion rect (CSS pixels, updated each frame)
+  const excludeRect = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
+
   const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
     const dpr = dprRef.current;
     const frame = frameRef.current;
@@ -85,9 +116,21 @@ export const CRTBackground = () => {
     const b1y = beam1Y.current;
     const b2y = beam2Y.current;
 
+    // Exclusion zone (with margin baked in)
+    const er = excludeRect.current;
+    const hasExclusion = er !== null;
+    const ex = er ? er.x - EXCLUDE_MARGIN : 0;
+    const ey = er ? er.y - EXCLUDE_MARGIN : 0;
+    const ew = er ? er.w + EXCLUDE_MARGIN * 2 : 0;
+    const eh = er ? er.h + EXCLUDE_MARGIN * 2 : 0;
+
     // Draw dot grid with per-dot variation
     for (let x = DOT_SPACING; x < width; x += DOT_SPACING) {
       for (let y = DOT_SPACING; y < height; y += DOT_SPACING) {
+        // Apply exclusion mask
+        const mask = hasExclusion ? exclusionMask(x, y, ex, ey, ew, eh) : 1;
+        if (mask < 0.01) continue; // fully hidden, skip
+
         const hash = dotHash(x, y);
         const brightnessVar = 0.6 + (hash / 255) * 0.8; // 0.6–1.4 per dot
         const sizeVar = 0.8 + ((hash >> 4) / 15) * 0.4; // 0.8–1.2
@@ -109,7 +152,7 @@ export const CRTBackground = () => {
           : 0;
 
         const totalGlow = Math.min(Math.max(glow1, glow2, afterglow), 1);
-        const alpha = (baseAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker;
+        const alpha = (baseAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker * mask;
         const r = (DOT_BASE_RADIUS + totalGlow * 2) * sizeVar;
 
         if (totalGlow > 0.05) {
@@ -126,8 +169,8 @@ export const CRTBackground = () => {
         ctx.arc(x * dpr, y * dpr, r * dpr, 0, Math.PI * 2);
         ctx.fill();
 
-        // Spawn characters near primary beam center
-        if (glow1 > 0.6 && Math.random() < CHAR_DENSITY) {
+        // Spawn characters near primary beam center (not in exclusion zone)
+        if (mask > 0.5 && glow1 > 0.6 && Math.random() < CHAR_DENSITY) {
           const char = Math.random() < 0.4
             ? KEYWORDS[(Math.random() * KEYWORDS.length) | 0]
             : SYMBOLS[(Math.random() * SYMBOLS.length) | 0];
@@ -137,7 +180,7 @@ export const CRTBackground = () => {
             char,
             life: lifetime,
             maxLife: lifetime,
-            drift: (Math.random() - 0.5) * 0.3, // subtle horizontal drift
+            drift: (Math.random() - 0.5) * 0.3,
           });
         }
       }
@@ -155,12 +198,16 @@ export const CRTBackground = () => {
 
       c.x += c.drift;
 
+      // Fade out chars that drift into exclusion zone
+      const cMask = hasExclusion ? exclusionMask(c.x, c.y, ex, ey, ew, eh) : 1;
+      if (cMask < 0.01) return false;
+
       const progress = c.life / c.maxLife;
       const alpha = progress > 0.85
         ? (1 - progress) / 0.15
         : progress / 0.85;
 
-      const charAlpha = alpha * (isDark ? 0.55 : 0.35) * flicker;
+      const charAlpha = alpha * (isDark ? 0.55 : 0.35) * flicker * cMask;
 
       // Chromatic fringe on characters — offset red and blue channels
       if (isDark && charAlpha > 0.15) {
@@ -198,7 +245,9 @@ export const CRTBackground = () => {
     for (let i = 0; i < noiseCount; i++) {
       const nx = Math.random() * width;
       const ny = Math.random() * height;
-      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker;
+      const nMask = hasExclusion ? exclusionMask(nx, ny, ex, ey, ew, eh) : 1;
+      if (nMask < 0.1) continue;
+      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker * nMask;
       // Mostly green-tinted noise for CRT feel
       if (Math.random() < 0.6) {
         ctx.fillStyle = `rgba(${beamColor[0]},${beamColor[1]},${beamColor[2]},${nAlpha})`;
@@ -250,6 +299,68 @@ export const CRTBackground = () => {
       ctx.restore();
       ctx.filter = 'none';
     }
+
+    // Final exclusion zone mask — erase canvas content in the content area
+    // using destination-out with a soft radial gradient for clean edges
+    if (hasExclusion) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+
+      // Inner fully-opaque rect (completely cleared)
+      ctx.fillStyle = 'rgba(0,0,0,1)';
+      ctx.fillRect(ex * dpr, ey * dpr, ew * dpr, eh * dpr);
+
+      // Soft fade edges — draw gradient rects on each side
+      const fade = EXCLUDE_FADE * dpr;
+
+      // Top edge
+      const topGrad = ctx.createLinearGradient(0, (ey - EXCLUDE_FADE) * dpr, 0, ey * dpr);
+      topGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      topGrad.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = topGrad;
+      ctx.fillRect((ex - EXCLUDE_FADE) * dpr, (ey - EXCLUDE_FADE) * dpr, (ew + EXCLUDE_FADE * 2) * dpr, fade);
+
+      // Bottom edge
+      const botGrad = ctx.createLinearGradient(0, (ey + eh) * dpr, 0, (ey + eh + EXCLUDE_FADE) * dpr);
+      botGrad.addColorStop(0, 'rgba(0,0,0,1)');
+      botGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = botGrad;
+      ctx.fillRect((ex - EXCLUDE_FADE) * dpr, (ey + eh) * dpr, (ew + EXCLUDE_FADE * 2) * dpr, fade);
+
+      // Left edge
+      const leftGrad = ctx.createLinearGradient((ex - EXCLUDE_FADE) * dpr, 0, ex * dpr, 0);
+      leftGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      leftGrad.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = leftGrad;
+      ctx.fillRect((ex - EXCLUDE_FADE) * dpr, ey * dpr, fade, eh * dpr);
+
+      // Right edge
+      const rightGrad = ctx.createLinearGradient((ex + ew) * dpr, 0, (ex + ew + EXCLUDE_FADE) * dpr, 0);
+      rightGrad.addColorStop(0, 'rgba(0,0,0,1)');
+      rightGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rightGrad;
+      ctx.fillRect((ex + ew) * dpr, ey * dpr, fade, eh * dpr);
+
+      // Corner radial fades
+      const corners = [
+        [ex, ey],                // top-left
+        [ex + ew, ey],           // top-right
+        [ex, ey + eh],           // bottom-left
+        [ex + ew, ey + eh],      // bottom-right
+      ];
+      for (const [cx, cy] of corners) {
+        const cornerGrad = ctx.createRadialGradient(
+          cx * dpr, cy * dpr, 0,
+          cx * dpr, cy * dpr, fade,
+        );
+        cornerGrad.addColorStop(0, 'rgba(0,0,0,1)');
+        cornerGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = cornerGrad;
+        ctx.fillRect((cx - EXCLUDE_FADE) * dpr, (cy - EXCLUDE_FADE) * dpr, fade * 2, fade * 2);
+      }
+
+      ctx.restore();
+    }
   }, [isDark]);
 
   useEffect(() => {
@@ -284,6 +395,14 @@ export const CRTBackground = () => {
       const height = canvas.height / dprRef.current;
       const width = canvas.width / dprRef.current;
       frameRef.current++;
+
+      // Update exclusion rect from the DOM element
+      if (excludeRef?.current) {
+        const r = excludeRef.current.getBoundingClientRect();
+        excludeRect.current = { x: r.left, y: r.top, w: r.width, h: r.height };
+      } else {
+        excludeRect.current = null;
+      }
 
       beam1Y.current += BEAM_SPEED;
       if (beam1Y.current > height + BEAM_WIDTH) {

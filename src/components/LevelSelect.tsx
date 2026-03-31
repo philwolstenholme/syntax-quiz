@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Code2, ChevronRight } from 'lucide-react';
 import { Link } from 'wouter';
 import clsx from 'clsx';
@@ -8,10 +9,12 @@ import { formatNumber } from '../utils/format';
 import { CRTBackground } from './CRTBackground';
 
 export const LevelSelect = () => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
   return (
     <PageLayout>
-      <CRTBackground />
-      <div className="relative py-12 sm:py-20">
+      <CRTBackground excludeRef={contentRef} />
+      <div ref={contentRef} className="relative py-12 sm:py-20">
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">

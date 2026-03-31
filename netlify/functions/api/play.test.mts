@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { Question } from '../../../src/data/questions.js'
 import { levels } from '../../../src/data/questions.js'
 import { BASE_SCORE_POINTS, playRoute } from './play.mjs'
-import { flattenCode } from './payloads.mjs'
+import { flattenCode } from './schemas.mjs'
 
 const dummyRequest = new Request('http://localhost')
 

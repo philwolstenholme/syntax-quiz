@@ -5,8 +5,7 @@ import { type CookieOptions, parse as parseCookies } from 'hono/utils/cookie'
 import { z } from 'zod'
 import { fromBase64Url, toBase64Url } from '../../../src/utils/base64url.js'
 import { levelMap } from './data.mjs'
-import { flattenCode } from './payloads.mjs'
-import { FeedbackSchema, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
+import { FeedbackSchema, flattenCode, levelParamSchema, PlayQuestionSchema, ProgressSchema } from './schemas.mjs'
 
 export const BASE_SCORE_POINTS = 10
 

@@ -76,3 +76,35 @@
     justify-content: center;
   }
 }
+
+/* Grid background effect — homepage only */
+
+.grid-bg-dots {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 50%, transparent 100%);
+}
+
+.dark .grid-bg-dots {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+}
+
+.grid-bg-glow {
+  --glow-x: -600px;
+  --glow-y: -600px;
+  background: radial-gradient(
+    circle 550px at var(--glow-x) var(--glow-y),
+    rgba(16, 185, 129, 0.06) 0%,
+    rgba(16, 185, 129, 0.02) 50%,
+    transparent 70%
+  );
+}
+
+.dark .grid-bg-glow {
+  background: radial-gradient(
+    circle 550px at var(--glow-x) var(--glow-y),
+    rgba(16, 185, 129, 0.14) 0%,
+    rgba(16, 185, 129, 0.05) 50%,
+    transparent 70%
+  );
+}

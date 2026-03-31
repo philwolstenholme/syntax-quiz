@@ -1,0 +1,56 @@
+- generic [ref=e3]:
+  - group "Theme preference" [ref=e4]:
+    - button "System theme" [ref=e5] [cursor=pointer]:
+      - img [ref=e6]
+    - button "Light theme" [ref=e8] [cursor=pointer]:
+      - img [ref=e9]
+    - button "Dark theme" [pressed] [ref=e15] [cursor=pointer]:
+      - img [ref=e16]
+  - generic [ref=e19]:
+    - link "Skip to content" [ref=e20] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - img [ref=e26]
+            - generic [ref=e30]: syntax-quiz
+          - heading "Syntax Quiz" [level=1] [ref=e31]
+          - paragraph [ref=e32]: Test your TypeScript and JavaScript knowledge across 3 difficulty levels.
+        - generic [ref=e33]:
+          - link "1 Level 1 Easy Basic syntax fundamentals 32" [ref=e34] [cursor=pointer]:
+            - /url: /level/1/questions
+            - generic [ref=e35]:
+              - generic [ref=e36]: "1"
+              - generic [ref=e37]:
+                - generic [ref=e38]:
+                  - heading "Level 1" [level=2] [ref=e39]
+                  - generic [ref=e40]: Easy
+                - paragraph [ref=e41]: Basic syntax fundamentals
+            - generic [ref=e42]:
+              - generic [ref=e43]: "32"
+              - img [ref=e44]
+          - link "2 Level 2 Medium Intermediate concepts 28" [ref=e46] [cursor=pointer]:
+            - /url: /level/2/questions
+            - generic [ref=e47]:
+              - generic [ref=e48]: "2"
+              - generic [ref=e49]:
+                - generic [ref=e50]:
+                  - heading "Level 2" [level=2] [ref=e51]
+                  - generic [ref=e52]: Medium
+                - paragraph [ref=e53]: Intermediate concepts
+            - generic [ref=e54]:
+              - generic [ref=e55]: "28"
+              - img [ref=e56]
+          - link "3 Level 3 Hard Advanced bits 12" [ref=e58] [cursor=pointer]:
+            - /url: /level/3/questions
+            - generic [ref=e59]:
+              - generic [ref=e60]: "3"
+              - generic [ref=e61]:
+                - generic [ref=e62]:
+                  - heading "Level 3" [level=2] [ref=e63]
+                  - generic [ref=e64]: Hard
+                - paragraph [ref=e65]: Advanced bits
+            - generic [ref=e66]:
+              - generic [ref=e67]: "12"
+              - img [ref=e68]

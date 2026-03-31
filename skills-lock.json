@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "documentation": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "computedHash": "f3cf9a1503645e244cd4b60698271783406458e18e94e308e56160255dfc5823"
+    },
+    "node-best-practices": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "computedHash": "26825a659f97acd02a91586df8c648856f9fbb8d6d315d419cf785db8d15ce43"
+    },
+    "nodejs-core": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "computedHash": "0f42e790d7cbcd12112f1de9ec820083de18ef6d2617e323222ccc34b8fe0c40"
+    },
+    "typescript-magician": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "computedHash": "2a3eff565a3e8379035f42a1fed7563a90c1d7314e4409fc3433fbea72a0b1d5"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "afeca00ac2f492d88fdd010e73d91719a5b57c564bb4a73325b0bd77e11323ab"
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 /** Collapse multi-line code snippets to a single line for JSON responses. */
 export function flattenCode(code: string): string {
-  return code.replaceAll('\n', ' ')
+  return code.replace(/\s*\n\s*/g, ' ')
 }
 
 // Runtime: smart coercion converts "1" → 1 from query params

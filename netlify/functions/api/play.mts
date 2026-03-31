@@ -75,7 +75,7 @@ function buildPlayQuestion(state: PlayState) {
   const q = levelData.questions[state.q[0]!]!
   return {
     code: flattenCode(q.code),
-    highlight: q.highlight,
+    highlight: flattenCode(q.highlight),
     question: q.question,
     answers: shuffle([...q.options]) as string[],
   }

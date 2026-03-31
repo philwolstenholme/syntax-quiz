@@ -149,12 +149,14 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
   // Mouse state
   const mouseYNorm = useRef(0.5); // 0–1
   const mouseYPx = useRef(0); // actual pixel Y
+  const mouseXPx = useRef(0); // actual pixel X
   const mouseActive = useRef(false); // whether mouse is over the page
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseYNorm.current = e.clientY / window.innerHeight;
       mouseYPx.current = e.clientY;
+      mouseXPx.current = e.clientX;
       mouseActive.current = true;
     };
     const handleMouseLeave = () => {
@@ -201,6 +203,12 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const exW = er ? er.w + EXCLUDE_MARGIN * 2 : 0;
     const exH = er ? er.h + EXCLUDE_MARGIN * 2 : 0;
 
+    // Mouse X state for dot proximity
+    const dotMxActive = mouseActive.current;
+    const dotMx = mouseXPx.current;
+    const dotMy = mouseYPx.current;
+    const dotMaxReach = width * 0.8;
+
     // Draw dot grid
     for (let x = DOT_SPACING; x < width; x += DOT_SPACING) {
       for (let y = DOT_SPACING; y < height; y += DOT_SPACING) {
@@ -210,6 +218,20 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         const hash = dotHash(x, y);
         const brightnessVar = 0.6 + (hash / 255) * 0.8;
         const sizeVar = 0.8 + ((hash >> 4) / 15) * 0.4;
+
+        // Cursor proximity influence on dots (both X and Y distance)
+        let cursorDotBoost = 0;
+        if (dotMxActive && width > 0) {
+          const dx = Math.abs(x - dotMx);
+          const dy = Math.abs(y - dotMy);
+          // Elliptical falloff: X reach is wider, Y reach is tighter
+          const normDist = Math.sqrt((dx / dotMaxReach) ** 2 + (dy / (height * 0.5)) ** 2);
+          const proximity = Math.max(0, 1 - normDist);
+          // Per-dot noise for organic variation
+          const dotNoise = ((hash ^ (hash >> 3)) & 0xff) / 255;
+          const noisy = proximity * 0.75 + dotNoise * 0.25;
+          cursorDotBoost = noisy * noisy * (3 - 2 * noisy); // smoothstep
+        }
 
         // Compute max glow from all beams
         let maxGlow = 0;
@@ -228,8 +250,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         }
 
         const totalGlow = Math.min(maxGlow, 1);
-        const alpha = (baseAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker * mask;
-        const r = (DOT_BASE_RADIUS + totalGlow * 2) * sizeVar;
+        // Cursor proximity adds very subtle alpha boost and size increase
+        const cursorAlpha = cursorDotBoost * (isDark ? 0.06 : 0.03);
+        const cursorSize = cursorDotBoost * 0.25;
+        const alpha = (baseAlpha + cursorAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker * mask;
+        const r = (DOT_BASE_RADIUS + cursorSize + totalGlow * 2) * sizeVar;
 
         if (totalGlow > 0.05) {
           const blend = Math.min(totalGlow * 1.5, 1);
@@ -264,6 +289,10 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    // Mouse X proximity — chars closer to cursor are more visible
+    const mxActive = mouseActive.current;
+    const mx = mouseXPx.current;
+
     chars.current = chars.current.filter(c => {
       c.life--;
       if (c.life <= 0) return false;
@@ -272,9 +301,30 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const cMask = hasExclusion ? exclusionMask(c.x, c.y, exX, exY, exW, exH) : 1;
       if (cMask < 0.01) return false;
 
+      // Cursor X influence on character visibility
+      // Chars near the cursor's X are fully visible; distant ones fade out
+      // Use per-char noise (based on position hash) so the effect isn't a clean line
+      let cursorXFactor = 1;
+      if (mxActive && width > 0) {
+        const xDist = Math.abs(c.x - mx);
+        const maxReach = width * 0.75; // cursor "illuminates" up to 75% of viewport width
+        const proximity = Math.max(0, 1 - xDist / maxReach); // 1 near cursor, 0 far away
+
+        // Per-char noise: use position hash for stable variation
+        const charNoise = (dotHash(Math.round(c.x) * 7, Math.round(c.y) * 13) / 255); // 0–1
+        // Blend proximity with noise: some far chars survive, some near chars dim
+        const noisy = proximity * 0.7 + charNoise * 0.3;
+        // Smoothstep for natural falloff
+        cursorXFactor = noisy * noisy * (3 - 2 * noisy);
+        // Floor so chars near cursor are always at least partially visible
+        cursorXFactor = 0.08 + cursorXFactor * 0.92;
+      }
+
       const progress = c.life / c.maxLife;
       const alpha = progress > 0.85 ? (1 - progress) / 0.15 : progress / 0.85;
-      const charAlpha = alpha * (isDark ? 0.55 : 0.35) * flicker * cMask;
+      const charAlpha = alpha * (isDark ? 0.55 : 0.35) * flicker * cMask * cursorXFactor;
+
+      if (charAlpha < 0.02) return true; // keep alive but don't render
 
       if (isDark && charAlpha > 0.15) {
         const fringeOffset = 1 * dpr;

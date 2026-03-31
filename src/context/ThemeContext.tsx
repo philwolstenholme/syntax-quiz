@@ -3,7 +3,23 @@ import { ThemeContext, type ThemePreference, type ResolvedTheme } from './themeC
 
 const STORAGE_KEY = 'syntax-quiz-theme';
 
+function getUrlTheme(): ThemePreference | null {
+  try {
+    const param = new URLSearchParams(window.location.search).get('theme');
+    if (param === 'light' || param === 'dark' || param === 'system') {
+      return param;
+    }
+  } catch {
+    // URL parsing unavailable
+  }
+  return null;
+}
+
 function getStoredTheme(): ThemePreference {
+  // URL query param takes priority
+  const urlTheme = getUrlTheme();
+  if (urlTheme) return urlTheme;
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark' || stored === 'system') {

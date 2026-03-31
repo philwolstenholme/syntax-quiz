@@ -18,7 +18,7 @@ export const questionsRoute = os
     }
     return levelData.questions.map((q) => ({
       code: flattenCode(q.code),
-      highlight: q.highlight,
+      highlight: flattenCode(q.highlight),
       question: q.question,
       answers: q.options,
       metadata: {

@@ -36,6 +36,7 @@ describe('GET /questions', () => {
   it('flattens newlines in code snippets', () => {
     for (const q of level1Result) {
       expect(q.code).not.toContain('\n')
+      expect(q.highlight).not.toContain('\n')
     }
   })
 

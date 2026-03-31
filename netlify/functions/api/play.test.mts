@@ -14,7 +14,7 @@ function findSourceQuestion(
 ): Question {
   const levelData = levels.find((l) => l.id === levelId)!
   const match = levelData.questions.find(
-    (q) => flattenCode(q.code) === playQ.code && q.highlight === playQ.highlight && q.question === playQ.question,
+    (q) => flattenCode(q.code) === playQ.code && flattenCode(q.highlight) === playQ.highlight && q.question === playQ.question,
   )
   if (!match) throw new Error('Could not find matching source question')
   return match
@@ -33,6 +33,7 @@ describe('POST /play/start', () => {
     })
     expect(result.question.answers).toHaveLength(4)
     expect(result.question.code).not.toContain('\n')
+    expect(result.question.highlight).not.toContain('\n')
     expect(result.progress).toMatchObject({
       score: 0,
       streak: 0,

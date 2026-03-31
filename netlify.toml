@@ -37,22 +37,7 @@
   to = "/level/3/score"
   status = 301
 
-# Static API: serve pre-built JSON for read-only endpoints (no function invocation)
-[[redirects]]
-  from = "/api/levels"
-  to = "/api-static/levels.json"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/questions"
-  to = "/api-static/questions-:level.json"
-  status = 200
-  force = true
-  [redirects.query]
-    level = ":level"
-
-# Route remaining API requests (play, docs) to the Netlify function
+# Route API requests to the Netlify function
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
@@ -64,11 +49,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Cache headers for static API JSON (CDN caches until next deploy, browsers revalidate)
-[[headers]]
-  for = "/api-static/*"
-  [headers.values]
-    Content-Type = "application/json"
-    Cache-Control = "public, max-age=0, must-revalidate"
-    Netlify-CDN-Cache-Control = "public, max-age=31536000, durable"

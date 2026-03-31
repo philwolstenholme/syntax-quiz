@@ -1,5 +1,3 @@
-import { mkdir, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { createHighlighterCoreSync } from 'shiki/core'
@@ -7,7 +5,7 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import tsxLang from 'shiki/langs/tsx.mjs'
 import githubDark from 'shiki/themes/github-dark.mjs'
 import githubLight from 'shiki/themes/github-light.mjs'
-import { level1Questions, level2Questions, level3Questions, levels } from './src/data/questions'
+import { level1Questions, level2Questions, level3Questions } from './src/data/questions'
 
 // WCAG AA contrast helpers — used to ensure syntax token colors meet 4.5:1 ratio
 function srgbToLinear(c: number): number {
@@ -103,63 +101,10 @@ function tokenizePlugin(): Plugin {
   }
 }
 
-/** Collapse multi-line code snippets to a single line (mirrors the API transform). */
-function flattenCode(code: string): string {
-  return code.replaceAll('\n', ' ')
-}
-
-/**
- * Vite plugin that writes pre-built JSON for the read-only API endpoints
- * (`/api/levels` and `/api/questions?level=N`) into the output directory.
- *
- * Netlify redirects route these paths to the static files so the responses
- * are served straight from the CDN — no function cold-start required.
- */
-function staticApiPlugin(): Plugin {
-  return {
-    name: 'static-api',
-    apply: 'build',
-    async closeBundle() {
-      const outDir = join('dist', 'api-static')
-      await mkdir(outDir, { recursive: true })
-
-      // /api/levels
-      const levelsPayload = levels.map((l) => ({
-        id: l.id,
-        name: l.name,
-        subtitle: l.subtitle,
-        description: l.description,
-        questionCount: l.questions.length,
-      }))
-      await writeFile(join(outDir, 'levels.json'), JSON.stringify(levelsPayload))
-
-      // /api/questions?level=N
-      for (const level of levels) {
-        const questionsPayload = level.questions.map((q) => ({
-          code: flattenCode(q.code),
-          highlight: q.highlight,
-          question: q.question,
-          answers: q.options,
-          metadata: {
-            correct: q.correct,
-            hint: q.hint,
-            explanation: q.explanation,
-            ...(q.docsLink ? { docsLink: q.docsLink } : {}),
-          },
-        }))
-        await writeFile(join(outDir, `questions-${level.id}.json`), JSON.stringify(questionsPayload))
-      }
-
-      console.log('Static API: wrote levels.json + questions-{1,2,3}.json → dist/api-static/')
-    },
-  }
-}
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tokenizePlugin(),
-    staticApiPlugin(),
     react({
       babel: {
         plugins: ['babel-plugin-react-compiler'],

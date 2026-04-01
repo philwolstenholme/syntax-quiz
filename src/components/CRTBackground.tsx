@@ -227,33 +227,21 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const dpr = dprRef.current;
     ctx.clearRect(0, 0, width * dpr, height * dpr);
 
-    // Boot sequence — clip to a horizontal band expanding symmetrically from center
+    // Boot sequence — organic fade-in radiating from the primary beam
     const isBooting = !booted.current;
+    let bootProgress = 1;
+    let bootReach = height; // how far (px) from beam the boot glow extends
+    let bootBrightness = 1;
     if (isBooting) {
       const bf = bootFrame.current;
-      const progress = Math.min(bf / BOOT_DURATION, 1);
-      let bandHalf: number;
-      let bootBrightness: number;
-      if (progress < 0.3) {
-        const p = progress / 0.3;
-        bandHalf = 1 + p * p * 8;
-        bootBrightness = 0.4 + p * 0.6;
-      } else if (progress < 0.9) {
-        const p = (progress - 0.3) / 0.6;
-        const eased = 1 - Math.pow(1 - p, 3);
-        bandHalf = 9 + eased * (height / 2 - 9);
-        bootBrightness = 1;
-      } else {
-        bandHalf = height / 2;
-        bootBrightness = 1;
-      }
-      const cy = (height / 2) * dpr;
-      const bh = bandHalf * dpr;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, cy - bh, width * dpr, bh * 2);
-      ctx.clip();
-      ctx.globalAlpha = bootBrightness;
+      bootProgress = Math.min(bf / BOOT_DURATION, 1);
+      // Reach expands with eased curve — starts tight around beam, grows to full height
+      const reachEased = bootProgress < 0.15
+        ? (bootProgress / 0.15) * (bootProgress / 0.15) * 0.05
+        : 0.05 + (1 - Math.pow(1 - (bootProgress - 0.15) / 0.85, 3)) * 0.95;
+      bootReach = reachEased * height;
+      // Overall brightness ramps up quickly then settles
+      bootBrightness = Math.min(bootProgress / 0.3, 1);
     }
 
     const baseAlpha = isDark ? 0.22 : 0.12;
@@ -437,7 +425,19 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         const cursorSize = cursorDotBoost * 0.25;
         const rippleAlpha = rippleBoost * rippleAlphaScale;
         const rippleSize = rippleBoost * 2.5;
-        const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * glowAlphaScale) * brightnessVar * flicker * mask * edgeAlpha;
+        // Boot attenuation — dots fade in based on distance from primary beam
+        let bootAlpha = 1;
+        if (isBooting) {
+          const distFromBeam = Math.abs(y - primaryBeamY);
+          if (distFromBeam > bootReach) {
+            bootAlpha = 0;
+          } else {
+            const t = distFromBeam / Math.max(bootReach, 1);
+            bootAlpha = (1 - t * t) * bootBrightness;
+          }
+        }
+
+        const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * glowAlphaScale) * brightnessVar * flicker * mask * edgeAlpha * bootAlpha;
         const r = (DOT_BASE_RADIUS + cursorSize + rippleSize + totalGlow * 2) * sizeVar * edgeRadius;
 
         // Magnetic interference — chromatic aberration on dots near cursor
@@ -544,7 +544,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
       const progress = c.life / c.maxLife;
       const charAlphaBase = progress > 0.85 ? (1 - progress) / 0.15 : progress / 0.85;
-      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor;
+      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor * bootBrightness;
 
       if (charAlpha >= 0.02) {
         if (isDark && charAlpha > 0.15) {
@@ -569,7 +569,17 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const glowHeight = 80 * bStr;
       // Skip beams entirely off screen
       if (bY + glowHeight < 0 || bY - glowHeight > height) continue;
-      const beamAlpha = (isDark ? 0.1 : 0.075) * bStr * flicker;
+      let beamBootAlpha = 1;
+      if (isBooting) {
+        const distFromPrimary = Math.abs(bY - primaryBeamY);
+        if (distFromPrimary > bootReach) {
+          beamBootAlpha = 0;
+        } else {
+          const t = distFromPrimary / Math.max(bootReach, 1);
+          beamBootAlpha = (1 - t * t) * bootBrightness;
+        }
+      }
+      const beamAlpha = (isDark ? 0.1 : 0.075) * bStr * flicker * beamBootAlpha;
       if (beamAlpha < 0.002) continue;
       const gradient = ctx.createLinearGradient(0, (bY - glowHeight) * dpr, 0, (bY + glowHeight) * dpr);
       gradient.addColorStop(0, `rgba(${beamR},${beamG},${beamB},0)`);
@@ -591,8 +601,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         (width / 2) * dpr, hotY, 0,
         (width / 2) * dpr, hotY, hotRadius
       );
-      hotGrad.addColorStop(0, `rgba(255,255,255,${hotAlpha * flicker})`);
-      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${hotBeamAlpha * flicker})`);
+      hotGrad.addColorStop(0, `rgba(255,255,255,${hotAlpha * flicker * bootBrightness})`);
+      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${hotBeamAlpha * flicker * bootBrightness})`);
       hotGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = hotGrad;
       ctx.fillRect(
@@ -619,7 +629,14 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const ny = Math.random() * height;
       const nMask = hasExclusion ? exclusionMask(nx, ny, exX, exY, exW, exH) : 1;
       if (nMask < 0.1) continue;
-      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker * nMask;
+      let nBootAlpha = 1;
+      if (isBooting) {
+        const distFromBeam = Math.abs(ny - primaryBeamY);
+        if (distFromBeam > bootReach) continue;
+        const t = distFromBeam / Math.max(bootReach, 1);
+        nBootAlpha = (1 - t * t) * bootBrightness;
+      }
+      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker * nMask * nBootAlpha;
       if (Math.random() < 0.6) {
         ctx.fillStyle = `rgba(${beamR},${beamG},${beamB},${nAlpha})`;
       } else {
@@ -674,10 +691,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.restore();
     }
 
-    // End boot clip if active
-    if (isBooting) {
-      ctx.restore();
-    }
+    // (boot sequence uses per-element alpha — no clip to restore)
 
     // Exclusion zone mask
     if (hasExclusion) {

@@ -59,14 +59,24 @@ interface FollowerBeam {
 
 // Autonomous scan beams: primary + several subtle secondary ones
 function createScanBeams(): ScanBeam[] {
+  // 12 secondary beams evenly distributed across viewport height (using REFERENCE_HEIGHT=900 as basis)
+  // Positions: -75, -150, -225, -300, -375, -450, -525, -600, -675, -750, -825, -900
   return [
     // Primary beam — brightest, spawns characters
     { type: 'scan', y: 0, baseSpeed: 1.5, currentSpeed: 1.5, width: 140, strength: 1, phaseOffset: 0 },
-    // Secondary scan beams — various speeds and strengths
-    { type: 'scan', y: -300, baseSpeed: 2.5, currentSpeed: 2.5, width: 80, strength: 0.3, phaseOffset: 100 },
-    { type: 'scan', y: -600, baseSpeed: 0.9, currentSpeed: 0.9, width: 60, strength: 0.2, phaseOffset: 47 },
+    // Secondary scan beams — evenly distributed, varied speeds and strengths
+    { type: 'scan', y: -75,  baseSpeed: 1.8, currentSpeed: 1.8, width: 55, strength: 0.18, phaseOffset: 33 },
     { type: 'scan', y: -150, baseSpeed: 3.3, currentSpeed: 3.3, width: 50, strength: 0.15, phaseOffset: 200 },
+    { type: 'scan', y: -225, baseSpeed: 1.2, currentSpeed: 1.2, width: 65, strength: 0.22, phaseOffset: 88 },
+    { type: 'scan', y: -300, baseSpeed: 2.5, currentSpeed: 2.5, width: 80, strength: 0.3,  phaseOffset: 100 },
+    { type: 'scan', y: -375, baseSpeed: 0.7, currentSpeed: 0.7, width: 45, strength: 0.12, phaseOffset: 155 },
     { type: 'scan', y: -450, baseSpeed: 2.0, currentSpeed: 2.0, width: 70, strength: 0.25, phaseOffset: 73 },
+    { type: 'scan', y: -525, baseSpeed: 3.1, currentSpeed: 3.1, width: 52, strength: 0.16, phaseOffset: 220 },
+    { type: 'scan', y: -600, baseSpeed: 0.9, currentSpeed: 0.9, width: 60, strength: 0.2,  phaseOffset: 47 },
+    { type: 'scan', y: -675, baseSpeed: 2.8, currentSpeed: 2.8, width: 58, strength: 0.19, phaseOffset: 175 },
+    { type: 'scan', y: -750, baseSpeed: 1.5, currentSpeed: 1.5, width: 75, strength: 0.28, phaseOffset: 62 },
+    { type: 'scan', y: -825, baseSpeed: 2.2, currentSpeed: 2.2, width: 48, strength: 0.14, phaseOffset: 140 },
+    { type: 'scan', y: -900, baseSpeed: 1.1, currentSpeed: 1.1, width: 63, strength: 0.21, phaseOffset: 310 },
   ];
 }
 

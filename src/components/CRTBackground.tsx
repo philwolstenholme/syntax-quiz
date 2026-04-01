@@ -275,7 +275,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.globalAlpha = bootBrightness;
     }
 
-    const baseAlpha = isDark ? 0.08 : 0.05;
+    const baseAlpha = isDark ? 0.14 : 0.08;
     const beamColor = isDark ? ([0, 255, 136] as const) : ([140, 140, 140] as const);
     const dotColor = isDark ? ([255, 255, 255] as const) : ([0, 0, 0] as const);
     const charColor = isDark ? ([0, 255, 136] as const) : ([100, 100, 100] as const);
@@ -507,7 +507,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     // Beam glow bands for all beams
     for (const b of allBeams) {
       const glowHeight = 80 * b.strength;
-      const beamAlpha = (isDark ? 0.07 : 0.04) * b.strength * flicker;
+      const beamAlpha = (isDark ? 0.1 : 0.055) * b.strength * flicker;
       if (beamAlpha < 0.002) continue; // skip invisible beams
       const gradient = ctx.createLinearGradient(0, (b.y - glowHeight) * dpr, 0, (b.y + glowHeight) * dpr);
       gradient.addColorStop(0, `rgba(${beamColor[0]},${beamColor[1]},${beamColor[2]},0)`);

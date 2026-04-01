@@ -28,6 +28,9 @@ const CHAR_LIFETIME_MAX = 75;
 const NOISE_DENSITY = 0.002;
 const GLITCH_CHANCE = 0.003;
 
+// Reference height for speed normalisation — beam traversal time is constant at any viewport height
+const REFERENCE_HEIGHT = 900;
+
 // Exclusion zone
 const EXCLUDE_MARGIN = 32;
 const EXCLUDE_FADE = 48;
@@ -520,7 +523,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         const organic = organicNoise(timeSeconds + b.phaseOffset) * SPEED_VARIATION;
         const targetSpeed = Math.max(0.08, b.baseSpeed + organic + mouseOffset * b.baseSpeed);
         b.currentSpeed += (targetSpeed - b.currentSpeed) * SPEED_SMOOTHING;
-        b.y += b.currentSpeed;
+        b.y += b.currentSpeed * (height / REFERENCE_HEIGHT);
         if (b.y > height + b.width) b.y = -b.width;
       }
 

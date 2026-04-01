@@ -275,7 +275,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.globalAlpha = bootBrightness;
     }
 
-    const baseAlpha = isDark ? 0.14 : 0.08;
+    const baseAlpha = isDark ? 0.22 : 0.12;
     const beamColor = isDark ? ([0, 255, 136] as const) : ([140, 140, 140] as const);
     const dotColor = isDark ? ([255, 255, 255] as const) : ([0, 0, 0] as const);
     const charColor = isDark ? ([0, 255, 136] as const) : ([100, 100, 100] as const);

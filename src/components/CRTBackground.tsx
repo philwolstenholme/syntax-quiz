@@ -28,7 +28,7 @@ const CHAR_LIFETIME_MAX = 75;
 const NOISE_DENSITY = 0.002;
 const GLITCH_CHANCE = 0.003;
 
-// Beam speeds are in CSS pixels per frame (at 60fps) — constant visual speed regardless of viewport height
+// Beam speeds are in CSS pixels per frame (at 60fps) — absolute speed, no viewport scaling
 
 // Click ripple (dot-integrated)
 const RIPPLE_SPEED = 4; // px per frame expansion
@@ -74,20 +74,20 @@ function createScanBeams(): ScanBeam[] {
   // Positions: -75, -150, -225, -300, -375, -450, -525, -600, -675, -750, -825, -900
   return [
     // Primary beam — brightest, spawns characters
-    { type: 'scan', y: 0, baseSpeed: 1.5, currentSpeed: 1.5, width: 140, strength: 1, phaseOffset: 0 },
+    { type: 'scan', y: 0, baseSpeed: 1.3, currentSpeed: 1.3, width: 140, strength: 1, phaseOffset: 0 },
     // Secondary scan beams — evenly distributed, varied speeds and strengths
-    { type: 'scan', y: -75,  baseSpeed: 1.8, currentSpeed: 1.8, width: 55, strength: 0.18, phaseOffset: 33 },
-    { type: 'scan', y: -150, baseSpeed: 3.3, currentSpeed: 3.3, width: 50, strength: 0.15, phaseOffset: 200 },
-    { type: 'scan', y: -225, baseSpeed: 1.2, currentSpeed: 1.2, width: 65, strength: 0.22, phaseOffset: 88 },
-    { type: 'scan', y: -300, baseSpeed: 2.5, currentSpeed: 2.5, width: 80, strength: 0.3,  phaseOffset: 100 },
-    { type: 'scan', y: -375, baseSpeed: 0.7, currentSpeed: 0.7, width: 45, strength: 0.12, phaseOffset: 155 },
-    { type: 'scan', y: -450, baseSpeed: 2.0, currentSpeed: 2.0, width: 70, strength: 0.25, phaseOffset: 73 },
-    { type: 'scan', y: -525, baseSpeed: 3.1, currentSpeed: 3.1, width: 52, strength: 0.16, phaseOffset: 220 },
-    { type: 'scan', y: -600, baseSpeed: 0.9, currentSpeed: 0.9, width: 60, strength: 0.2,  phaseOffset: 47 },
-    { type: 'scan', y: -675, baseSpeed: 2.8, currentSpeed: 2.8, width: 58, strength: 0.19, phaseOffset: 175 },
-    { type: 'scan', y: -750, baseSpeed: 1.5, currentSpeed: 1.5, width: 75, strength: 0.28, phaseOffset: 62 },
-    { type: 'scan', y: -825, baseSpeed: 2.2, currentSpeed: 2.2, width: 48, strength: 0.14, phaseOffset: 140 },
-    { type: 'scan', y: -900, baseSpeed: 1.1, currentSpeed: 1.1, width: 63, strength: 0.21, phaseOffset: 310 },
+    { type: 'scan', y: -75,  baseSpeed: 1.5, currentSpeed: 1.5, width: 55, strength: 0.18, phaseOffset: 33 },
+    { type: 'scan', y: -150, baseSpeed: 2.8, currentSpeed: 2.8, width: 50, strength: 0.15, phaseOffset: 200 },
+    { type: 'scan', y: -225, baseSpeed: 1.0, currentSpeed: 1.0, width: 65, strength: 0.22, phaseOffset: 88 },
+    { type: 'scan', y: -300, baseSpeed: 2.1, currentSpeed: 2.1, width: 80, strength: 0.3,  phaseOffset: 100 },
+    { type: 'scan', y: -375, baseSpeed: 0.6, currentSpeed: 0.6, width: 45, strength: 0.12, phaseOffset: 155 },
+    { type: 'scan', y: -450, baseSpeed: 1.7, currentSpeed: 1.7, width: 70, strength: 0.25, phaseOffset: 73 },
+    { type: 'scan', y: -525, baseSpeed: 2.6, currentSpeed: 2.6, width: 52, strength: 0.16, phaseOffset: 220 },
+    { type: 'scan', y: -600, baseSpeed: 0.75, currentSpeed: 0.75, width: 60, strength: 0.2,  phaseOffset: 47 },
+    { type: 'scan', y: -675, baseSpeed: 2.4, currentSpeed: 2.4, width: 58, strength: 0.19, phaseOffset: 175 },
+    { type: 'scan', y: -750, baseSpeed: 1.3, currentSpeed: 1.3, width: 75, strength: 0.28, phaseOffset: 62 },
+    { type: 'scan', y: -825, baseSpeed: 1.85, currentSpeed: 1.85, width: 48, strength: 0.14, phaseOffset: 140 },
+    { type: 'scan', y: -900, baseSpeed: 0.95, currentSpeed: 0.95, width: 63, strength: 0.21, phaseOffset: 310 },
   ];
 }
 
@@ -227,39 +227,27 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const dpr = dprRef.current;
     ctx.clearRect(0, 0, width * dpr, height * dpr);
 
-    // Boot sequence — clip to a horizontal band expanding symmetrically from center
+    // Boot sequence — organic fade-in radiating from the primary beam
     const isBooting = !booted.current;
+    let bootProgress = 1;
+    let bootReach = height; // how far (px) from beam the boot glow extends
+    let bootBrightness = 1;
     if (isBooting) {
       const bf = bootFrame.current;
-      const progress = Math.min(bf / BOOT_DURATION, 1);
-      let bandHalf: number;
-      let bootBrightness: number;
-      if (progress < 0.3) {
-        const p = progress / 0.3;
-        bandHalf = 1 + p * p * 8;
-        bootBrightness = 0.4 + p * 0.6;
-      } else if (progress < 0.9) {
-        const p = (progress - 0.3) / 0.6;
-        const eased = 1 - Math.pow(1 - p, 3);
-        bandHalf = 9 + eased * (height / 2 - 9);
-        bootBrightness = 1;
-      } else {
-        bandHalf = height / 2;
-        bootBrightness = 1;
-      }
-      const cy = (height / 2) * dpr;
-      const bh = bandHalf * dpr;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, cy - bh, width * dpr, bh * 2);
-      ctx.clip();
-      ctx.globalAlpha = bootBrightness;
+      bootProgress = Math.min(bf / BOOT_DURATION, 1);
+      // Reach expands with eased curve — starts tight around beam, grows to full height
+      const reachEased = bootProgress < 0.15
+        ? (bootProgress / 0.15) * (bootProgress / 0.15) * 0.05
+        : 0.05 + (1 - Math.pow(1 - (bootProgress - 0.15) / 0.85, 3)) * 0.95;
+      bootReach = reachEased * height;
+      // Overall brightness ramps up quickly then settles
+      bootBrightness = Math.min(bootProgress / 0.3, 1);
     }
 
     const baseAlpha = isDark ? 0.22 : 0.12;
-    const beamColor = isDark ? ([0, 255, 136] as const) : ([140, 140, 140] as const);
-    const dotColor = isDark ? ([255, 255, 255] as const) : ([0, 0, 0] as const);
-    const charColor = isDark ? ([0, 255, 136] as const) : ([100, 100, 100] as const);
+    const beamColor = isDark ? ([0, 255, 136] as const) : ([34, 180, 85] as const);
+    const dotColor = isDark ? ([255, 255, 255] as const) : ([20, 30, 20] as const);
+    const charColor = isDark ? ([0, 255, 136] as const) : ([40, 160, 70] as const);
 
     const frame = frameRef.current;
     const breathe = 1 + Math.sin(frame / 60 * Math.PI * 2 * BREATHE_FREQUENCY) * BREATHE_AMPLITUDE;
@@ -342,9 +330,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     // Pre-compute base dot color string (used for non-glowing dots)
     const dotR = dotColor[0], dotG = dotColor[1], dotB = dotColor[2];
     const beamR = beamColor[0], beamG = beamColor[1], beamB = beamColor[2];
-    const glowAlphaScale = isDark ? 0.75 : 0.45;
+    const glowAlphaScale = isDark ? 0.75 : 0.55;
     const cursorAlphaScale = isDark ? 0.06 : 0.03;
-    const rippleAlphaScale = isDark ? 0.5 : 0.25;
+    const rippleAlphaScale = isDark ? 0.5 : 0.35;
 
     // Active ripples snapshot
     const activeRipples = ripples.current;
@@ -437,7 +425,19 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         const cursorSize = cursorDotBoost * 0.25;
         const rippleAlpha = rippleBoost * rippleAlphaScale;
         const rippleSize = rippleBoost * 2.5;
-        const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * glowAlphaScale) * brightnessVar * flicker * mask * edgeAlpha;
+        // Boot attenuation — dots fade in based on distance from primary beam
+        let bootAlpha = 1;
+        if (isBooting) {
+          const distFromBeam = Math.abs(y - primaryBeamY);
+          if (distFromBeam > bootReach) {
+            bootAlpha = 0;
+          } else {
+            const t = distFromBeam / Math.max(bootReach, 1);
+            bootAlpha = (1 - t * t) * bootBrightness;
+          }
+        }
+
+        const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * glowAlphaScale) * brightnessVar * flicker * mask * edgeAlpha * bootAlpha;
         const r = (DOT_BASE_RADIUS + cursorSize + rippleSize + totalGlow * 2) * sizeVar * edgeRadius;
 
         // Magnetic interference — chromatic aberration on dots near cursor
@@ -544,7 +544,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
       const progress = c.life / c.maxLife;
       const charAlphaBase = progress > 0.85 ? (1 - progress) / 0.15 : progress / 0.85;
-      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.35) * flicker * cMask * cursorXFactor;
+      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor * bootBrightness;
 
       if (charAlpha >= 0.02) {
         if (isDark && charAlpha > 0.15) {
@@ -569,7 +569,17 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const glowHeight = 80 * bStr;
       // Skip beams entirely off screen
       if (bY + glowHeight < 0 || bY - glowHeight > height) continue;
-      const beamAlpha = (isDark ? 0.1 : 0.055) * bStr * flicker;
+      let beamBootAlpha = 1;
+      if (isBooting) {
+        const distFromPrimary = Math.abs(bY - primaryBeamY);
+        if (distFromPrimary > bootReach) {
+          beamBootAlpha = 0;
+        } else {
+          const t = distFromPrimary / Math.max(bootReach, 1);
+          beamBootAlpha = (1 - t * t) * bootBrightness;
+        }
+      }
+      const beamAlpha = (isDark ? 0.1 : 0.075) * bStr * flicker * beamBootAlpha;
       if (beamAlpha < 0.002) continue;
       const gradient = ctx.createLinearGradient(0, (bY - glowHeight) * dpr, 0, (bY + glowHeight) * dpr);
       gradient.addColorStop(0, `rgba(${beamR},${beamG},${beamB},0)`);
@@ -582,15 +592,17 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     }
 
     // Beam hot spot
-    if (isDark) {
+    {
       const hotY = primaryBeamY * dpr;
       const hotRadius = 12 * dpr;
+      const hotAlpha = isDark ? 0.08 : 0.05;
+      const hotBeamAlpha = isDark ? 0.05 : 0.035;
       const hotGrad = ctx.createRadialGradient(
         (width / 2) * dpr, hotY, 0,
         (width / 2) * dpr, hotY, hotRadius
       );
-      hotGrad.addColorStop(0, `rgba(255,255,255,${0.08 * flicker})`);
-      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${0.05 * flicker})`);
+      hotGrad.addColorStop(0, `rgba(255,255,255,${hotAlpha * flicker * bootBrightness})`);
+      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${hotBeamAlpha * flicker * bootBrightness})`);
       hotGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = hotGrad;
       ctx.fillRect(
@@ -617,7 +629,14 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const ny = Math.random() * height;
       const nMask = hasExclusion ? exclusionMask(nx, ny, exX, exY, exW, exH) : 1;
       if (nMask < 0.1) continue;
-      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker * nMask;
+      let nBootAlpha = 1;
+      if (isBooting) {
+        const distFromBeam = Math.abs(ny - primaryBeamY);
+        if (distFromBeam > bootReach) continue;
+        const t = distFromBeam / Math.max(bootReach, 1);
+        nBootAlpha = (1 - t * t) * bootBrightness;
+      }
+      const nAlpha = Math.random() * (isDark ? 0.15 : 0.08) * flicker * nMask * nBootAlpha;
       if (Math.random() < 0.6) {
         ctx.fillStyle = `rgba(${beamR},${beamG},${beamB},${nAlpha})`;
       } else {
@@ -672,10 +691,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.restore();
     }
 
-    // End boot clip if active
-    if (isBooting) {
-      ctx.restore();
-    }
+    // (boot sequence uses per-element alpha — no clip to restore)
 
     // Exclusion zone mask
     if (hasExclusion) {

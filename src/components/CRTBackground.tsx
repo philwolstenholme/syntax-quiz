@@ -28,8 +28,7 @@ const CHAR_LIFETIME_MAX = 75;
 const NOISE_DENSITY = 0.002;
 const GLITCH_CHANCE = 0.003;
 
-// Reference height for speed normalisation — beam traversal time is constant at any viewport height
-const REFERENCE_HEIGHT = 900;
+// Beam speeds are in CSS pixels per frame (at 60fps) — constant visual speed regardless of viewport height
 
 // Click ripple (dot-integrated)
 const RIPPLE_SPEED = 4; // px per frame expansion
@@ -71,7 +70,7 @@ interface FollowerBeam {
 
 // Autonomous scan beams: primary + several subtle secondary ones
 function createScanBeams(): ScanBeam[] {
-  // 12 secondary beams evenly distributed across viewport height (using REFERENCE_HEIGHT=900 as basis)
+  // 12 secondary beams evenly distributed across viewport height
   // Positions: -75, -150, -225, -300, -375, -450, -525, -600, -675, -750, -825, -900
   return [
     // Primary beam — brightest, spawns characters
@@ -809,7 +808,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         const organic = organicNoise(timeSeconds + b.phaseOffset) * SPEED_VARIATION;
         const targetSpeed = Math.max(0.08, b.baseSpeed + organic + mouseOffset * b.baseSpeed);
         b.currentSpeed += (targetSpeed - b.currentSpeed) * (1 - Math.pow(1 - SPEED_SMOOTHING, dt));
-        b.y += b.currentSpeed * (height / REFERENCE_HEIGHT) * dt;
+        b.y += b.currentSpeed * dt;
         if (b.y > height + b.width) b.y = -b.width;
       }
 

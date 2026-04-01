@@ -31,10 +31,10 @@ const GLITCH_CHANCE = 0.003;
 // Reference height for speed normalisation — beam traversal time is constant at any viewport height
 const REFERENCE_HEIGHT = 900;
 
-// Click ripple
+// Click ripple (dot-integrated)
 const RIPPLE_SPEED = 4; // px per frame expansion
 const RIPPLE_MAX_RADIUS = 200;
-const RIPPLE_WIDTH = 30; // ring thickness
+const RIPPLE_RING_WIDTH = 40; // how wide the influence band is around the ring edge
 
 // Boot sequence
 const BOOT_DURATION = 70; // frames
@@ -242,6 +242,39 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const dpr = dprRef.current;
     ctx.clearRect(0, 0, width * dpr, height * dpr);
 
+    // Boot sequence — clip to a horizontal band expanding symmetrically from center
+    const isBooting = !booted.current;
+    if (isBooting) {
+      const bf = bootFrame.current;
+      const progress = Math.min(bf / BOOT_DURATION, 1);
+      // Phase 1 (0-30%): thin bright line, very slow expansion
+      // Phase 2 (30-90%): accelerating expansion with ease-out
+      // Phase 3 (90-100%): final settle
+      let bandHalf: number; // half-height of visible band in CSS px
+      let bootBrightness: number;
+      if (progress < 0.3) {
+        const p = progress / 0.3;
+        bandHalf = 1 + p * p * 8; // 1px to ~9px
+        bootBrightness = 0.4 + p * 0.6;
+      } else if (progress < 0.9) {
+        const p = (progress - 0.3) / 0.6;
+        const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        bandHalf = 9 + eased * (height / 2 - 9);
+        bootBrightness = 1;
+      } else {
+        bandHalf = height / 2;
+        bootBrightness = 1;
+      }
+      const cy = (height / 2) * dpr;
+      const bh = bandHalf * dpr;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, cy - bh, width * dpr, bh * 2);
+      ctx.clip();
+      // Apply boot brightness by setting global alpha
+      ctx.globalAlpha = bootBrightness;
+    }
+
     const baseAlpha = isDark ? 0.08 : 0.05;
     const beamColor = isDark ? ([0, 255, 136] as const) : ([140, 140, 140] as const);
     const dotColor = isDark ? ([255, 255, 255] as const) : ([0, 0, 0] as const);
@@ -319,13 +352,31 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         }
 
         const totalGlow = Math.min(maxGlow, 1);
+
+        // Ripple influence on dots — dots near the ring edge get boosted
+        let rippleBoost = 0;
+        for (const rip of ripples.current) {
+          const rdx = x - rip.x;
+          const rdy = y - rip.y;
+          const distFromCenter = Math.sqrt(rdx * rdx + rdy * rdy);
+          const distFromRing = Math.abs(distFromCenter - rip.radius);
+          if (distFromRing < RIPPLE_RING_WIDTH) {
+            const ringProximity = 1 - distFromRing / RIPPLE_RING_WIDTH;
+            const rippleLife = 1 - rip.radius / rip.maxRadius;
+            const boost = ringProximity * rippleLife;
+            if (boost > rippleBoost) rippleBoost = boost;
+          }
+        }
+
         // Edge falloff — CRT beam defocus at screen periphery
         const edge = edgeFalloff(x, y, width, height);
         // Cursor proximity adds very subtle alpha boost and size increase
         const cursorAlpha = cursorDotBoost * (isDark ? 0.06 : 0.03);
         const cursorSize = cursorDotBoost * 0.25;
-        const alpha = (baseAlpha + cursorAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker * mask * edge.alpha;
-        const r = (DOT_BASE_RADIUS + cursorSize + totalGlow * 2) * sizeVar * edge.radius;
+        const rippleAlpha = rippleBoost * (isDark ? 0.5 : 0.25);
+        const rippleSize = rippleBoost * 2.5;
+        const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * (isDark ? 0.75 : 0.45)) * brightnessVar * flicker * mask * edge.alpha;
+        const r = (DOT_BASE_RADIUS + cursorSize + rippleSize + totalGlow * 2) * sizeVar * edge.radius;
 
         // Magnetic interference — chromatic aberration on dots near cursor
         let magneticShift = 0;
@@ -339,8 +390,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           }
         }
 
-        if (totalGlow > 0.05) {
-          const blend = Math.min(totalGlow * 1.5, 1);
+        if (totalGlow > 0.05 || rippleBoost > 0.05) {
+          const blend = Math.min(Math.max(totalGlow * 1.5, rippleBoost), 1);
           const cr = dotColor[0] + (beamColor[0] - dotColor[0]) * blend;
           const cg = dotColor[1] + (beamColor[1] - dotColor[1]) * blend;
           const cb = dotColor[2] + (beamColor[2] - dotColor[2]) * blend;
@@ -486,30 +537,10 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       );
     }
 
-    // Click ripples
+    // Advance ripples (rendering is integrated into the dot loop above)
     ripples.current = ripples.current.filter(rip => {
       rip.radius += RIPPLE_SPEED;
-      if (rip.radius > rip.maxRadius) return false;
-
-      const progress = rip.radius / rip.maxRadius;
-      const ripAlpha = (1 - progress) * (isDark ? 0.15 : 0.08) * flicker;
-      const inner = Math.max(0, rip.radius - RIPPLE_WIDTH) * dpr;
-      const outer = rip.radius * dpr;
-
-      const ripGrad = ctx.createRadialGradient(
-        rip.x * dpr, rip.y * dpr, inner,
-        rip.x * dpr, rip.y * dpr, outer
-      );
-      ripGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      ripGrad.addColorStop(0.3, `rgba(${beamColor[0]},${beamColor[1]},${beamColor[2]},${ripAlpha * 0.5})`);
-      ripGrad.addColorStop(0.6, `rgba(${beamColor[0]},${beamColor[1]},${beamColor[2]},${ripAlpha})`);
-      ripGrad.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = ripGrad;
-      ctx.fillRect(
-        (rip.x - rip.radius) * dpr, (rip.y - rip.radius) * dpr,
-        rip.radius * 2 * dpr, rip.radius * 2 * dpr
-      );
-      return true;
+      return rip.radius <= rip.maxRadius;
     });
 
     // Static noise
@@ -564,6 +595,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.drawImage(ctx.canvas, 0, 0);
       ctx.restore();
       ctx.filter = 'none';
+    }
+
+    // End boot clip if active
+    if (isBooting) {
+      ctx.restore();
     }
 
     // Exclusion zone mask
@@ -650,36 +686,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const width = canvas.width / dprRef.current;
       const frame = ++frameRef.current;
 
-      // Boot sequence — CRT power-on effect
+      // Boot sequence — advance frame counter
       if (!booted.current) {
         bootFrame.current++;
-        const bf = bootFrame.current;
-        if (bf >= BOOT_DURATION) {
+        if (bootFrame.current >= BOOT_DURATION) {
           booted.current = true;
-          canvas.style.transform = '';
-          canvas.style.opacity = '1';
-        } else {
-          const progress = bf / BOOT_DURATION;
-          // Phase 1 (0-40%): bright horizontal line expanding vertically
-          // Phase 2 (40-80%): expanding to full screen with bloom
-          // Phase 3 (80-100%): settling
-          if (progress < 0.4) {
-            const p = progress / 0.4; // 0-1 within phase
-            const scaleY = 0.005 + p * p * 0.15;
-            canvas.style.transform = `scaleY(${scaleY})`;
-            canvas.style.opacity = `${0.5 + p * 0.5}`;
-          } else if (progress < 0.8) {
-            const p = (progress - 0.4) / 0.4;
-            const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
-            const scaleY = 0.155 + eased * 0.845;
-            canvas.style.transform = `scaleY(${scaleY})`;
-            canvas.style.opacity = '1';
-          } else {
-            const p = (progress - 0.8) / 0.2;
-            // Subtle overshoot and settle
-            const settle = 1 + Math.sin(p * Math.PI) * 0.02;
-            canvas.style.transform = `scaleY(${settle})`;
-          }
         }
       }
 
@@ -735,33 +746,16 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {/* Barrel distortion SVG filter — subtle CRT screen curvature */}
-      <svg className="absolute" width="0" height="0" aria-hidden="true">
-        <defs>
-          <filter id="crt-barrel">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="0" result="clean" />
-            <feDisplacementMap
-              in="clean"
-              in2="clean"
-              scale="3"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-        </defs>
-      </svg>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ filter: 'url(#crt-barrel)' }}
       />
-      {/* CRT scanlines — multiply blend makes lines more visible over bright areas */}
+      {/* CRT scanlines */}
       <div
-        className="absolute inset-0 opacity-[0.06] dark:opacity-[0.1]"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.5) 1px, rgba(0,0,0,0.5) 2px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.3) 1px, rgba(0,0,0,0.3) 2px)',
           backgroundSize: '100% 3px',
-          mixBlendMode: 'multiply',
         }}
       />
       {/* Vignette */}

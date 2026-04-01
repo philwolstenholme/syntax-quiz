@@ -170,6 +170,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
   const isDark = resolvedTheme === 'dark';
   const animRef = useRef<number>(0);
   const frameRef = useRef(0);
+  const lastTimeRef = useRef(0); // timestamp of previous frame for delta-time
   const chars = useRef<FloatingChar[]>([]);
   const glitches = useRef<GlitchLine[]>([]);
   const dprRef = useRef(1);
@@ -223,7 +224,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     };
   }, []);
 
-  const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => {
     const dpr = dprRef.current;
     ctx.clearRect(0, 0, width * dpr, height * dpr);
 
@@ -524,9 +525,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const charArr = chars.current;
     for (let i = 0; i < charArr.length; i++) {
       const c = charArr[i]!;
-      c.life--;
+      c.life -= dt;
       if (c.life <= 0) continue;
-      c.x += c.drift;
+      c.x += c.drift * dt;
 
       const cMask = hasExclusion ? exclusionMask(c.x, c.y, exX, exY, exW, exH) : 1;
       if (cMask < 0.01) continue;
@@ -603,7 +604,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     writeIdx = 0;
     for (let i = 0; i < activeRipples.length; i++) {
       const rip = activeRipples[i]!;
-      rip.radius += RIPPLE_SPEED;
+      rip.radius += RIPPLE_SPEED * dt;
       if (rip.radius <= rip.maxRadius) {
         activeRipples[writeIdx++] = rip;
       }
@@ -641,7 +642,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const glitchArr = glitches.current;
     for (let i = 0; i < glitchArr.length; i++) {
       const g = glitchArr[i]!;
-      g.life--;
+      g.life -= dt;
       if (g.life <= 0) continue;
       const glitchAlpha = (g.life / 8) * (isDark ? 0.12 : 0.06);
       const sy = (g.y * dpr) | 0;
@@ -752,25 +753,33 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       // Hide all beams offscreen for static render
       scanBeams.current = scanBeams.current.map(b => ({ ...b, y: -999 }));
       followerBeams.current = followerBeams.current.map(b => ({ ...b, y: -999 }));
-      draw(ctx, canvas.width / dprRef.current, canvas.height / dprRef.current);
+      draw(ctx, canvas.width / dprRef.current, canvas.height / dprRef.current, 1);
       return () => window.removeEventListener('resize', resize);
     }
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      // Delta-time: scale all per-frame movement so speed is consistent regardless of framerate.
+      // The original code assumed ~60fps, so TARGET_FRAME_MS = 1000/60 ≈ 16.67ms.
+      const TARGET_FRAME_MS = 1000 / 60;
+      const rawDelta = lastTimeRef.current > 0 ? timestamp - lastTimeRef.current : TARGET_FRAME_MS;
+      // Clamp delta to avoid huge jumps when tab is backgrounded or first frame
+      const delta = Math.min(rawDelta, TARGET_FRAME_MS * 3);
+      const dt = delta / TARGET_FRAME_MS; // 1.0 at 60fps, 2.0 at 30fps, etc.
+      lastTimeRef.current = timestamp;
+
       const height = canvas.height / dprRef.current;
       const width = canvas.width / dprRef.current;
       const frame = ++frameRef.current;
 
-      // Boot sequence — advance frame counter
+      // Boot sequence — advance proportionally to elapsed time
       if (!booted.current) {
-        bootFrame.current++;
+        bootFrame.current += dt;
         if (bootFrame.current >= BOOT_DURATION) {
           booted.current = true;
         }
       }
 
       // Compute exclusion rect — throttle getBoundingClientRect to every 10 frames
-      // to avoid forcing layout recalculation on every animation frame
       if (frame % 10 === 0 || excludeRect.current === null) {
         const startEl = excludeStartRef?.current;
         const endEl = excludeEndRef?.current;
@@ -795,22 +804,22 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const mouseOffset = (mouseYNorm.current - 0.5) * 2 * MOUSE_SPEED_INFLUENCE;
       const timeSeconds = frame / 60;
 
-      // Update scan beams
+      // Update scan beams — scale movement by dt for framerate independence
       for (const b of scanBeams.current) {
         const organic = organicNoise(timeSeconds + b.phaseOffset) * SPEED_VARIATION;
         const targetSpeed = Math.max(0.08, b.baseSpeed + organic + mouseOffset * b.baseSpeed);
-        b.currentSpeed += (targetSpeed - b.currentSpeed) * SPEED_SMOOTHING;
-        b.y += b.currentSpeed * (height / REFERENCE_HEIGHT);
+        b.currentSpeed += (targetSpeed - b.currentSpeed) * (1 - Math.pow(1 - SPEED_SMOOTHING, dt));
+        b.y += b.currentSpeed * (height / REFERENCE_HEIGHT) * dt;
         if (b.y > height + b.width) b.y = -b.width;
       }
 
-      // Update follower beams — ease toward mouse Y position
+      // Update follower beams — ease toward mouse Y, scaled by dt
       const targetY = mouseActive.current ? mouseYPx.current : height * 0.5;
       for (const b of followerBeams.current) {
-        b.y += (targetY - b.y) * b.easing;
+        b.y += (targetY - b.y) * (1 - Math.pow(1 - b.easing, dt));
       }
 
-      draw(ctx, width, height);
+      draw(ctx, width, height, dt);
       animRef.current = requestAnimationFrame(animate);
     };
 

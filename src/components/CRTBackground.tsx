@@ -28,6 +28,9 @@ const CHAR_LIFETIME_MAX = 75;
 const NOISE_DENSITY = 0.002;
 const GLITCH_CHANCE = 0.003;
 
+// CRT barrel distortion — subtle convex screen curvature
+const BARREL_STRENGTH = -0.02; // negative = convex/outward bulge like CRT glass (0 = flat)
+
 // Beam speeds are in CSS pixels per frame (at 60fps) — absolute speed, no viewport scaling
 
 // Click ripple (dot-integrated)
@@ -160,6 +163,16 @@ function organicNoise(t: number): number {
     Math.sin(t * 1.3 + 2.1) * 0.3 +
     Math.sin(t * 2.9 + 5.4) * 0.2
   );
+}
+
+// Barrel distortion: push points outward from center to simulate convex CRT glass.
+// (nx, ny) are normalized coords (-1 to 1), returns displaced CSS pixel coords.
+function barrelDistort(x: number, y: number, cx: number, cy: number, halfW: number, halfH: number): [number, number] {
+  const nx = (x - cx) / halfW;
+  const ny = (y - cy) / halfH;
+  const r2 = nx * nx + ny * ny;
+  const factor = 1 + BARREL_STRENGTH * r2;
+  return [cx + nx * factor * halfW, cy + ny * factor * halfH];
 }
 
 export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundProps) => {
@@ -342,6 +355,10 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     const twoPi = Math.PI * 2;
     const useSubPixel = isDark && dpr >= 1.5;
 
+    // Barrel distortion pre-computed half-dimensions
+    const barrelHalfW = width / 2;
+    const barrelHalfH = height / 2;
+
     // Draw dot grid
     for (let ci = 0; ci < colCount; ci++) {
       const x = DOT_SPACING + ci * DOT_SPACING;
@@ -452,6 +469,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           }
         }
 
+        // Apply barrel distortion to get the draw position
+        const [dx, dy] = barrelDistort(x, y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
+
         if (totalGlow > 0.05 || rippleBoost > 0.05) {
           const blend = Math.min(Math.max(totalGlow * 1.5, rippleBoost), 1);
           const cr = dotR + (beamR - dotR) * blend;
@@ -461,11 +481,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           if (magneticShift > 0.3) {
             ctx.fillStyle = `rgba(${Math.min(255, (cr | 0) + 80)},${(cg | 0) >> 1},${(cb | 0) >> 1},${alpha * 0.3})`;
             ctx.beginPath();
-            ctx.arc((x - magneticShift) * dpr + magneticShift, y * dpr, r * dpr, 0, twoPi);
+            ctx.arc((dx - magneticShift / dpr) * dpr + magneticShift, dy * dpr, r * dpr, 0, twoPi);
             ctx.fill();
             ctx.fillStyle = `rgba(${(cr | 0) >> 1},${(cg | 0) >> 1},${Math.min(255, (cb | 0) + 80)},${alpha * 0.3})`;
             ctx.beginPath();
-            ctx.arc((x + magneticShift) * dpr - magneticShift, y * dpr, r * dpr, 0, twoPi);
+            ctx.arc((dx + magneticShift / dpr) * dpr - magneticShift, dy * dpr, r * dpr, 0, twoPi);
             ctx.fill();
           }
 
@@ -476,8 +496,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
         // Phosphor sub-pixel rendering in dark mode
         if (useSubPixel && r * dpr > 1.5) {
-          const px = x * dpr;
-          const py = y * dpr;
+          const px = dx * dpr;
+          const py = dy * dpr;
           const subW = Math.max(0.6, (r * dpr) / 2.2);
           const subH = r * dpr * 1.6;
           const gap = subW * 0.3;
@@ -493,7 +513,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           ctx.fillRect(px + gap, py - subH / 2, subW, subH);
         } else {
           ctx.beginPath();
-          ctx.arc(x * dpr, y * dpr, r * dpr, 0, twoPi);
+          ctx.arc(dx * dpr, dy * dpr, r * dpr, 0, twoPi);
           ctx.fill();
         }
 
@@ -547,15 +567,16 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor * bootBrightness;
 
       if (charAlpha >= 0.02) {
+        const [cdx, cdy] = barrelDistort(c.x, c.y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
         if (isDark && charAlpha > 0.15) {
           const fringeOffset = 1 * dpr;
           ctx.fillStyle = `rgba(255,50,50,${charAlpha * 0.2})`;
-          ctx.fillText(c.char, (c.x - fringeOffset) * dpr, c.y * dpr);
+          ctx.fillText(c.char, (cdx - fringeOffset / dpr) * dpr, cdy * dpr);
           ctx.fillStyle = `rgba(50,50,255,${charAlpha * 0.2})`;
-          ctx.fillText(c.char, (c.x + fringeOffset) * dpr, c.y * dpr);
+          ctx.fillText(c.char, (cdx + fringeOffset / dpr) * dpr, cdy * dpr);
         }
         ctx.fillStyle = `rgba(${charColor[0]},${charColor[1]},${charColor[2]},${charAlpha})`;
-        ctx.fillText(c.char, c.x * dpr, c.y * dpr);
+        ctx.fillText(c.char, cdx * dpr, cdy * dpr);
       }
 
       charArr[writeIdx++] = c;
@@ -642,8 +663,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       } else {
         ctx.fillStyle = `rgba(${dotR},${dotG},${dotB},${nAlpha * 0.5})`;
       }
+      const [ndx, ndy] = barrelDistort(nx, ny, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
       const nSize = (0.5 + Math.random() * 1.5) * dpr;
-      ctx.fillRect(nx * dpr, ny * dpr, nSize, nSize);
+      ctx.fillRect(ndx * dpr, ndy * dpr, nSize, nSize);
     }
 
     // Glitch lines — use drawImage with clipping instead of getImageData/putImageData

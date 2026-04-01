@@ -257,9 +257,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     }
 
     const baseAlpha = isDark ? 0.22 : 0.12;
-    const beamColor = isDark ? ([0, 255, 136] as const) : ([140, 140, 140] as const);
-    const dotColor = isDark ? ([255, 255, 255] as const) : ([0, 0, 0] as const);
-    const charColor = isDark ? ([0, 255, 136] as const) : ([100, 100, 100] as const);
+    const beamColor = isDark ? ([0, 255, 136] as const) : ([34, 180, 85] as const);
+    const dotColor = isDark ? ([255, 255, 255] as const) : ([20, 30, 20] as const);
+    const charColor = isDark ? ([0, 255, 136] as const) : ([40, 160, 70] as const);
 
     const frame = frameRef.current;
     const breathe = 1 + Math.sin(frame / 60 * Math.PI * 2 * BREATHE_FREQUENCY) * BREATHE_AMPLITUDE;
@@ -342,9 +342,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     // Pre-compute base dot color string (used for non-glowing dots)
     const dotR = dotColor[0], dotG = dotColor[1], dotB = dotColor[2];
     const beamR = beamColor[0], beamG = beamColor[1], beamB = beamColor[2];
-    const glowAlphaScale = isDark ? 0.75 : 0.45;
+    const glowAlphaScale = isDark ? 0.75 : 0.55;
     const cursorAlphaScale = isDark ? 0.06 : 0.03;
-    const rippleAlphaScale = isDark ? 0.5 : 0.25;
+    const rippleAlphaScale = isDark ? 0.5 : 0.35;
 
     // Active ripples snapshot
     const activeRipples = ripples.current;
@@ -544,7 +544,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
       const progress = c.life / c.maxLife;
       const charAlphaBase = progress > 0.85 ? (1 - progress) / 0.15 : progress / 0.85;
-      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.35) * flicker * cMask * cursorXFactor;
+      const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor;
 
       if (charAlpha >= 0.02) {
         if (isDark && charAlpha > 0.15) {
@@ -569,7 +569,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const glowHeight = 80 * bStr;
       // Skip beams entirely off screen
       if (bY + glowHeight < 0 || bY - glowHeight > height) continue;
-      const beamAlpha = (isDark ? 0.1 : 0.055) * bStr * flicker;
+      const beamAlpha = (isDark ? 0.1 : 0.075) * bStr * flicker;
       if (beamAlpha < 0.002) continue;
       const gradient = ctx.createLinearGradient(0, (bY - glowHeight) * dpr, 0, (bY + glowHeight) * dpr);
       gradient.addColorStop(0, `rgba(${beamR},${beamG},${beamB},0)`);
@@ -582,15 +582,17 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     }
 
     // Beam hot spot
-    if (isDark) {
+    {
       const hotY = primaryBeamY * dpr;
       const hotRadius = 12 * dpr;
+      const hotAlpha = isDark ? 0.08 : 0.05;
+      const hotBeamAlpha = isDark ? 0.05 : 0.035;
       const hotGrad = ctx.createRadialGradient(
         (width / 2) * dpr, hotY, 0,
         (width / 2) * dpr, hotY, hotRadius
       );
-      hotGrad.addColorStop(0, `rgba(255,255,255,${0.08 * flicker})`);
-      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${0.05 * flicker})`);
+      hotGrad.addColorStop(0, `rgba(255,255,255,${hotAlpha * flicker})`);
+      hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${hotBeamAlpha * flicker})`);
       hotGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = hotGrad;
       ctx.fillRect(

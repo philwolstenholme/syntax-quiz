@@ -61,12 +61,12 @@ interface FollowerBeam {
 function createScanBeams(): ScanBeam[] {
   return [
     // Primary beam — brightest, spawns characters
-    { type: 'scan', y: 0, baseSpeed: 0.5, currentSpeed: 0.5, width: 140, strength: 1, phaseOffset: 0 },
+    { type: 'scan', y: 0, baseSpeed: 2.0, currentSpeed: 2.0, width: 140, strength: 1, phaseOffset: 0 },
     // Secondary scan beams — various speeds and strengths
-    { type: 'scan', y: -300, baseSpeed: 0.85, currentSpeed: 0.85, width: 80, strength: 0.3, phaseOffset: 100 },
-    { type: 'scan', y: -600, baseSpeed: 0.3, currentSpeed: 0.3, width: 60, strength: 0.2, phaseOffset: 47 },
-    { type: 'scan', y: -150, baseSpeed: 1.1, currentSpeed: 1.1, width: 50, strength: 0.15, phaseOffset: 200 },
-    { type: 'scan', y: -450, baseSpeed: 0.65, currentSpeed: 0.65, width: 70, strength: 0.25, phaseOffset: 73 },
+    { type: 'scan', y: -300, baseSpeed: 3.4, currentSpeed: 3.4, width: 80, strength: 0.3, phaseOffset: 100 },
+    { type: 'scan', y: -600, baseSpeed: 1.2, currentSpeed: 1.2, width: 60, strength: 0.2, phaseOffset: 47 },
+    { type: 'scan', y: -150, baseSpeed: 4.4, currentSpeed: 4.4, width: 50, strength: 0.15, phaseOffset: 200 },
+    { type: 'scan', y: -450, baseSpeed: 2.6, currentSpeed: 2.6, width: 70, strength: 0.25, phaseOffset: 73 },
   ];
 }
 

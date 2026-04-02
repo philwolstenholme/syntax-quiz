@@ -75,7 +75,7 @@ export function useCRTTweakpane() {
       const pane = new Pane({ title: 'CRT Parameters', expanded: true });
       const folderExpanded = !collapsed;
 
-      // Style: position top-right, high z-index, make it interactive
+      // Style: position top-right, high z-index, make it interactive and resizable
       const container = pane.element.parentElement!;
       container.style.position = 'fixed';
       container.style.top = '12px';
@@ -84,6 +84,10 @@ export function useCRTTweakpane() {
       container.style.pointerEvents = 'auto';
       container.style.maxHeight = '90vh';
       container.style.overflowY = 'auto';
+      container.style.width = '380px';
+      container.style.resize = 'horizontal';
+      container.style.minWidth = '280px';
+      container.style.maxWidth = '90vw';
 
       const onChange = () => syncURL(crtParams);
 

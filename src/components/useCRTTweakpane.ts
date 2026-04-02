@@ -119,8 +119,10 @@ export function useCRTTweakpane() {
       grip.style.opacity = '0.4';
       dragHandle.appendChild(grip);
 
-      // Pane content area (scrollable)
+      // Pane content area (scrollable, no elastic overscroll)
       const paneContainer = document.createElement('div');
+      paneContainer.className = 'rounded-lg rounded-br-none overflow-hidden';
+      paneContainer.style.overscrollBehavior = 'contain';
       paneContainer.style.overflowY = 'auto';
       paneContainer.style.flex = '1';
       paneContainer.style.minHeight = '0';

@@ -756,15 +756,15 @@ const str = value as string;`,
     docsLink: "https://www.typescriptlang.org/docs/handbook/2/conditional-types.html"
   },
   {
-    code: `type Partial<T> = {
-  [P in keyof T]?: T[P];
+    code: `type Flags = {
+  [K in "read" | "write" | "execute"]: boolean;
 };`,
-    highlight: '[P in keyof T]?: T[P]',
+    highlight: '[K in "read" | "write" | "execute"]: boolean',
     question: "What is this type called?",
     correct: "mapped type",
     options: ["mapped type", "conditional type", "indexed type", "generic type"],
-    hint: "The [P in keyof T] iterates over each property, transforming the type like Array.map.",
-    explanation: "A mapped type iterates over the keys of another type using `[P in keyof T]` and transforms each property. The `in` keyword is the distinguishing feature — conditional types use `extends ? :`, while mapped types use `in` to loop. An indexed type uses `T[K]` to look up a single property. `Partial<T>` makes every property optional by adding `?` to each one.",
+    hint: "The [K in ...] iterates over each member of the union, creating a property for each one — like Array.map for types.",
+    explanation: "A mapped type iterates over the members of a union using `[K in ...]` and creates a property for each one. The `in` keyword is the distinguishing feature — conditional types use `extends ? :`, while mapped types use `in` to loop. An indexed type uses `T[K]` to look up a single property. Here, the mapped type creates an object with `read`, `write`, and `execute` properties, each typed as `boolean`.",
     docsLink: "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html"
   },
   {

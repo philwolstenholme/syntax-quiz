@@ -547,12 +547,13 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     }
     charArr.length = writeIdx;
 
-    // Beam glow bands — only render visible beams
+    // Beam glow bands — render as vertical slices so they curve with barrel distortion
+    const beamSliceW = 8; // px per slice — balance between smoothness and perf
+    const beamSliceCount = Math.ceil(width / beamSliceW);
     for (let bi = 0; bi < beamCount; bi++) {
       const bY = beamYs[bi]!;
       const bStr = beamStrengths[bi]!;
       const glowHeight = 80 * bStr;
-      // Skip beams entirely off screen
       if (bY + glowHeight < 0 || bY - glowHeight > height) continue;
       let beamBootAlpha = 1;
       if (isBooting) {
@@ -566,33 +567,40 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       }
       const beamAlpha = (isDark ? 0.1 : 0.075) * bStr * flicker * beamBootAlpha;
       if (beamAlpha < 0.002) continue;
-      const gradient = ctx.createLinearGradient(0, (bY - glowHeight) * dpr, 0, (bY + glowHeight) * dpr);
-      gradient.addColorStop(0, `rgba(${beamR},${beamG},${beamB},0)`);
-      gradient.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${beamAlpha * 0.5})`);
-      gradient.addColorStop(0.5, `rgba(${beamR},${beamG},${beamB},${beamAlpha})`);
-      gradient.addColorStop(0.7, `rgba(${beamR},${beamG},${beamB},${beamAlpha * 0.3})`);
-      gradient.addColorStop(1, `rgba(${beamR},${beamG},${beamB},0)`);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, (bY - glowHeight) * dpr, width * dpr, glowHeight * 2 * dpr);
+      for (let si = 0; si < beamSliceCount; si++) {
+        const sx = si * beamSliceW;
+        const sw = Math.min(beamSliceW, width - sx);
+        const [, dbY] = barrelDistort(sx + sw / 2, bY, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
+        const gradient = ctx.createLinearGradient(0, (dbY - glowHeight) * dpr, 0, (dbY + glowHeight) * dpr);
+        gradient.addColorStop(0, `rgba(${beamR},${beamG},${beamB},0)`);
+        gradient.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${beamAlpha * 0.5})`);
+        gradient.addColorStop(0.5, `rgba(${beamR},${beamG},${beamB},${beamAlpha})`);
+        gradient.addColorStop(0.7, `rgba(${beamR},${beamG},${beamB},${beamAlpha * 0.3})`);
+        gradient.addColorStop(1, `rgba(${beamR},${beamG},${beamB},0)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(sx * dpr, (dbY - glowHeight) * dpr, sw * dpr, glowHeight * 2 * dpr);
+      }
     }
 
     // Beam hot spot
     {
-      const hotY = primaryBeamY * dpr;
+      const [hotDx, hotDy] = barrelDistort(width / 2, primaryBeamY, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
+      const hotPx = hotDx * dpr;
+      const hotPy = hotDy * dpr;
       const hotRadius = 12 * dpr;
       const hotAlpha = isDark ? 0.08 : 0.05;
       const hotBeamAlpha = isDark ? 0.05 : 0.035;
       const hotGrad = ctx.createRadialGradient(
-        (width / 2) * dpr, hotY, 0,
-        (width / 2) * dpr, hotY, hotRadius
+        hotPx, hotPy, 0,
+        hotPx, hotPy, hotRadius
       );
       hotGrad.addColorStop(0, `rgba(255,255,255,${hotAlpha * flicker * bootBrightness})`);
       hotGrad.addColorStop(0.3, `rgba(${beamR},${beamG},${beamB},${hotBeamAlpha * flicker * bootBrightness})`);
       hotGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = hotGrad;
       ctx.fillRect(
-        (width / 2 - hotRadius) * dpr, (primaryBeamY - hotRadius) * dpr,
-        hotRadius * 2 * dpr, hotRadius * 2 * dpr
+        hotPx - hotRadius, hotPy - hotRadius,
+        hotRadius * 2, hotRadius * 2
       );
     }
 
@@ -649,7 +657,9 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       g.life -= dt;
       if (g.life <= 0) continue;
       const glitchAlpha = (g.life / 8) * (isDark ? 0.12 : 0.06);
-      const sy = (g.y * dpr) | 0;
+      // Apply barrel distortion to glitch Y position
+      const [, gdy] = barrelDistort(width / 2, g.y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
+      const sy = (gdy * dpr) | 0;
       const sh = (g.width * dpr) | 0;
       const canvasW = (width * dpr) | 0;
       const offsetPx = (g.offset * dpr) | 0;

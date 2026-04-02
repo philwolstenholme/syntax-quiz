@@ -69,13 +69,25 @@ export function useCRTTweakpane() {
   const visibleRef = useRef(false);
 
   useEffect(() => {
+    const resetToDefaults = () => {
+      const obj = crtParams as unknown as Record<string, unknown>;
+      for (const key of Object.keys(CRT_DEFAULTS) as (keyof CRTParams)[]) {
+        const def = CRT_DEFAULTS[key];
+        if (typeof def === 'object' && def !== null) {
+          obj[key] = { ...def };
+        } else {
+          obj[key] = def;
+        }
+      }
+    };
+
     const showPane = async (collapsed = false) => {
       // Dynamic import so tweakpane isn't in the main bundle
       const { Pane } = await import('tweakpane');
       const pane = new Pane({ title: 'CRT Parameters', expanded: true });
       const folderExpanded = !collapsed;
 
-      // Style: position top-right, high z-index, make it interactive
+      // Style: position top-right, high z-index, make it interactive and resizable
       const container = pane.element.parentElement!;
       container.style.position = 'fixed';
       container.style.top = '12px';
@@ -84,6 +96,10 @@ export function useCRTTweakpane() {
       container.style.pointerEvents = 'auto';
       container.style.maxHeight = '90vh';
       container.style.overflowY = 'auto';
+      container.style.width = '380px';
+      container.style.resize = 'horizontal';
+      container.style.minWidth = '280px';
+      container.style.maxWidth = '90vw';
 
       const onChange = () => syncURL(crtParams);
 
@@ -159,17 +175,14 @@ export function useCRTTweakpane() {
 
       // Reset button
       pane.addButton({ title: 'Reset to defaults' }).on('click', () => {
-        const obj = crtParams as unknown as Record<string, unknown>;
-        for (const key of Object.keys(CRT_DEFAULTS) as (keyof CRTParams)[]) {
-          const def = CRT_DEFAULTS[key];
-          if (typeof def === 'object' && def !== null) {
-            obj[key] = { ...def };
-          } else {
-            obj[key] = def;
-          }
-        }
+        resetToDefaults();
         pane.refresh();
         syncURL(crtParams);
+      });
+
+      // Close button — resets to defaults and dismisses the panel
+      pane.addButton({ title: 'Close panel' }).on('click', () => {
+        hidePane();
       });
 
       paneRef.current = pane;
@@ -178,6 +191,8 @@ export function useCRTTweakpane() {
 
     const hidePane = () => {
       if (paneRef.current) {
+        resetToDefaults();
+        syncURL(crtParams);
         paneRef.current.dispose();
         paneRef.current = null;
         visibleRef.current = false;

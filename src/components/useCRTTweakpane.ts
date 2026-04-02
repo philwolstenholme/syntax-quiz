@@ -26,23 +26,28 @@ function paramsToQuery(p: CRTParams): string {
   return parts.length ? `?${parts.join('&')}` : '';
 }
 
-function hydrateFromQuery(p: CRTParams): void {
+/** Hydrate params from URL. Returns true if any CRT params were found. */
+function hydrateFromQuery(p: CRTParams): boolean {
   const params = new URLSearchParams(window.location.search);
   const obj = p as unknown as Record<string, unknown>;
+  let found = false;
   for (const [key, val] of params.entries()) {
     if (!(key in CRT_DEFAULTS)) continue;
     if (COLOR_KEYS.has(key)) {
       const nums = val.split(',').map(Number);
       if (nums.length === 3 && nums.every(n => !isNaN(n))) {
         obj[key] = { r: nums[0], g: nums[1], b: nums[2] };
+        found = true;
       }
     } else {
       const n = Number(val);
       if (!isNaN(n)) {
         obj[key] = n;
+        found = true;
       }
     }
   }
+  return found;
 }
 
 // ---- URL sync (debounced) ----
@@ -63,24 +68,12 @@ export function useCRTTweakpane() {
   const paneRef = useRef<{ dispose: () => void } | null>(null);
   const visibleRef = useRef(false);
 
-  // Hydrate params from URL on mount
   useEffect(() => {
-    hydrateFromQuery(crtParams);
-  }, []);
-
-  useEffect(() => {
-    const toggle = async () => {
-      // Toggle off
-      if (visibleRef.current && paneRef.current) {
-        paneRef.current.dispose();
-        paneRef.current = null;
-        visibleRef.current = false;
-        return;
-      }
-
-      // Toggle on — dynamic import so tweakpane isn't in the main bundle
+    const showPane = async (collapsed = false) => {
+      // Dynamic import so tweakpane isn't in the main bundle
       const { Pane } = await import('tweakpane');
       const pane = new Pane({ title: 'CRT Parameters', expanded: true });
+      const folderExpanded = !collapsed;
 
       // Style: position top-right, high z-index, make it interactive
       const container = pane.element.parentElement!;
@@ -95,57 +88,57 @@ export function useCRTTweakpane() {
       const onChange = () => syncURL(crtParams);
 
       // -- Grid --
-      const grid = pane.addFolder({ title: 'Grid' });
+      const grid = pane.addFolder({ expanded: folderExpanded, title: 'Grid' });
       grid.addBinding(crtParams, 'dotSpacing', { label: 'Dot spacing — grid cell size (px)', min: 4, max: 64, step: 1 }).on('change', onChange);
       grid.addBinding(crtParams, 'dotBaseRadius', { label: 'Dot radius — base size before variation', min: 0.1, max: 5, step: 0.1 }).on('change', onChange);
 
       // -- Speed --
-      const speed = pane.addFolder({ title: 'Beam Speed' });
+      const speed = pane.addFolder({ expanded: folderExpanded, title: 'Beam Speed' });
       speed.addBinding(crtParams, 'speedVariation', { label: 'Organic noise — amplitude added to beam speed', min: 0, max: 2, step: 0.01 }).on('change', onChange);
       speed.addBinding(crtParams, 'speedSmoothing', { label: 'Smoothing — easing factor (higher = snappier)', min: 0.001, max: 0.5, step: 0.001 }).on('change', onChange);
       speed.addBinding(crtParams, 'mouseSpeedInfluence', { label: 'Mouse influence — cursor Y warps scan speed', min: 0, max: 3, step: 0.05 }).on('change', onChange);
 
       // -- Characters --
-      const chars = pane.addFolder({ title: 'Floating Characters' });
+      const chars = pane.addFolder({ expanded: folderExpanded, title: 'Floating Characters' });
       chars.addBinding(crtParams, 'charDensity', { label: 'Spawn rate — probability per dot per frame', min: 0, max: 0.2, step: 0.001 }).on('change', onChange);
       chars.addBinding(crtParams, 'charLifetimeMin', { label: 'Min lifetime — shortest lifespan (frames)', min: 5, max: 200, step: 1 }).on('change', onChange);
       chars.addBinding(crtParams, 'charLifetimeMax', { label: 'Max lifetime — longest lifespan (frames)', min: 10, max: 300, step: 1 }).on('change', onChange);
 
       // -- Noise & Glitch --
-      const noise = pane.addFolder({ title: 'Noise & Glitch' });
+      const noise = pane.addFolder({ expanded: folderExpanded, title: 'Noise & Glitch' });
       noise.addBinding(crtParams, 'noiseDensity', { label: 'Static noise — pixel count as fraction of area', min: 0, max: 0.02, step: 0.0001 }).on('change', onChange);
       noise.addBinding(crtParams, 'glitchChance', { label: 'Glitch chance — per-frame probability of h-shift', min: 0, max: 0.05, step: 0.0005 }).on('change', onChange);
 
       // -- Barrel distortion --
-      const barrel = pane.addFolder({ title: 'Barrel Distortion' });
+      const barrel = pane.addFolder({ expanded: folderExpanded, title: 'Barrel Distortion' });
       barrel.addBinding(crtParams, 'barrelStrength', { label: 'Strength — negative = convex CRT bulge, 0 = flat', min: -0.15, max: 0.15, step: 0.001 }).on('change', onChange);
 
       // -- Click ripple --
-      const ripple = pane.addFolder({ title: 'Click Ripple' });
+      const ripple = pane.addFolder({ expanded: folderExpanded, title: 'Click Ripple' });
       ripple.addBinding(crtParams, 'rippleSpeed', { label: 'Expansion speed — px per frame at 60fps', min: 0.5, max: 20, step: 0.5 }).on('change', onChange);
       ripple.addBinding(crtParams, 'rippleMaxRadius', { label: 'Max radius — ripple dies at this size (px)', min: 20, max: 800, step: 10 }).on('change', onChange);
       ripple.addBinding(crtParams, 'rippleRingWidth', { label: 'Ring width — influence band thickness (px)', min: 5, max: 200, step: 5 }).on('change', onChange);
 
       // -- Boot sequence --
-      const boot = pane.addFolder({ title: 'Boot Sequence' });
+      const boot = pane.addFolder({ expanded: folderExpanded, title: 'Boot Sequence' });
       boot.addBinding(crtParams, 'bootDuration', { label: 'Duration — frames for fade-in sequence', min: 10, max: 300, step: 5 }).on('change', onChange);
 
       // -- Screen breathe --
-      const breathe = pane.addFolder({ title: 'Screen Breathe' });
+      const breathe = pane.addFolder({ expanded: folderExpanded, title: 'Screen Breathe' });
       breathe.addBinding(crtParams, 'breatheFrequency', { label: 'Frequency — Hz of slow brightness oscillation', min: 0, max: 0.2, step: 0.001 }).on('change', onChange);
       breathe.addBinding(crtParams, 'breatheAmplitude', { label: 'Amplitude — brightness variation per cycle', min: 0, max: 0.2, step: 0.005 }).on('change', onChange);
 
       // -- Exclusion zone --
-      const excl = pane.addFolder({ title: 'Exclusion Zone' });
+      const excl = pane.addFolder({ expanded: folderExpanded, title: 'Exclusion Zone' });
       excl.addBinding(crtParams, 'excludeMargin', { label: 'Margin — extra padding around content (px)', min: 0, max: 100, step: 1 }).on('change', onChange);
       excl.addBinding(crtParams, 'excludeFade', { label: 'Fade — gradient distance at boundary (px)', min: 0, max: 200, step: 1 }).on('change', onChange);
 
       // -- Afterglow --
-      const glow = pane.addFolder({ title: 'Afterglow' });
+      const glow = pane.addFolder({ expanded: folderExpanded, title: 'Afterglow' });
       glow.addBinding(crtParams, 'afterglowWidth', { label: 'Trail width — phosphor glow behind beam (px)', min: 0, max: 400, step: 5 }).on('change', onChange);
 
       // -- Dark theme --
-      const dark = pane.addFolder({ title: 'Dark Theme' });
+      const dark = pane.addFolder({ expanded: folderExpanded, title: 'Dark Theme' });
       dark.addBinding(crtParams, 'darkBaseAlpha', { label: 'Base alpha — overall dot opacity', min: 0, max: 1, step: 0.01 }).on('change', onChange);
       dark.addBinding(crtParams, 'darkBeamColor', { label: 'Beam color — scan beam tint', }).on('change', onChange);
       dark.addBinding(crtParams, 'darkDotColor', { label: 'Dot color — grid dot base color', }).on('change', onChange);
@@ -155,7 +148,7 @@ export function useCRTTweakpane() {
       dark.addBinding(crtParams, 'darkRippleAlphaScale', { label: 'Ripple glow — click ripple brightness', min: 0, max: 2, step: 0.01 }).on('change', onChange);
 
       // -- Light theme --
-      const light = pane.addFolder({ title: 'Light Theme' });
+      const light = pane.addFolder({ expanded: folderExpanded, title: 'Light Theme' });
       light.addBinding(crtParams, 'lightBaseAlpha', { label: 'Base alpha — overall dot opacity', min: 0, max: 1, step: 0.01 }).on('change', onChange);
       light.addBinding(crtParams, 'lightBeamColor', { label: 'Beam color — scan beam tint', }).on('change', onChange);
       light.addBinding(crtParams, 'lightDotColor', { label: 'Dot color — grid dot base color', }).on('change', onChange);
@@ -183,6 +176,28 @@ export function useCRTTweakpane() {
       visibleRef.current = true;
     };
 
+    const hidePane = () => {
+      if (paneRef.current) {
+        paneRef.current.dispose();
+        paneRef.current = null;
+        visibleRef.current = false;
+      }
+    };
+
+    const toggle = () => {
+      if (visibleRef.current) {
+        hidePane();
+      } else {
+        showPane();
+      }
+    };
+
+    // Hydrate params from URL and auto-show pane (collapsed) if tweaks were found
+    const hasTweaks = hydrateFromQuery(crtParams);
+    if (hasTweaks) {
+      showPane(true);
+    }
+
     const handleKeydown = (e: KeyboardEvent) => {
       // Cmd+K (Mac) or Ctrl+K to toggle CRT tweakpane
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -194,10 +209,7 @@ export function useCRTTweakpane() {
     window.addEventListener('keydown', handleKeydown);
     return () => {
       window.removeEventListener('keydown', handleKeydown);
-      if (paneRef.current) {
-        paneRef.current.dispose();
-        paneRef.current = null;
-      }
+      hidePane();
     };
   }, []);
 }

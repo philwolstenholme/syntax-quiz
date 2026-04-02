@@ -184,8 +184,8 @@ export function useCRTTweakpane() {
     };
 
     const handleKeydown = (e: KeyboardEvent) => {
-      // Ctrl+Shift+T (or Cmd+Shift+T on Mac) to toggle CRT tweakpane
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+      // Cmd+K (Mac) or Ctrl+K to toggle CRT tweakpane
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         toggle();
       }

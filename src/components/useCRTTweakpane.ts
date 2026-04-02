@@ -65,7 +65,7 @@ function syncURL(p: CRTParams) {
 // ---- Hook ----
 
 export function useCRTTweakpane() {
-  const paneRef = useRef<{ dispose: () => void } | null>(null);
+  const paneRef = useRef<{ dispose: () => void; wrapper: HTMLElement } | null>(null);
   const visibleRef = useRef(false);
 
   useEffect(() => {
@@ -84,22 +84,82 @@ export function useCRTTweakpane() {
     const showPane = async (collapsed = false) => {
       // Dynamic import so tweakpane isn't in the main bundle
       const { Pane } = await import('tweakpane');
-      const pane = new Pane({ title: 'CRT Parameters', expanded: true });
       const folderExpanded = !collapsed;
 
-      // Style: position top-right, high z-index, make it interactive and resizable
-      const container = pane.element.parentElement!;
-      container.style.position = 'fixed';
-      container.style.top = '12px';
-      container.style.right = '12px';
-      container.style.zIndex = '99999';
-      container.style.pointerEvents = 'auto';
-      container.style.maxHeight = '90vh';
-      container.style.overflowY = 'auto';
-      container.style.width = '380px';
-      container.style.resize = 'horizontal';
-      container.style.minWidth = '280px';
-      container.style.maxWidth = '90vw';
+      // Create a wrapper element we fully control for positioning, sizing, and dragging
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'fixed';
+      wrapper.style.top = '12px';
+      wrapper.style.right = '12px';
+      wrapper.style.zIndex = '99999';
+      wrapper.style.pointerEvents = 'auto';
+      wrapper.style.width = '380px';
+      wrapper.style.resize = 'horizontal';
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.minWidth = '280px';
+      wrapper.style.maxWidth = '90vw';
+
+      // Drag handle at the top of the wrapper
+      const dragHandle = document.createElement('div');
+      dragHandle.style.height = '8px';
+      dragHandle.style.cursor = 'grab';
+      dragHandle.style.background = 'var(--tp-container-background-color, #1f1f1f)';
+      dragHandle.style.borderRadius = '6px 6px 0 0';
+      dragHandle.style.display = 'flex';
+      dragHandle.style.alignItems = 'center';
+      dragHandle.style.justifyContent = 'center';
+      // Grip dots visual indicator
+      const grip = document.createElement('div');
+      grip.style.width = '32px';
+      grip.style.height = '3px';
+      grip.style.borderRadius = '2px';
+      grip.style.background = 'var(--tp-container-foreground-color, #999)';
+      grip.style.opacity = '0.4';
+      dragHandle.appendChild(grip);
+
+      // Pane content area (scrollable)
+      const paneContainer = document.createElement('div');
+      paneContainer.style.maxHeight = 'calc(90vh - 8px)';
+      paneContainer.style.overflowY = 'auto';
+
+      wrapper.appendChild(dragHandle);
+      wrapper.appendChild(paneContainer);
+      document.body.appendChild(wrapper);
+
+      const pane = new Pane({ title: 'CRT Parameters', expanded: true, container: paneContainer });
+
+      // Drag logic on our handle element
+      let dragX = 0;
+      let dragY = 0;
+      let startLeft = 0;
+      let startTop = 0;
+
+      const onMouseMove = (e: MouseEvent) => {
+        wrapper.style.left = `${startLeft + (e.clientX - dragX)}px`;
+        wrapper.style.top = `${startTop + (e.clientY - dragY)}px`;
+      };
+
+      const onMouseUp = () => {
+        dragHandle.style.cursor = 'grab';
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+
+      dragHandle.addEventListener('mousedown', (e: MouseEvent) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        dragHandle.style.cursor = 'grabbing';
+        dragX = e.clientX;
+        dragY = e.clientY;
+        // Switch from right-anchored to left-anchored on first drag
+        const rect = wrapper.getBoundingClientRect();
+        wrapper.style.right = 'auto';
+        wrapper.style.left = `${rect.left}px`;
+        startLeft = rect.left;
+        startTop = rect.top;
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
 
       const onChange = () => syncURL(crtParams);
 
@@ -185,7 +245,7 @@ export function useCRTTweakpane() {
         hidePane();
       });
 
-      paneRef.current = pane;
+      paneRef.current = { dispose: () => pane.dispose(), wrapper };
       visibleRef.current = true;
     };
 
@@ -194,6 +254,7 @@ export function useCRTTweakpane() {
         resetToDefaults();
         syncURL(crtParams);
         paneRef.current.dispose();
+        paneRef.current.wrapper.remove();
         paneRef.current = null;
         visibleRef.current = false;
       }

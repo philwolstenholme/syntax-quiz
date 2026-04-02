@@ -194,53 +194,53 @@ export function useCRTTweakpane() {
 
       // -- Grid --
       const grid = pane.addFolder({ expanded: folderExpanded, title: 'Grid' });
-      grid.addBinding(crtParams, 'dotSpacing', { label: 'Dot spacing — grid cell size (px)', min: 4, max: 64, step: 1 }).on('change', onChange);
-      grid.addBinding(crtParams, 'dotBaseRadius', { label: 'Dot radius — base size before variation', min: 0.1, max: 5, step: 0.1 }).on('change', onChange);
+      grid.addBinding(crtParams, 'dotSpacing', { label: 'Dot spacing — grid cell size (px)', min: 2, max: 128, step: 1 }).on('change', onChange);
+      grid.addBinding(crtParams, 'dotBaseRadius', { label: 'Dot radius — base size before variation', min: 0.1, max: 12, step: 0.1 }).on('change', onChange);
 
       // -- Speed --
       const speed = pane.addFolder({ expanded: folderExpanded, title: 'Beam Speed' });
-      speed.addBinding(crtParams, 'speedVariation', { label: 'Organic noise — amplitude added to beam speed', min: 0, max: 2, step: 0.01 }).on('change', onChange);
-      speed.addBinding(crtParams, 'speedSmoothing', { label: 'Smoothing — easing factor (higher = snappier)', min: 0.001, max: 0.5, step: 0.001 }).on('change', onChange);
-      speed.addBinding(crtParams, 'mouseSpeedInfluence', { label: 'Mouse influence — cursor Y warps scan speed', min: 0, max: 3, step: 0.05 }).on('change', onChange);
+      speed.addBinding(crtParams, 'speedVariation', { label: 'Organic noise — amplitude added to beam speed', min: 0, max: 5, step: 0.01 }).on('change', onChange);
+      speed.addBinding(crtParams, 'speedSmoothing', { label: 'Smoothing — easing factor (higher = snappier)', min: 0.001, max: 1, step: 0.001 }).on('change', onChange);
+      speed.addBinding(crtParams, 'mouseSpeedInfluence', { label: 'Mouse influence — cursor Y warps scan speed', min: 0, max: 8, step: 0.05 }).on('change', onChange);
 
       // -- Characters --
       const chars = pane.addFolder({ expanded: folderExpanded, title: 'Floating Characters' });
-      chars.addBinding(crtParams, 'charDensity', { label: 'Spawn rate — probability per dot per frame', min: 0, max: 0.2, step: 0.001 }).on('change', onChange);
-      chars.addBinding(crtParams, 'charLifetimeMin', { label: 'Min lifetime — shortest lifespan (frames)', min: 5, max: 200, step: 1 }).on('change', onChange);
-      chars.addBinding(crtParams, 'charLifetimeMax', { label: 'Max lifetime — longest lifespan (frames)', min: 10, max: 300, step: 1 }).on('change', onChange);
+      chars.addBinding(crtParams, 'charDensity', { label: 'Spawn rate — probability per dot per frame', min: 0, max: 0.5, step: 0.001 }).on('change', onChange);
+      chars.addBinding(crtParams, 'charLifetimeMin', { label: 'Min lifetime — shortest lifespan (frames)', min: 1, max: 500, step: 1 }).on('change', onChange);
+      chars.addBinding(crtParams, 'charLifetimeMax', { label: 'Max lifetime — longest lifespan (frames)', min: 1, max: 1000, step: 1 }).on('change', onChange);
 
       // -- Noise & Glitch --
       const noise = pane.addFolder({ expanded: folderExpanded, title: 'Noise & Glitch' });
-      noise.addBinding(crtParams, 'noiseDensity', { label: 'Static noise — pixel count as fraction of area', min: 0, max: 0.02, step: 0.0001 }).on('change', onChange);
-      noise.addBinding(crtParams, 'glitchChance', { label: 'Glitch chance — per-frame probability of h-shift', min: 0, max: 0.05, step: 0.0005 }).on('change', onChange);
+      noise.addBinding(crtParams, 'noiseDensity', { label: 'Static noise — pixel count as fraction of area', min: 0, max: 0.1, step: 0.0001 }).on('change', onChange);
+      noise.addBinding(crtParams, 'glitchChance', { label: 'Glitch chance — per-frame probability of h-shift', min: 0, max: 0.2, step: 0.0005 }).on('change', onChange);
 
       // -- Barrel distortion --
       const barrel = pane.addFolder({ expanded: folderExpanded, title: 'Barrel Distortion' });
-      barrel.addBinding(crtParams, 'barrelStrength', { label: 'Strength — negative = convex CRT bulge, 0 = flat', min: -0.15, max: 0.15, step: 0.001 }).on('change', onChange);
+      barrel.addBinding(crtParams, 'barrelStrength', { label: 'Strength — negative = convex CRT bulge, 0 = flat', min: -0.5, max: 0.5, step: 0.001 }).on('change', onChange);
 
       // -- Click ripple --
       const ripple = pane.addFolder({ expanded: folderExpanded, title: 'Click Ripple' });
-      ripple.addBinding(crtParams, 'rippleSpeed', { label: 'Expansion speed — px per frame at 60fps', min: 0.5, max: 20, step: 0.5 }).on('change', onChange);
-      ripple.addBinding(crtParams, 'rippleMaxRadius', { label: 'Max radius — ripple dies at this size (px)', min: 20, max: 800, step: 10 }).on('change', onChange);
-      ripple.addBinding(crtParams, 'rippleRingWidth', { label: 'Ring width — influence band thickness (px)', min: 5, max: 200, step: 5 }).on('change', onChange);
+      ripple.addBinding(crtParams, 'rippleSpeed', { label: 'Expansion speed — px per frame at 60fps', min: 0.5, max: 50, step: 0.5 }).on('change', onChange);
+      ripple.addBinding(crtParams, 'rippleMaxRadius', { label: 'Max radius — ripple dies at this size (px)', min: 20, max: 2000, step: 10 }).on('change', onChange);
+      ripple.addBinding(crtParams, 'rippleRingWidth', { label: 'Ring width — influence band thickness (px)', min: 5, max: 500, step: 5 }).on('change', onChange);
 
       // -- Boot sequence --
       const boot = pane.addFolder({ expanded: folderExpanded, title: 'Boot Sequence' });
-      boot.addBinding(crtParams, 'bootDuration', { label: 'Duration — frames for fade-in sequence', min: 10, max: 300, step: 5 }).on('change', onChange);
+      boot.addBinding(crtParams, 'bootDuration', { label: 'Duration — frames for fade-in sequence', min: 1, max: 600, step: 5 }).on('change', onChange);
 
       // -- Screen breathe --
       const breathe = pane.addFolder({ expanded: folderExpanded, title: 'Screen Breathe' });
-      breathe.addBinding(crtParams, 'breatheFrequency', { label: 'Frequency — Hz of slow brightness oscillation', min: 0, max: 0.2, step: 0.001 }).on('change', onChange);
-      breathe.addBinding(crtParams, 'breatheAmplitude', { label: 'Amplitude — brightness variation per cycle', min: 0, max: 0.2, step: 0.005 }).on('change', onChange);
+      breathe.addBinding(crtParams, 'breatheFrequency', { label: 'Frequency — Hz of slow brightness oscillation', min: 0, max: 1, step: 0.001 }).on('change', onChange);
+      breathe.addBinding(crtParams, 'breatheAmplitude', { label: 'Amplitude — brightness variation per cycle', min: 0, max: 0.8, step: 0.005 }).on('change', onChange);
 
       // -- Exclusion zone --
       const excl = pane.addFolder({ expanded: folderExpanded, title: 'Exclusion Zone' });
-      excl.addBinding(crtParams, 'excludeMargin', { label: 'Margin — extra padding around content (px)', min: 0, max: 100, step: 1 }).on('change', onChange);
-      excl.addBinding(crtParams, 'excludeFade', { label: 'Fade — gradient distance at boundary (px)', min: 0, max: 200, step: 1 }).on('change', onChange);
+      excl.addBinding(crtParams, 'excludeMargin', { label: 'Margin — extra padding around content (px)', min: 0, max: 300, step: 1 }).on('change', onChange);
+      excl.addBinding(crtParams, 'excludeFade', { label: 'Fade — gradient distance at boundary (px)', min: 0, max: 500, step: 1 }).on('change', onChange);
 
       // -- Afterglow --
       const glow = pane.addFolder({ expanded: folderExpanded, title: 'Afterglow' });
-      glow.addBinding(crtParams, 'afterglowWidth', { label: 'Trail width — phosphor glow behind beam (px)', min: 0, max: 400, step: 5 }).on('change', onChange);
+      glow.addBinding(crtParams, 'afterglowWidth', { label: 'Trail width — phosphor glow behind beam (px)', min: 0, max: 1000, step: 5 }).on('change', onChange);
 
       // -- Dark theme --
       const dark = pane.addFolder({ expanded: folderExpanded, title: 'Dark Theme' });
@@ -248,9 +248,9 @@ export function useCRTTweakpane() {
       dark.addBinding(crtParams, 'darkBeamColor', { label: 'Beam color — scan beam tint', }).on('change', onChange);
       dark.addBinding(crtParams, 'darkDotColor', { label: 'Dot color — grid dot base color', }).on('change', onChange);
       dark.addBinding(crtParams, 'darkCharColor', { label: 'Char color — floating character tint', }).on('change', onChange);
-      dark.addBinding(crtParams, 'darkGlowAlphaScale', { label: 'Glow intensity — beam glow on dots', min: 0, max: 2, step: 0.01 }).on('change', onChange);
-      dark.addBinding(crtParams, 'darkCursorAlphaScale', { label: 'Cursor glow — proximity brightness boost', min: 0, max: 0.3, step: 0.005 }).on('change', onChange);
-      dark.addBinding(crtParams, 'darkRippleAlphaScale', { label: 'Ripple glow — click ripple brightness', min: 0, max: 2, step: 0.01 }).on('change', onChange);
+      dark.addBinding(crtParams, 'darkGlowAlphaScale', { label: 'Glow intensity — beam glow on dots', min: 0, max: 5, step: 0.01 }).on('change', onChange);
+      dark.addBinding(crtParams, 'darkCursorAlphaScale', { label: 'Cursor glow — proximity brightness boost', min: 0, max: 1, step: 0.005 }).on('change', onChange);
+      dark.addBinding(crtParams, 'darkRippleAlphaScale', { label: 'Ripple glow — click ripple brightness', min: 0, max: 5, step: 0.01 }).on('change', onChange);
 
       // -- Light theme --
       const light = pane.addFolder({ expanded: folderExpanded, title: 'Light Theme' });
@@ -258,9 +258,9 @@ export function useCRTTweakpane() {
       light.addBinding(crtParams, 'lightBeamColor', { label: 'Beam color — scan beam tint', }).on('change', onChange);
       light.addBinding(crtParams, 'lightDotColor', { label: 'Dot color — grid dot base color', }).on('change', onChange);
       light.addBinding(crtParams, 'lightCharColor', { label: 'Char color — floating character tint', }).on('change', onChange);
-      light.addBinding(crtParams, 'lightGlowAlphaScale', { label: 'Glow intensity — beam glow on dots', min: 0, max: 2, step: 0.01 }).on('change', onChange);
-      light.addBinding(crtParams, 'lightCursorAlphaScale', { label: 'Cursor glow — proximity brightness boost', min: 0, max: 0.3, step: 0.005 }).on('change', onChange);
-      light.addBinding(crtParams, 'lightRippleAlphaScale', { label: 'Ripple glow — click ripple brightness', min: 0, max: 2, step: 0.01 }).on('change', onChange);
+      light.addBinding(crtParams, 'lightGlowAlphaScale', { label: 'Glow intensity — beam glow on dots', min: 0, max: 5, step: 0.01 }).on('change', onChange);
+      light.addBinding(crtParams, 'lightCursorAlphaScale', { label: 'Cursor glow — proximity brightness boost', min: 0, max: 1, step: 0.005 }).on('change', onChange);
+      light.addBinding(crtParams, 'lightRippleAlphaScale', { label: 'Ripple glow — click ripple brightness', min: 0, max: 5, step: 0.01 }).on('change', onChange);
 
       // Reset button
       pane.addButton({ title: 'Reset to defaults' }).on('click', () => {

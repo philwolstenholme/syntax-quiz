@@ -103,7 +103,6 @@ export function useCRTTweakpane() {
       const dragHandle = document.createElement('div');
       dragHandle.style.height = '8px';
       dragHandle.style.cursor = 'grab';
-      dragHandle.style.background = 'var(--tp-container-background-color, #1f1f1f)';
       dragHandle.style.borderRadius = '6px 6px 0 0';
       dragHandle.style.display = 'flex';
       dragHandle.style.alignItems = 'center';
@@ -113,7 +112,6 @@ export function useCRTTweakpane() {
       grip.style.width = '32px';
       grip.style.height = '3px';
       grip.style.borderRadius = '2px';
-      grip.style.background = 'var(--tp-container-foreground-color, #999)';
       grip.style.opacity = '0.4';
       dragHandle.appendChild(grip);
 
@@ -130,6 +128,19 @@ export function useCRTTweakpane() {
 
       // Remove top border-radius from the pane root so it sits flush against the drag handle
       pane.element.style.borderRadius = '0';
+
+      // Match drag handle colors to the actual pane background (read after pane renders)
+      const paneBg = getComputedStyle(pane.element).backgroundColor;
+      dragHandle.style.background = paneBg;
+      grip.style.background = paneBg;
+      // Make grip slightly lighter/darker than the background for contrast
+      const match = paneBg.match(/\d+/g)?.map(Number);
+      if (match && match.length >= 3) {
+        const r = match[0]!, g = match[1]!, b = match[2]!;
+        const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        const offset = lum > 128 ? -40 : 40;
+        grip.style.background = `rgb(${r + offset},${g + offset},${b + offset})`;
+      }
 
       // Drag logic on our handle element
       let dragX = 0;

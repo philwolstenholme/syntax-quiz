@@ -88,23 +88,25 @@ export function useCRTTweakpane() {
 
       // Create a wrapper element we fully control for positioning, sizing, and dragging
       const wrapper = document.createElement('div');
+      wrapper.className = 'rounded-lg rounded-br-none overflow-hidden';
       wrapper.style.position = 'fixed';
       wrapper.style.top = '12px';
       wrapper.style.right = '12px';
       wrapper.style.zIndex = '99999';
       wrapper.style.pointerEvents = 'auto';
       wrapper.style.width = '380px';
-      wrapper.style.resize = 'horizontal';
-      wrapper.style.overflow = 'hidden';
+      wrapper.style.resize = 'both';
+      wrapper.style.display = 'flex';
+      wrapper.style.flexDirection = 'column';
       wrapper.style.minWidth = '280px';
       wrapper.style.maxWidth = '90vw';
+      wrapper.style.minHeight = '60px';
+      wrapper.style.maxHeight = '90vh';
 
       // Drag handle at the top of the wrapper
       const dragHandle = document.createElement('div');
       dragHandle.style.height = '8px';
       dragHandle.style.cursor = 'grab';
-      dragHandle.style.background = 'var(--tp-container-background-color, #1f1f1f)';
-      dragHandle.style.borderRadius = '6px 6px 0 0';
       dragHandle.style.display = 'flex';
       dragHandle.style.alignItems = 'center';
       dragHandle.style.justifyContent = 'center';
@@ -113,20 +115,37 @@ export function useCRTTweakpane() {
       grip.style.width = '32px';
       grip.style.height = '3px';
       grip.style.borderRadius = '2px';
-      grip.style.background = 'var(--tp-container-foreground-color, #999)';
       grip.style.opacity = '0.4';
       dragHandle.appendChild(grip);
 
-      // Pane content area (scrollable)
+      // Pane content area (scrollable, no elastic overscroll)
       const paneContainer = document.createElement('div');
-      paneContainer.style.maxHeight = 'calc(90vh - 8px)';
+      paneContainer.style.overscrollBehavior = 'none';
       paneContainer.style.overflowY = 'auto';
+      paneContainer.style.flex = '1';
+      paneContainer.style.minHeight = '0';
+      // Also contain overscroll on the wrapper to prevent any bounce
+      wrapper.style.overscrollBehavior = 'none';
 
       wrapper.appendChild(dragHandle);
       wrapper.appendChild(paneContainer);
       document.body.appendChild(wrapper);
 
       const pane = new Pane({ title: 'CRT Parameters', expanded: true, container: paneContainer });
+
+      // Remove top border-radius from the pane root so it sits flush against the drag handle
+      pane.element.style.borderRadius = '0';
+
+      // Match drag handle colors to the actual pane background (read after pane renders)
+      const paneBg = getComputedStyle(pane.element).backgroundColor;
+      dragHandle.style.background = paneBg;
+      const match = paneBg.match(/\d+/g)?.map(Number);
+      if (match && match.length >= 3) {
+        const r = match[0]!, g = match[1]!, b = match[2]!;
+        const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        const offset = lum > 128 ? -40 : 40;
+        grip.style.background = `rgb(${r + offset},${g + offset},${b + offset})`;
+      }
 
       // Drag logic on our handle element
       let dragX = 0;

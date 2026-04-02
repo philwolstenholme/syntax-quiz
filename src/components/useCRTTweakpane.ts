@@ -53,9 +53,16 @@ function hydrateFromQuery(p: CRTParams): boolean {
 // ---- URL sync (debounced) ----
 
 let urlTimer: ReturnType<typeof setTimeout> | undefined;
+let hasPushedBaseline = false;
 function syncURL(p: CRTParams) {
   clearTimeout(urlTimer);
   urlTimer = setTimeout(() => {
+    // On first change, snapshot the current (clean) URL as a baseline history entry
+    // so the user can always navigate back to the state before any tweaks
+    if (!hasPushedBaseline) {
+      window.history.replaceState({ crtBaseline: true }, '', window.location.href);
+      hasPushedBaseline = true;
+    }
     const qs = paramsToQuery(p);
     const url = window.location.pathname + qs + window.location.hash;
     // pushState so each tweak creates a history entry for browser back/forward

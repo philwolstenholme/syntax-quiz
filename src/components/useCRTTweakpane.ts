@@ -54,7 +54,9 @@ function hydrateFromQuery(p: CRTParams): boolean {
 
 let urlTimer: ReturnType<typeof setTimeout> | undefined;
 let hasPushedBaseline = false;
+let restoringFromHistory = false;
 function syncURL(p: CRTParams) {
+  if (restoringFromHistory) return;
   clearTimeout(urlTimer);
   urlTimer = setTimeout(() => {
     // On first change, snapshot the current (clean) URL as a baseline history entry
@@ -311,9 +313,11 @@ export function useCRTTweakpane() {
 
     // Browser back/forward restores params from the URL
     const handlePopstate = () => {
+      restoringFromHistory = true;
       resetToDefaults();
       hydrateFromQuery(crtParams);
       paneRef.current?.refresh();
+      restoringFromHistory = false;
     };
 
     window.addEventListener('keydown', handleKeydown);

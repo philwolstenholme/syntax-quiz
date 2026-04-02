@@ -53,19 +53,29 @@ function hydrateFromQuery(p: CRTParams): boolean {
 // ---- URL sync (debounced) ----
 
 let urlTimer: ReturnType<typeof setTimeout> | undefined;
+let hasPushedBaseline = false;
+let restoringFromHistory = false;
 function syncURL(p: CRTParams) {
+  if (restoringFromHistory) return;
   clearTimeout(urlTimer);
   urlTimer = setTimeout(() => {
+    // On first change, snapshot the current (clean) URL as a baseline history entry
+    // so the user can always navigate back to the state before any tweaks
+    if (!hasPushedBaseline) {
+      window.history.replaceState({ crtBaseline: true }, '', window.location.href);
+      hasPushedBaseline = true;
+    }
     const qs = paramsToQuery(p);
     const url = window.location.pathname + qs + window.location.hash;
-    window.history.replaceState(null, '', url);
+    // pushState so each tweak creates a history entry for browser back/forward
+    window.history.pushState(null, '', url);
   }, 300);
 }
 
 // ---- Hook ----
 
 export function useCRTTweakpane() {
-  const paneRef = useRef<{ dispose: () => void; wrapper: HTMLElement } | null>(null);
+  const paneRef = useRef<{ dispose: () => void; wrapper: HTMLElement; refresh: () => void } | null>(null);
   const visibleRef = useRef(false);
 
   useEffect(() => {
@@ -264,7 +274,7 @@ export function useCRTTweakpane() {
         hidePane();
       });
 
-      paneRef.current = { dispose: () => pane.dispose(), wrapper };
+      paneRef.current = { dispose: () => pane.dispose(), refresh: () => pane.refresh(), wrapper };
       visibleRef.current = true;
     };
 
@@ -301,9 +311,20 @@ export function useCRTTweakpane() {
       }
     };
 
+    // Browser back/forward restores params from the URL
+    const handlePopstate = () => {
+      restoringFromHistory = true;
+      resetToDefaults();
+      hydrateFromQuery(crtParams);
+      paneRef.current?.refresh();
+      restoringFromHistory = false;
+    };
+
     window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('popstate', handlePopstate);
     return () => {
       window.removeEventListener('keydown', handleKeydown);
+      window.removeEventListener('popstate', handlePopstate);
       hidePane();
     };
   }, []);

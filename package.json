@@ -23,6 +23,7 @@
     "@orpc/openapi": "^1.13.6",
     "@orpc/server": "^1.13.6",
     "@orpc/zod": "^1.13.6",
+    "@tweakpane/core": "^2.0.5",
     "clsx": "^2.1.1",
     "es-toolkit": "^1.44.0",
     "hono": "^4.12.5",
@@ -30,6 +31,7 @@
     "motion": "^12.31.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "tweakpane": "^4.0.5",
     "wouter": "^3.9.0",
     "zod": "^4.3.6"
   },

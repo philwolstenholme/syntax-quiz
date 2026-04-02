@@ -94,10 +94,14 @@ export function useCRTTweakpane() {
       wrapper.style.zIndex = '99999';
       wrapper.style.pointerEvents = 'auto';
       wrapper.style.width = '380px';
-      wrapper.style.resize = 'horizontal';
+      wrapper.style.resize = 'both';
       wrapper.style.overflow = 'hidden';
+      wrapper.style.display = 'flex';
+      wrapper.style.flexDirection = 'column';
       wrapper.style.minWidth = '280px';
       wrapper.style.maxWidth = '90vw';
+      wrapper.style.minHeight = '60px';
+      wrapper.style.maxHeight = '90vh';
 
       // Drag handle at the top of the wrapper
       const dragHandle = document.createElement('div');
@@ -117,8 +121,9 @@ export function useCRTTweakpane() {
 
       // Pane content area (scrollable)
       const paneContainer = document.createElement('div');
-      paneContainer.style.maxHeight = 'calc(90vh - 8px)';
       paneContainer.style.overflowY = 'auto';
+      paneContainer.style.flex = '1';
+      paneContainer.style.minHeight = '0';
 
       wrapper.appendChild(dragHandle);
       wrapper.appendChild(paneContainer);

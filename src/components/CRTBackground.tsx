@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback, type RefObject } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { useTheme } from '../context/useTheme';
+import { crtParams } from './crtParams';
+import { useCRTTweakpane } from './useCRTTweakpane';
 
 const KEYWORDS = [
   'const', 'let', 'var', 'function', 'return', 'type', 'interface',
@@ -9,48 +11,6 @@ const KEYWORDS = [
   'true', 'false', 'new', 'this', 'super', 'yield', 'from', 'as',
 ];
 const SYMBOLS = '{}[]()=>:;<>|&!?.+=-_/*%~^@#'.split('');
-
-// Grid
-const DOT_SPACING = 24;
-const DOT_BASE_RADIUS = 1;
-
-// Speed variation
-const SPEED_VARIATION = 0.25;
-const SPEED_SMOOTHING = 0.06; // faster easing so mouse effect feels responsive
-const MOUSE_SPEED_INFLUENCE = 0.8; // strong mouse Y influence on scan speed
-
-// Characters (only spawn on primary beam)
-const CHAR_DENSITY = 0.035;
-const CHAR_LIFETIME_MIN = 45;
-const CHAR_LIFETIME_MAX = 75;
-
-// Noise & glitch
-const NOISE_DENSITY = 0.002;
-const GLITCH_CHANCE = 0.003;
-
-// CRT barrel distortion — subtle convex screen curvature
-const BARREL_STRENGTH = -0.02; // negative = convex/outward bulge like CRT glass (0 = flat)
-
-// Beam speeds are in CSS pixels per frame (at 60fps) — absolute speed, no viewport scaling
-
-// Click ripple (dot-integrated)
-const RIPPLE_SPEED = 4; // px per frame expansion
-const RIPPLE_MAX_RADIUS = 200;
-const RIPPLE_RING_WIDTH = 40; // how wide the influence band is around the ring edge
-
-// Boot sequence
-const BOOT_DURATION = 70; // frames
-
-// Screen breathe
-const BREATHE_FREQUENCY = 0.02; // Hz — very slow oscillation
-const BREATHE_AMPLITUDE = 0.025; // 2.5% brightness variation
-
-// Exclusion zone
-const EXCLUDE_MARGIN = 32;
-const EXCLUDE_FADE = 48;
-
-// Afterglow (primary beam only)
-const AFTERGLOW_WIDTH = 100;
 
 // --- Beam definitions ---
 interface ScanBeam {
@@ -146,13 +106,14 @@ function dotHash(x: number, y: number): number {
 function exclusionMask(
   px: number, py: number,
   ex: number, ey: number, ew: number, eh: number,
+  fadeDist: number,
 ): number {
   const dx = Math.max(ex - px, 0, px - (ex + ew));
   const dy = Math.max(ey - py, 0, py - (ey + eh));
   if (dx === 0 && dy === 0) return 0;
   const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist >= EXCLUDE_FADE) return 1;
-  const t = dist / EXCLUDE_FADE;
+  if (dist >= fadeDist) return 1;
+  const t = dist / fadeDist;
   return t * t * (3 - 2 * t);
 }
 
@@ -167,15 +128,16 @@ function organicNoise(t: number): number {
 
 // Barrel distortion: push points outward from center to simulate convex CRT glass.
 // (nx, ny) are normalized coords (-1 to 1), returns displaced CSS pixel coords.
-function barrelDistort(x: number, y: number, cx: number, cy: number, halfW: number, halfH: number): [number, number] {
+function barrelDistort(x: number, y: number, cx: number, cy: number, halfW: number, halfH: number, strength: number): [number, number] {
   const nx = (x - cx) / halfW;
   const ny = (y - cy) / halfH;
   const r2 = nx * nx + ny * ny;
-  const factor = 1 + BARREL_STRENGTH * r2;
+  const factor = 1 + strength * r2;
   return [cx + nx * factor * halfW, cy + ny * factor * halfH];
 }
 
 export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundProps) => {
+  useCRTTweakpane();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { resolvedTheme } = useTheme();
@@ -222,7 +184,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         x: e.clientX,
         y: e.clientY,
         radius: 0,
-        maxRadius: RIPPLE_MAX_RADIUS,
+        maxRadius: crtParams.rippleMaxRadius,
       });
     };
 
@@ -237,6 +199,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
   }, []);
 
   const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => {
+    // Snapshot mutable params once per frame for consistency
+    const p = crtParams;
     const dpr = dprRef.current;
     ctx.clearRect(0, 0, width * dpr, height * dpr);
 
@@ -247,7 +211,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     let bootBrightness = 1;
     if (isBooting) {
       const bf = bootFrame.current;
-      bootProgress = Math.min(bf / BOOT_DURATION, 1);
+      bootProgress = Math.min(bf / p.bootDuration, 1);
       // Reach expands with eased curve — starts tight around beam, grows to full height
       const reachEased = bootProgress < 0.15
         ? (bootProgress / 0.15) * (bootProgress / 0.15) * 0.05
@@ -257,13 +221,13 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       bootBrightness = Math.min(bootProgress / 0.3, 1);
     }
 
-    const baseAlpha = isDark ? 0.22 : 0.12;
-    const beamColor = isDark ? ([0, 255, 136] as const) : ([34, 180, 85] as const);
-    const dotColor = isDark ? ([255, 255, 255] as const) : ([20, 30, 20] as const);
-    const charColor = isDark ? ([0, 255, 136] as const) : ([40, 160, 70] as const);
+    const baseAlpha = isDark ? p.darkBaseAlpha : p.lightBaseAlpha;
+    const beamColor = isDark ? p.darkBeamColor : p.lightBeamColor;
+    const dotColor = isDark ? p.darkDotColor : p.lightDotColor;
+    const charColor = isDark ? p.darkCharColor : p.lightCharColor;
 
     const frame = frameRef.current;
-    const breathe = 1 + Math.sin(frame / 60 * Math.PI * 2 * BREATHE_FREQUENCY) * BREATHE_AMPLITUDE;
+    const breathe = 1 + Math.sin(frame / 60 * Math.PI * 2 * p.breatheFrequency) * p.breatheAmplitude;
     const flicker = (1 - Math.random() * 0.03) * breathe;
 
     // Pre-compute beam data as flat arrays for fast iteration (avoids object allocation + property access)
@@ -297,17 +261,17 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     // Extend for afterglow
     const primaryBeam = scanArr[0]!;
     const primaryBeamY = primaryBeam.y;
-    const afterglowMinY = primaryBeamY - AFTERGLOW_WIDTH;
+    const afterglowMinY = primaryBeamY - p.afterglowWidth;
     if (afterglowMinY < beamMinY) beamMinY = afterglowMinY;
     if (primaryBeamY > beamMaxY) beamMaxY = primaryBeamY;
 
     // Exclusion zone
     const er = excludeRect.current;
     const hasExclusion = er !== null;
-    const exX = er ? er.x - EXCLUDE_MARGIN : 0;
-    const exY = er ? er.y - EXCLUDE_MARGIN : 0;
-    const exW = er ? er.w + EXCLUDE_MARGIN * 2 : 0;
-    const exH = er ? er.h + EXCLUDE_MARGIN * 2 : 0;
+    const exX = er ? er.x - p.excludeMargin : 0;
+    const exY = er ? er.y - p.excludeMargin : 0;
+    const exW = er ? er.w + p.excludeMargin * 2 : 0;
+    const exH = er ? er.h + p.excludeMargin * 2 : 0;
 
     // Mouse state
     const dotMxActive = mouseActive.current;
@@ -319,21 +283,21 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     // Pre-compute edge falloff per column and row (avoids sqrt per dot)
     const cx = width / 2;
     const cy = height / 2;
-    const colCount = Math.ceil((width - DOT_SPACING) / DOT_SPACING) + 1;
-    const rowCount = Math.ceil((height - DOT_SPACING) / DOT_SPACING) + 1;
+    const colCount = Math.ceil((width - p.dotSpacing) / p.dotSpacing) + 1;
+    const rowCount = Math.ceil((height - p.dotSpacing) / p.dotSpacing) + 1;
     const edgeAlphaX = new Float64Array(colCount);
     const edgeRadiusX = new Float64Array(colCount);
     const edgeAlphaY = new Float64Array(rowCount);
     const edgeRadiusY = new Float64Array(rowCount);
     for (let ci = 0; ci < colCount; ci++) {
-      const x = DOT_SPACING + ci * DOT_SPACING;
+      const x = p.dotSpacing + ci * p.dotSpacing;
       const dx = (x - cx) / cx;
       const dist2 = dx * dx;
       edgeAlphaX[ci] = dist2;
       edgeRadiusX[ci] = dist2;
     }
     for (let ri = 0; ri < rowCount; ri++) {
-      const y = DOT_SPACING + ri * DOT_SPACING;
+      const y = p.dotSpacing + ri * p.dotSpacing;
       const dy = (y - cy) / cy;
       const dist2 = dy * dy;
       edgeAlphaY[ri] = dist2;
@@ -341,11 +305,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     }
 
     // Pre-compute base dot color string (used for non-glowing dots)
-    const dotR = dotColor[0], dotG = dotColor[1], dotB = dotColor[2];
-    const beamR = beamColor[0], beamG = beamColor[1], beamB = beamColor[2];
-    const glowAlphaScale = isDark ? 0.75 : 0.55;
-    const cursorAlphaScale = isDark ? 0.06 : 0.03;
-    const rippleAlphaScale = isDark ? 0.5 : 0.35;
+    const dotR = dotColor.r, dotG = dotColor.g, dotB = dotColor.b;
+    const beamR = beamColor.r, beamG = beamColor.g, beamB = beamColor.b;
+    const glowAlphaScale = isDark ? p.darkGlowAlphaScale : p.lightGlowAlphaScale;
+    const cursorAlphaScale = isDark ? p.darkCursorAlphaScale : p.lightCursorAlphaScale;
+    const rippleAlphaScale = isDark ? p.darkRippleAlphaScale : p.lightRippleAlphaScale;
 
     // Active ripples snapshot
     const activeRipples = ripples.current;
@@ -361,16 +325,16 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
     // Draw dot grid
     for (let ci = 0; ci < colCount; ci++) {
-      const x = DOT_SPACING + ci * DOT_SPACING;
+      const x = p.dotSpacing + ci * p.dotSpacing;
       if (x >= width) break;
 
       const edDx2 = edgeAlphaX[ci]!;
 
       for (let ri = 0; ri < rowCount; ri++) {
-        const y = DOT_SPACING + ri * DOT_SPACING;
+        const y = p.dotSpacing + ri * p.dotSpacing;
         if (y >= height) break;
 
-        const mask = hasExclusion ? exclusionMask(x, y, exX, exY, exW, exH) : 1;
+        const mask = hasExclusion ? exclusionMask(x, y, exX, exY, exW, exH, p.excludeFade) : 1;
         if (mask < 0.01) continue;
 
         const hash = dotHash(x, y);
@@ -406,8 +370,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
         // Afterglow (primary beam only)
         const behind = primaryBeamY - y;
-        if (behind > 0 && behind < AFTERGLOW_WIDTH) {
-          const t = 1 - behind / AFTERGLOW_WIDTH;
+        if (behind > 0 && behind < p.afterglowWidth) {
+          const t = 1 - behind / p.afterglowWidth;
           const ag = t * t * 0.35;
           if (ag > maxGlow) maxGlow = ag;
         }
@@ -422,8 +386,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           const rdy = y - rip.y;
           const distFromCenter = Math.sqrt(rdx * rdx + rdy * rdy);
           const distFromRing = Math.abs(distFromCenter - rip.radius);
-          if (distFromRing < RIPPLE_RING_WIDTH) {
-            const ringProximity = 1 - distFromRing / RIPPLE_RING_WIDTH;
+          if (distFromRing < p.rippleRingWidth) {
+            const ringProximity = 1 - distFromRing / p.rippleRingWidth;
             const rippleLife = 1 - rip.radius / rip.maxRadius;
             const boost = ringProximity * rippleLife;
             if (boost > rippleBoost) rippleBoost = boost;
@@ -455,7 +419,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         }
 
         const alpha = (baseAlpha + cursorAlpha + rippleAlpha + totalGlow * glowAlphaScale) * brightnessVar * flicker * mask * edgeAlpha * bootAlpha;
-        const r = (DOT_BASE_RADIUS + cursorSize + rippleSize + totalGlow * 2) * sizeVar * edgeRadius;
+        const r = (p.dotBaseRadius + cursorSize + rippleSize + totalGlow * 2) * sizeVar * edgeRadius;
 
         // Magnetic interference — chromatic aberration on dots near cursor
         let magneticShift = 0;
@@ -470,7 +434,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         }
 
         // Apply barrel distortion to get the draw position
-        const [dx, dy] = barrelDistort(x, y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
+        const [dx, dy] = barrelDistort(x, y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
 
         if (totalGlow > 0.05 || rippleBoost > 0.05) {
           const blend = Math.min(Math.max(totalGlow * 1.5, rippleBoost), 1);
@@ -520,11 +484,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         // Spawn characters only near primary beam
         const primaryDist = Math.abs(y - primaryBeamY);
         const primaryGlow = Math.max(0, 1 - primaryDist / primaryBeam.width);
-        if (mask > 0.5 && primaryGlow > 0.6 && Math.random() < CHAR_DENSITY) {
+        if (mask > 0.5 && primaryGlow > 0.6 && Math.random() < p.charDensity) {
           const char = Math.random() < 0.4
             ? KEYWORDS[(Math.random() * KEYWORDS.length) | 0] ?? '='
             : SYMBOLS[(Math.random() * SYMBOLS.length) | 0] ?? '#';
-          const lifetime = CHAR_LIFETIME_MIN + ((Math.random() * (CHAR_LIFETIME_MAX - CHAR_LIFETIME_MIN)) | 0);
+          const lifetime = p.charLifetimeMin + ((Math.random() * (p.charLifetimeMax - p.charLifetimeMin)) | 0);
           chars.current.push({ x, y, char, life: lifetime, maxLife: lifetime, drift: (Math.random() - 0.5) * 0.3 });
         }
       }
@@ -548,7 +512,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       if (c.life <= 0) continue;
       c.x += c.drift * dt;
 
-      const cMask = hasExclusion ? exclusionMask(c.x, c.y, exX, exY, exW, exH) : 1;
+      const cMask = hasExclusion ? exclusionMask(c.x, c.y, exX, exY, exW, exH, p.excludeFade) : 1;
       if (cMask < 0.01) continue;
 
       let cursorXFactor = 1;
@@ -567,7 +531,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       const charAlpha = charAlphaBase * (isDark ? 0.55 : 0.45) * flicker * cMask * cursorXFactor * bootBrightness;
 
       if (charAlpha >= 0.02) {
-        const [cdx, cdy] = barrelDistort(c.x, c.y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
+        const [cdx, cdy] = barrelDistort(c.x, c.y, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
         if (isDark && charAlpha > 0.15) {
           const fringeOffset = 1 * dpr;
           ctx.fillStyle = `rgba(255,50,50,${charAlpha * 0.2})`;
@@ -575,7 +539,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
           ctx.fillStyle = `rgba(50,50,255,${charAlpha * 0.2})`;
           ctx.fillText(c.char, (cdx + fringeOffset / dpr) * dpr, cdy * dpr);
         }
-        ctx.fillStyle = `rgba(${charColor[0]},${charColor[1]},${charColor[2]},${charAlpha})`;
+        ctx.fillStyle = `rgba(${charColor.r},${charColor.g},${charColor.b},${charAlpha})`;
         ctx.fillText(c.char, cdx * dpr, cdy * dpr);
       }
 
@@ -636,7 +600,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     writeIdx = 0;
     for (let i = 0; i < activeRipples.length; i++) {
       const rip = activeRipples[i]!;
-      rip.radius += RIPPLE_SPEED * dt;
+      rip.radius += p.rippleSpeed * dt;
       if (rip.radius <= rip.maxRadius) {
         activeRipples[writeIdx++] = rip;
       }
@@ -644,11 +608,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
     activeRipples.length = writeIdx;
 
     // Static noise
-    const noiseCount = (width * height * NOISE_DENSITY) | 0;
+    const noiseCount = (width * height * p.noiseDensity) | 0;
     for (let i = 0; i < noiseCount; i++) {
       const nx = Math.random() * width;
       const ny = Math.random() * height;
-      const nMask = hasExclusion ? exclusionMask(nx, ny, exX, exY, exW, exH) : 1;
+      const nMask = hasExclusion ? exclusionMask(nx, ny, exX, exY, exW, exH, p.excludeFade) : 1;
       if (nMask < 0.1) continue;
       let nBootAlpha = 1;
       if (isBooting) {
@@ -663,13 +627,13 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       } else {
         ctx.fillStyle = `rgba(${dotR},${dotG},${dotB},${nAlpha * 0.5})`;
       }
-      const [ndx, ndy] = barrelDistort(nx, ny, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH);
+      const [ndx, ndy] = barrelDistort(nx, ny, barrelHalfW, barrelHalfH, barrelHalfW, barrelHalfH, p.barrelStrength);
       const nSize = (0.5 + Math.random() * 1.5) * dpr;
       ctx.fillRect(ndx * dpr, ndy * dpr, nSize, nSize);
     }
 
     // Glitch lines — use drawImage with clipping instead of getImageData/putImageData
-    if (Math.random() < GLITCH_CHANCE) {
+    if (Math.random() < p.glitchChance) {
       glitches.current.push({
         y: Math.random() * height,
         offset: (Math.random() - 0.5) * 30,
@@ -723,27 +687,27 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       ctx.fillStyle = 'rgba(0,0,0,1)';
       ctx.fillRect(exX * dpr, exY * dpr, exW * dpr, exH * dpr);
 
-      const fade = EXCLUDE_FADE * dpr;
+      const fade = p.excludeFade * dpr;
 
-      const topGrad = ctx.createLinearGradient(0, (exY - EXCLUDE_FADE) * dpr, 0, exY * dpr);
+      const topGrad = ctx.createLinearGradient(0, (exY - p.excludeFade) * dpr, 0, exY * dpr);
       topGrad.addColorStop(0, 'rgba(0,0,0,0)');
       topGrad.addColorStop(1, 'rgba(0,0,0,1)');
       ctx.fillStyle = topGrad;
-      ctx.fillRect((exX - EXCLUDE_FADE) * dpr, (exY - EXCLUDE_FADE) * dpr, (exW + EXCLUDE_FADE * 2) * dpr, fade);
+      ctx.fillRect((exX - p.excludeFade) * dpr, (exY - p.excludeFade) * dpr, (exW + p.excludeFade * 2) * dpr, fade);
 
-      const botGrad = ctx.createLinearGradient(0, (exY + exH) * dpr, 0, (exY + exH + EXCLUDE_FADE) * dpr);
+      const botGrad = ctx.createLinearGradient(0, (exY + exH) * dpr, 0, (exY + exH + p.excludeFade) * dpr);
       botGrad.addColorStop(0, 'rgba(0,0,0,1)');
       botGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = botGrad;
-      ctx.fillRect((exX - EXCLUDE_FADE) * dpr, (exY + exH) * dpr, (exW + EXCLUDE_FADE * 2) * dpr, fade);
+      ctx.fillRect((exX - p.excludeFade) * dpr, (exY + exH) * dpr, (exW + p.excludeFade * 2) * dpr, fade);
 
-      const leftGrad = ctx.createLinearGradient((exX - EXCLUDE_FADE) * dpr, 0, exX * dpr, 0);
+      const leftGrad = ctx.createLinearGradient((exX - p.excludeFade) * dpr, 0, exX * dpr, 0);
       leftGrad.addColorStop(0, 'rgba(0,0,0,0)');
       leftGrad.addColorStop(1, 'rgba(0,0,0,1)');
       ctx.fillStyle = leftGrad;
-      ctx.fillRect((exX - EXCLUDE_FADE) * dpr, exY * dpr, fade, exH * dpr);
+      ctx.fillRect((exX - p.excludeFade) * dpr, exY * dpr, fade, exH * dpr);
 
-      const rightGrad = ctx.createLinearGradient((exX + exW) * dpr, 0, (exX + exW + EXCLUDE_FADE) * dpr, 0);
+      const rightGrad = ctx.createLinearGradient((exX + exW) * dpr, 0, (exX + exW + p.excludeFade) * dpr, 0);
       rightGrad.addColorStop(0, 'rgba(0,0,0,1)');
       rightGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = rightGrad;
@@ -758,7 +722,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         cornerGrad.addColorStop(0, 'rgba(0,0,0,1)');
         cornerGrad.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = cornerGrad;
-        ctx.fillRect((ccx - EXCLUDE_FADE) * dpr, (ccy - EXCLUDE_FADE) * dpr, fade * 2, fade * 2);
+        ctx.fillRect((ccx - p.excludeFade) * dpr, (ccy - p.excludeFade) * dpr, fade * 2, fade * 2);
       }
 
       ctx.restore();
@@ -811,7 +775,7 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       // Boot sequence — advance proportionally to elapsed time
       if (!booted.current) {
         bootFrame.current += dt;
-        if (bootFrame.current >= BOOT_DURATION) {
+        if (bootFrame.current >= crtParams.bootDuration) {
           booted.current = true;
         }
       }
@@ -838,14 +802,14 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
       }
 
       // Mouse influence on scan speed
-      const mouseOffset = (mouseYNorm.current - 0.5) * 2 * MOUSE_SPEED_INFLUENCE;
+      const mouseOffset = (mouseYNorm.current - 0.5) * 2 * crtParams.mouseSpeedInfluence;
       const timeSeconds = frame / 60;
 
       // Update scan beams — scale movement by dt for framerate independence
       for (const b of scanBeams.current) {
-        const organic = organicNoise(timeSeconds + b.phaseOffset) * SPEED_VARIATION;
+        const organic = organicNoise(timeSeconds + b.phaseOffset) * crtParams.speedVariation;
         const targetSpeed = Math.max(0.08, b.baseSpeed + organic + mouseOffset * b.baseSpeed);
-        b.currentSpeed += (targetSpeed - b.currentSpeed) * (1 - Math.pow(1 - SPEED_SMOOTHING, dt));
+        b.currentSpeed += (targetSpeed - b.currentSpeed) * (1 - Math.pow(1 - crtParams.speedSmoothing, dt));
         b.y += b.currentSpeed * dt;
         if (b.y > height + b.width) b.y = -b.width;
       }

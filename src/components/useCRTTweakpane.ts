@@ -120,12 +120,12 @@ export function useCRTTweakpane() {
 
       // Pane content area (scrollable, no elastic overscroll)
       const paneContainer = document.createElement('div');
-      paneContainer.style.overscrollBehavior = 'contain';
+      paneContainer.style.overscrollBehavior = 'none';
       paneContainer.style.overflowY = 'auto';
       paneContainer.style.flex = '1';
       paneContainer.style.minHeight = '0';
       // Also contain overscroll on the wrapper to prevent any bounce
-      wrapper.style.overscrollBehavior = 'contain';
+      wrapper.style.overscrollBehavior = 'none';
 
       wrapper.appendChild(dragHandle);
       wrapper.appendChild(paneContainer);

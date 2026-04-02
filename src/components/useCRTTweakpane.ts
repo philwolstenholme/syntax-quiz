@@ -101,6 +101,46 @@ export function useCRTTweakpane() {
       container.style.minWidth = '280px';
       container.style.maxWidth = '90vw';
 
+      // Make the panel draggable via its title bar
+      const titleBar = container.querySelector('.tp-rotv_t') as HTMLElement | null;
+      if (titleBar) {
+        titleBar.style.cursor = 'grab';
+        let dragX = 0;
+        let dragY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+
+        const onMouseMove = (e: MouseEvent) => {
+          const dx = e.clientX - dragX;
+          const dy = e.clientY - dragY;
+          container.style.left = `${startLeft + dx}px`;
+          container.style.top = `${startTop + dy}px`;
+        };
+
+        const onMouseUp = () => {
+          titleBar.style.cursor = 'grab';
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
+
+        titleBar.addEventListener('mousedown', (e: MouseEvent) => {
+          // Only drag on left-click, ignore if clicking the expand/collapse button
+          if (e.button !== 0 || (e.target as HTMLElement).closest('.tp-rotv_b')) return;
+          e.preventDefault();
+          titleBar.style.cursor = 'grabbing';
+          dragX = e.clientX;
+          dragY = e.clientY;
+          // Switch from right-anchored to left-anchored positioning
+          const rect = container.getBoundingClientRect();
+          container.style.right = 'auto';
+          container.style.left = `${rect.left}px`;
+          startLeft = rect.left;
+          startTop = rect.top;
+          window.addEventListener('mousemove', onMouseMove);
+          window.addEventListener('mouseup', onMouseUp);
+        });
+      }
+
       const onChange = () => syncURL(crtParams);
 
       // -- Grid --

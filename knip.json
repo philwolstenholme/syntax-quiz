@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["netlify/functions/**/*.{ts,mts}"],
-  "project": ["src/**/*.{ts,tsx}", "netlify/functions/**/*.{ts,mts}"]
+  "project": ["src/**/*.{ts,tsx}", "netlify/functions/**/*.{ts,mts}"],
+  "ignoreDependencies": ["@tweakpane/core"]
 }

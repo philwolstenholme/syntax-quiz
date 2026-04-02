@@ -88,6 +88,7 @@ export function useCRTTweakpane() {
 
       // Create a wrapper element we fully control for positioning, sizing, and dragging
       const wrapper = document.createElement('div');
+      wrapper.className = 'rounded-lg rounded-br-none overflow-hidden';
       wrapper.style.position = 'fixed';
       wrapper.style.top = '12px';
       wrapper.style.right = '12px';
@@ -95,7 +96,6 @@ export function useCRTTweakpane() {
       wrapper.style.pointerEvents = 'auto';
       wrapper.style.width = '380px';
       wrapper.style.resize = 'both';
-      wrapper.style.overflow = 'hidden';
       wrapper.style.display = 'flex';
       wrapper.style.flexDirection = 'column';
       wrapper.style.minWidth = '280px';
@@ -107,7 +107,6 @@ export function useCRTTweakpane() {
       const dragHandle = document.createElement('div');
       dragHandle.style.height = '8px';
       dragHandle.style.cursor = 'grab';
-      dragHandle.style.borderRadius = '6px 6px 0 0';
       dragHandle.style.display = 'flex';
       dragHandle.style.alignItems = 'center';
       dragHandle.style.justifyContent = 'center';
@@ -121,7 +120,6 @@ export function useCRTTweakpane() {
 
       // Pane content area (scrollable, no elastic overscroll)
       const paneContainer = document.createElement('div');
-      paneContainer.className = 'rounded-lg rounded-br-none overflow-hidden';
       paneContainer.style.overscrollBehavior = 'contain';
       paneContainer.style.overflowY = 'auto';
       paneContainer.style.flex = '1';

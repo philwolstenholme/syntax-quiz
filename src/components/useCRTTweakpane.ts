@@ -128,6 +128,9 @@ export function useCRTTweakpane() {
 
       const pane = new Pane({ title: 'CRT Parameters', expanded: true, container: paneContainer });
 
+      // Remove top border-radius from the pane root so it sits flush against the drag handle
+      pane.element.style.borderRadius = '0';
+
       // Drag logic on our handle element
       let dragX = 0;
       let dragY = 0;

@@ -59,7 +59,7 @@ app.all('/*', async (c) => {
   if (c.req.method === 'POST' && url.pathname.startsWith('/api/play/') && response!.ok) {
     // Read gameState from the response to set the cookie, without full re-serialization
     const clone = response!.clone()
-    const body = await clone.json()
+    const body = await clone.json() as { gameState?: string }
     const res = new Response(response!.body, {
       status: response!.status,
       headers: new Headers(response!.headers),

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "typecheck": "tsc",
+    "typecheck": "tsc && tsc -p netlify/tsconfig.json",
     "lint": "eslint .",
     "preview": "vite preview",
     "test:e2e": "playwright test --project=chromium",
@@ -40,6 +40,7 @@
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^25.5.2",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

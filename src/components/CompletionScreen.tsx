@@ -14,12 +14,13 @@ interface CompletionScreenProps {
   correctAnswers: number;
   totalQuestions: number;
   level: Level;
+  flawless: boolean;
 }
 
-export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level }: CompletionScreenProps) => {
+export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level, flawless }: CompletionScreenProps) => {
   const animatedScore = useCountUp(score, 1000);
   const animatedCorrect = useCountUp(correctAnswers, 800);
-  const isPerfect = correctAnswers === totalQuestions;
+  const isPerfect = flawless;
   const accuracy = formatPercent(correctAnswers / totalQuestions);
   const prefersReducedMotion = useReducedMotion();
   const wrapperRef = useRef<HTMLDivElement>(null);

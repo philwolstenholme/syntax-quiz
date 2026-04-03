@@ -5,6 +5,7 @@ export interface QuizResult {
   correctAnswers: number;
   totalQuestions: number;
   levelId: number;
+  flawless: boolean;
 }
 
 export interface QuizResultContextValue {

@@ -39,7 +39,7 @@ export function useQuiz(): UseQuizReturn {
   const { level, levelId, saveState, initialQuestions, setLocation } = useQuizLevel();
   const { setResult } = useQuizResult();
 
-  const { score, streak, correctAnswers, recordCorrect, recordIncorrect } = useScoring({
+  const { score, streak, correctAnswers, totalAttempts, recordCorrect, recordIncorrect } = useScoring({
     initialScore: saveState?.s,
     initialStreak: saveState?.k,
     initialCorrect: saveState?.c,
@@ -86,7 +86,7 @@ export function useQuiz(): UseQuizReturn {
     }
 
     // Quiz truly complete — navigate to score page via context
-    setResult({ score, correctAnswers, totalQuestions: totalLevelQuestions, levelId });
+    setResult({ score, correctAnswers, totalQuestions: totalAttempts, levelId, flawless: !isRetryRound });
     setLocation(ROUTES.score(levelId));
   };
 

@@ -31,6 +31,7 @@ export const ScorePage = () => {
       correctAnswers={result.correctAnswers}
       totalQuestions={result.totalQuestions}
       level={level}
+      flawless={result.flawless}
     />
   );
 };

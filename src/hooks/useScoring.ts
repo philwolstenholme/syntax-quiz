@@ -11,6 +11,7 @@ interface UseScoringReturn {
   score: number;
   streak: number;
   correctAnswers: number;
+  totalAttempts: number;
   recordCorrect: (hintsUsed: number) => void;
   recordIncorrect: () => void;
 }
@@ -23,6 +24,7 @@ export function useScoring({
   const [score, setScore] = useState(initialScore);
   const [streak, setStreak] = useState(initialStreak);
   const [correctAnswers, setCorrectAnswers] = useState(initialCorrect);
+  const [totalAttempts, setTotalAttempts] = useState(initialCorrect);
 
   const recordCorrect = (hintsUsed: number) => {
     const newStreak = streak + 1;
@@ -31,11 +33,13 @@ export function useScoring({
     setStreak(newStreak);
     setScore(s => s + points);
     setCorrectAnswers(c => c + 1);
+    setTotalAttempts(t => t + 1);
   };
 
   const recordIncorrect = () => {
     setStreak(0);
+    setTotalAttempts(t => t + 1);
   };
 
-  return { score, streak, correctAnswers, recordCorrect, recordIncorrect };
+  return { score, streak, correctAnswers, totalAttempts, recordCorrect, recordIncorrect };
 }

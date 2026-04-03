@@ -53,6 +53,11 @@
   to   { opacity: 1; }
 }
 
+@keyframes trophy-glow-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 0.9;  transform: scale(1.15); }
+}
+
 @keyframes glow-shimmer {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.72; }
@@ -77,6 +82,9 @@
   @keyframes glow-shimmer {
     from, to { opacity: 1; }
   }
+  @keyframes trophy-glow-pulse {
+    from, to { opacity: 0.55; transform: scale(1); }
+  }
   @keyframes streak-pulse {
     from, to { transform: none; filter: none; }
   }
@@ -85,12 +93,12 @@
   }
 }
 
-.app-shell {
+.bg-dots {
   background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-.dark .app-shell {
+.dark .bg-dots {
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
 }
 

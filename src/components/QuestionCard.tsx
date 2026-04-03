@@ -140,14 +140,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     >
       {glowData && (
         <div
+          key={question.code}
           className="absolute inset-0 pointer-events-none"
-          style={{
-            opacity: isHovered ? 1 : 0.6,
-            transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
+          style={{ animation: 'glow-enter 1.4s ease-out forwards' }}
         >
-          <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
-          <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              opacity: isHovered ? 1 : 0.6,
+              transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
+            <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} />
+          </div>
         </div>
       )}
       <h2 className="relative text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">

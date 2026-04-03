@@ -10,7 +10,7 @@ export const ScorePage = () => {
   const [, setLocation] = useLocation();
   const { result } = useQuizResult();
 
-  const levelId = parseInt(params.levelId ?? '0', 10);
+  const levelId = parseFloat(params.levelId ?? '0');
   const level = levels.find((l) => l.id === levelId);
 
   const isValidAccess = result !== null && result.levelId === levelId && level;

@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Trophy, ArrowLeft, RotateCcw } from 'lucide-react';
 import { Link } from 'wouter';
 import { m, useReducedMotion } from 'motion/react';
 import { PageLayout } from './PageLayout';
-import { StatCard } from './StatCard';
+import { CRTBackground } from './CRTBackground';
 import type { Level } from '../data/questions';
 import { ROUTES } from '../routes';
 import { formatNumber, formatPercent } from '../utils/format';
@@ -22,6 +22,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
   const isPerfect = correctAnswers === totalQuestions;
   const accuracy = formatPercent(correctAnswers / totalQuestions);
   const prefersReducedMotion = useReducedMotion();
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isPerfect || prefersReducedMotion) return;
@@ -30,21 +31,8 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
       if (cancelled) return;
       const confetti = (await import('canvas-confetti')).default;
       if (cancelled) return;
-      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
-      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
-    }, 1000);
-    return () => { cancelled = true; clearTimeout(timer); };
-  }, [isPerfect, prefersReducedMotion]);
-
-  useEffect(() => {
-    if (!isPerfect || prefersReducedMotion) return;
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      if (cancelled) return;
-      const confetti = (await import('canvas-confetti')).default;
-      if (cancelled) return;
-      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
-      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
+      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ['#00ff88', '#00cc6a', '#00e87a', '#33ffaa', '#00ff88'] });
+      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ['#00ff88', '#00cc6a', '#00e87a', '#33ffaa', '#00ff88'] });
     }, 1000);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [isPerfect, prefersReducedMotion]);
@@ -60,32 +48,58 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
 
   return (
     <PageLayout centered>
-      <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900/50 p-8 sm:p-10 max-w-md w-full text-center">
-        <m.div className="mb-6" {...stagger(0)}>
-          <Trophy className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto" aria-hidden="true" />
+      <CRTBackground excludeStartRef={wrapperRef} />
+      <div ref={wrapperRef} className="score-wrapper relative p-8 sm:p-10 max-w-md w-full text-center">
+
+        {/* Trophy with CRT glow */}
+        <m.div className="relative mb-6 flex items-center justify-center" {...stagger(0)}>
+          {/* Pulsating lime green glow */}
+          <div
+            aria-hidden="true"
+            className="absolute w-24 h-24 rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(0,255,136,0.7) 0%, rgba(0,255,136,0.2) 50%, transparent 75%)',
+              filter: 'blur(16px)',
+              animation: prefersReducedMotion ? undefined : 'trophy-glow-pulse 2.4s ease-in-out infinite',
+            }}
+          />
+          <Trophy className="relative w-12 h-12 text-neutral-900 dark:text-white drop-shadow-[0_0_8px_rgba(0,255,136,0.8)]" aria-hidden="true" />
         </m.div>
 
         <m.h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2" {...stagger(1)}>
           {isPerfect ? 'Flawless.' : 'Quiz complete!'}
         </m.h1>
 
-        <m.div className="mb-6" {...stagger(2)}>
+        <m.div className="mb-8" {...stagger(2)}>
           <span className="inline-block text-xs font-medium px-2.5 py-0.5 rounded-full border border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-mono">
             {level.name} — {level.subtitle}
           </span>
         </m.div>
 
-        <m.div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6" {...stagger(3)}>
-          <div className="text-3xl font-semibold mb-1 tabular-nums font-mono">{formatNumber(animatedScore)}</div>
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">Total score</div>
+        {/* Score — borderless, just the number */}
+        <m.div className="mb-6" {...stagger(3)}>
+          <div className="text-5xl font-semibold tabular-nums font-mono text-neutral-900 dark:text-neutral-100 mb-1">
+            {formatNumber(animatedScore)}
+          </div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400 font-mono uppercase tracking-widest">Total score</div>
         </m.div>
 
-        <m.div className="grid grid-cols-2 gap-3 mb-6" {...stagger(4)}>
-          <StatCard icon={Target} iconColor="text-blue-500 dark:text-blue-400" value={accuracy} label="Accuracy" />
-          <StatCard icon={CheckCircle} iconColor="text-emerald-500 dark:text-emerald-400" value={formatNumber(animatedCorrect)} label="Correct" />
+        {/* Divider */}
+        <m.div className="border-t border-neutral-400/30 dark:border-neutral-600/40 mb-6" {...stagger(4)} />
+
+        {/* Stats — borderless, inline */}
+        <m.div className="grid grid-cols-2 gap-0 mb-8" {...stagger(5)}>
+          <div className="py-2 px-4">
+            <div className="text-2xl font-semibold tabular-nums font-mono text-neutral-900 dark:text-neutral-100 mb-0.5">{accuracy}</div>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest font-mono">Accuracy</div>
+          </div>
+          <div className="py-2 px-4 border-l border-neutral-400/30 dark:border-neutral-600/40">
+            <div className="text-2xl font-semibold tabular-nums font-mono text-neutral-900 dark:text-neutral-100 mb-0.5">{formatNumber(animatedCorrect)}</div>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest font-mono">Correct</div>
+          </div>
         </m.div>
 
-        <m.div className="space-y-3" {...stagger(5)}>
+        <m.div className="space-y-3" {...stagger(6)}>
           <Link
             to={ROUTES.questions(level.id)}
             className="w-full bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-700 dark:hover:bg-white transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"

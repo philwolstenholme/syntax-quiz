@@ -33,7 +33,7 @@ function App() {
     <ThemeProvider>
       <QuizResultProvider>
         <LazyMotion features={loadMotionFeatures}>
-          <div className="app-shell relative overflow-x-hidden bg-(--bg) min-h-dvh">
+          <div className={`app-shell${location.endsWith('/questions') ? ' bg-dots' : ''} relative overflow-x-hidden bg-(--bg) min-h-dvh`}>
             <ThemeToggle />
             <AnimatePresence mode="popLayout">
               <m.div key={location} {...pageTransition}>

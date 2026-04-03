@@ -203,7 +203,7 @@ greet('Alice');`,
   },
 ];
 
-export const level1_5Questions: Question[] = [
+const level1_5Questions: Question[] = [
   {
     code: `interface User {
   name: string;

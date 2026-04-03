@@ -24,7 +24,7 @@ export const LevelSelect = () => {
             </div>
             <span className="text-sm text-neutral-500 dark:text-neutral-400 font-mono">syntax-quiz</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
             Syntax Quiz
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-[50ch]">

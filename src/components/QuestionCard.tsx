@@ -94,10 +94,10 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     <div
       className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900/50 p-5 sm:p-6 mb-4"
     >
-      <h2 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
         {question.question}
       </h2>
-      <p id="question-instructions" className="text-neutral-500 dark:text-neutral-400 mb-4 text-base">
+      <p id="question-instructions" className="text-neutral-500 dark:text-neutral-400 mb-4 text-sm">
         Drag an answer onto the code or tap to select
       </p>
       <div

@@ -52,7 +52,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
           <Trophy className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto" aria-hidden="true" />
         </m.div>
 
-        <m.h1 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2" {...stagger(1)}>
+        <m.h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2" {...stagger(1)}>
           {isPerfect ? 'Flawless.' : 'Quiz complete!'}
         </m.h1>
 
@@ -63,7 +63,7 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
         </m.div>
 
         <m.div className="border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-lg p-6 mb-6" {...stagger(3)}>
-          <div className="text-3xl font-medium mb-1 tabular-nums font-mono">{formatNumber(animatedScore)}</div>
+          <div className="text-3xl font-semibold mb-1 tabular-nums font-mono">{formatNumber(animatedScore)}</div>
           <div className="text-sm text-neutral-500 dark:text-neutral-400">Total score</div>
         </m.div>
 

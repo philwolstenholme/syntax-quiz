@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react';
+import { m, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import { GripVertical } from 'lucide-react';
 import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
@@ -32,12 +33,38 @@ const DraggableOption = ({
   onAnswer,
 }: DraggableOptionProps) => {
   const isDisabled = disabled || eliminated;
+  const prefersReducedMotion = useReducedMotion();
+
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: option,
     data: { answer: option },
     disabled: isDisabled,
   });
-  const handleClick = (e: MouseEvent) => {
+
+  // Spring physics for 3D tilt on hover
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 350, damping: 22, mass: 0.5 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+  const rotateX = useTransform(springY, [-0.5, 0.5], [7, -7]);
+  const rotateY = useTransform(springX, [-0.5, 0.5], [-7, 7]);
+
+  const handleMouseMove = (e: MouseEvent<HTMLButtonElement>) => {
+    if (isDisabled || prefersReducedMotion || isDragging) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     // Prevent click from triggering after drag
     if (e.defaultPrevented) return;
     if (!isDisabled) {
@@ -46,7 +73,7 @@ const DraggableOption = ({
   };
 
   return (
-    <button
+    <m.button
       ref={setNodeRef}
       {...attributes}
       data-testid="answer-option"
@@ -55,8 +82,16 @@ const DraggableOption = ({
       type="button"
       disabled={isDisabled}
       onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={!prefersReducedMotion && !isDisabled ? {
+        rotateX,
+        rotateY,
+        transformPerspective: 900,
+        zIndex: 1,
+      } : undefined}
       className={clsx(
-        'flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800',
+        'relative flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800',
         'bg-white dark:bg-neutral-900/50 text-neutral-800 dark:text-neutral-200 font-medium text-base',
         'transition-[color,background-color,border-color,opacity] duration-150 select-none',
         eliminated && 'opacity-25 line-through cursor-not-allowed',
@@ -99,7 +134,7 @@ const DraggableOption = ({
           </Tooltip.Portal>
         </Tooltip.Root>
       )}
-    </button>
+    </m.button>
   );
 };
 

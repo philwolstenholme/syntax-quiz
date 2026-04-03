@@ -206,10 +206,15 @@ export const QuestionsPage = () => {
       </PageLayout>
       <DragOverlay>
         {activeId ? (
-          <div className="flex items-center gap-2 p-3 rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-medium text-sm shadow-2xl cursor-move">
+          <m.div
+            initial={prefersReducedMotion ? {} : { rotate: 0, scale: 1, boxShadow: '0 4px 6px rgba(0,0,0,0.07)' }}
+            animate={prefersReducedMotion ? {} : { rotate: -2, scale: 1.04, boxShadow: '0 20px 60px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.12)' }}
+            transition={{ type: 'spring', stiffness: 400, damping: 22, mass: 0.5 }}
+            className="flex items-center gap-3 p-3 rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-medium text-base cursor-move"
+          >
             <GripVertical className="text-neutral-400 dark:text-neutral-500 shrink-0" size={16} aria-hidden="true" />
             <span className="flex-1 text-left">{activeId}</span>
-          </div>
+          </m.div>
         ) : null}
       </DragOverlay>
     </DndContext>

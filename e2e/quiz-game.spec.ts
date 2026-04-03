@@ -13,8 +13,8 @@ const getLevel = (levelId: number) => {
 
 const pickLevel = async (page: Page, levelId: number) => {
   await page.goto('/');
-  await page.getByRole('link', { name: new RegExp(`Level ${levelId}`) }).click();
-  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
+  await page.getByRole('link', { name: new RegExp(`Level ${escapeRegExp(String(levelId))}(?![\\d.])`) }).click();
+  await expect(page).toHaveURL(new RegExp(`/level/${escapeRegExp(String(levelId))}/questions$`));
 };
 
 const currentQuestionPanel = (page: Page): Locator => page.getByTestId('question-panel').last();

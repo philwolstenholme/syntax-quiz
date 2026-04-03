@@ -20,7 +20,7 @@ export interface Level {
   color: string;
 }
 
-export const level1Questions: Question[] = [
+const level1Questions: Question[] = [
   {
     code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
@@ -376,7 +376,7 @@ console.log(selectedUser, cachedValue);`,
   }
 ];
 
-export const level2Questions: Question[] = [
+const level2Questions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
     highlight: '<number>',
@@ -712,7 +712,7 @@ title ||= 'Untitled';`,
   },
 ];
 
-export const level3Questions: Question[] = [
+const level3Questions: Question[] = [
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,

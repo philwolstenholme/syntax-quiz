@@ -152,6 +152,17 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
     };
   }, [durationMs, paused, completeFeedback]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        completeFeedback();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [completeFeedback]);
+
   const togglePause = useCallback(() => {
     if (completedRef.current) return;
     if (paused) {

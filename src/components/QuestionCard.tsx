@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useLayoutEffect, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { Question } from '../data/questions';
 import { darkTokenMap, lightTokenMap } from 'virtual:tokens';
 import { useTheme } from '../context/useTheme';
+import { GlowEffect, type GlowData } from './GlowEffect';
+import { WebGLNoise } from './WebGLNoise';
 
 interface QuestionCardProps {
   question: Question;
@@ -28,7 +30,7 @@ const TokenizedCode = ({
       const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
       const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
       elements.push(
-        <span key={key++} className={inHighlight ? 'bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200' : undefined}>
+        <span key={key++} data-hl={inHighlight ? 'true' : undefined} className={inHighlight ? 'bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200' : undefined}>
           {'\n'}
         </span>,
       );
@@ -58,7 +60,7 @@ const TokenizedCode = ({
       const hlStart = Math.max(0, hlRange.start - tokenStart);
       const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
       elements.push(
-        <span key={key++} className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200">
+        <span key={key++} data-hl="true" className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200">
           {token.content.substring(hlStart, hlEnd)}
         </span>,
       );
@@ -78,8 +80,12 @@ const TokenizedCode = ({
 
 export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
-  const { isOver, setNodeRef } = useDroppable({ id: 'dropzone' });
+  const { isOver, setNodeRef: setDropRef } = useDroppable({ id: 'dropzone' });
   const { resolvedTheme } = useTheme();
+  // cardRef: the outer card — canvas lives here for room to spread
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [glowData, setGlowData] = useState<GlowData | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const tokenMap = resolvedTheme === 'dark' ? darkTokenMap : lightTokenMap;
   const tokenLines = useMemo(() => tokenMap[code] ?? [], [tokenMap, code]);
@@ -90,18 +96,68 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     return { start, end: start + highlight.length };
   }, [code, highlight]);
 
+  // Measure highlight spans relative to the card for WebGL
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const measure = () => {
+      const spans = card.querySelectorAll<HTMLElement>('[data-hl="true"]');
+      if (!spans.length) { setGlowData(null); return; }
+
+      const cardRect = card.getBoundingClientRect();
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      spans.forEach((span) => {
+        const r = span.getBoundingClientRect();
+        minX = Math.min(minX, r.left - cardRect.left);
+        minY = Math.min(minY, r.top - cardRect.top);
+        maxX = Math.max(maxX, r.right - cardRect.left);
+        maxY = Math.max(maxY, r.bottom - cardRect.top);
+      });
+
+      setGlowData({
+        hlX: minX,
+        hlY: minY,
+        hlW: maxX - minX,
+        hlH: maxY - minY,
+        canvasW: cardRect.width,
+        canvasH: cardRect.height,
+      });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(card);
+    return () => ro.disconnect();
+  }, [tokenLines, hlRange]);
+
   return (
     <div
-      className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900/50 p-5 sm:p-6 mb-4"
+      ref={cardRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative rounded-lg border border-neutral-200 bg-white/80 dark:border-neutral-800 dark:bg-neutral-900/50 p-5 sm:p-6 mb-4"
     >
-      <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
+      {glowData && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            opacity: isHovered ? 1 : 0.6,
+            transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        >
+          <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
+          <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} />
+        </div>
+      )}
+      <h2 className="relative text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
         {question.question}
       </h2>
-      <p id="question-instructions" className="text-neutral-500 dark:text-neutral-400 mb-4 text-sm">
-        Drag an answer onto the code or tap to select
+      <p id="question-instructions" className="relative text-neutral-500 dark:text-neutral-400 mb-4 text-sm">
+        Focus on the highlighted part of the code. Drag an answer onto the code, tap an answer, or use the keyboard number shortcuts.
       </p>
       <div
-        ref={setNodeRef}
+        ref={setDropRef}
         data-dropzone
         role="region"
         aria-label="Code snippet — drop an answer here"

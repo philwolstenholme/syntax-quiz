@@ -95,6 +95,7 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
     gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, VERT));
     gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
+    // eslint-disable-next-line react-compiler/react-compiler
     gl.useProgram(prog);
 
     const buf = gl.createBuffer();

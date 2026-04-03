@@ -274,7 +274,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
               />
               <SkipButton onSkip={completeFeedback} />
             </div>
-          ) : !completed && (
+          ) : !completed ? (
             <div className="flex justify-end mt-3">
               <button
                 type="button"
@@ -290,7 +290,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
                 Next <ArrowRight size={16} aria-hidden="true" />
               </button>
             </div>
-          )}
+          ) : null}
         </div>
         </m.div>
     </m.div>

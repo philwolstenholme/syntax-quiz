@@ -1,11 +1,13 @@
 import { lazy, Suspense } from 'react';
 import { Route, Switch, useLocation } from 'wouter';
-import { LazyMotion, domMax, m, AnimatePresence, useReducedMotion } from 'motion/react';
+import { LazyMotion, m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { LevelSelect } from './components/LevelSelect';
 import { ROUTES, ROUTE_PATTERNS } from './routes';
 import { QuizResultProvider } from './context/QuizResultContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
+
+const loadMotionFeatures = () => import('motion/react').then(m => m.domMax);
 
 const QuestionsPage = lazy(() => import('./pages/QuestionsPage').then(m => ({ default: m.QuestionsPage })));
 const ScorePage = lazy(() => import('./pages/ScorePage').then(m => ({ default: m.ScorePage })));
@@ -30,8 +32,8 @@ function App() {
   return (
     <ThemeProvider>
       <QuizResultProvider>
-        <LazyMotion features={domMax}>
-          <div className="app-shell relative overflow-x-hidden bg-[var(--bg)] min-h-dvh">
+        <LazyMotion features={loadMotionFeatures}>
+          <div className="app-shell relative overflow-x-hidden bg-(--bg) min-h-dvh">
             <ThemeToggle />
             <AnimatePresence mode="popLayout">
               <m.div key={location} {...pageTransition}>

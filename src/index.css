@@ -49,24 +49,33 @@
 }
 
 @keyframes streak-pulse {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(1); filter: none; }
+  40%  { transform: scale(1.3); filter: drop-shadow(0 0 5px #fb923c); }
+  100% { transform: scale(1); filter: none; }
 }
 
 @keyframes score-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(1); filter: none; }
+  50%  { transform: scale(1.15); filter: drop-shadow(0 0 4px #93c5fd) brightness(1.2); }
+  100% { transform: scale(1); filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes streak-pulse {
-    from, to { transform: none; }
+    from, to { transform: none; filter: none; }
   }
   @keyframes score-pop {
-    from, to { transform: none; }
+    from, to { transform: none; filter: none; }
   }
+}
+
+.app-shell {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .app-shell {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
 @media (orientation: landscape) {

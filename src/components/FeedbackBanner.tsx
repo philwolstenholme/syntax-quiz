@@ -227,7 +227,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           )}
         >
         <div>
-          <div className="flex items-center gap-2 font-medium text-xl tracking-tight">
+          <div className="flex items-center gap-2 font-semibold text-xl tracking-tight">
             {lastAnswer.skipped ? (
               <>
                 <HelpCircle size={16} className="shrink-0" aria-hidden="true" />
@@ -254,7 +254,7 @@ export const FeedbackBanner = ({ lastAnswer, durationMs, onCountdownComplete }: 
           </div>
           {lastAnswer.explanation && (
             <p className={clsx(
-              'mt-2 ml-7 text-base leading-7',
+              'mt-2 ml-7 text-sm leading-relaxed',
               lastAnswer.skipped
                 ? 'text-neutral-600 dark:text-neutral-400'
                 : lastAnswer.correct

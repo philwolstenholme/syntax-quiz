@@ -10,14 +10,13 @@ export function flattenCode(code: string): string {
 // OpenAPI: registry override adds enum so the docs site shows a dropdown
 export const levelParamSchema = z
   .number()
-  .int()
   .min(1)
   .max(3)
-  .describe('Level number (1 = Easy, 2 = Medium, 3 = Hard)')
-JSON_SCHEMA_INPUT_REGISTRY.add(levelParamSchema, { type: 'integer', enum: [1, 2, 3] })
+  .describe('Level number (1 = Easy, 1.5 = Easy+, 2 = Medium, 3 = Hard)')
+JSON_SCHEMA_INPUT_REGISTRY.add(levelParamSchema, { type: 'number', enum: [1, 1.5, 2, 3] })
 
 export const LevelMetaSchema = z.object({
-  id: z.number().int().min(1).max(3),
+  id: z.number().min(1).max(3),
   name: z.string(),
   subtitle: z.string(),
   description: z.string(),

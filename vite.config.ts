@@ -5,7 +5,7 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import tsxLang from 'shiki/langs/tsx.mjs'
 import githubDark from 'shiki/themes/github-dark.mjs'
 import githubLight from 'shiki/themes/github-light.mjs'
-import { level1Questions, level2Questions, level3Questions } from './src/data/questions'
+import { levels } from './src/data/questions'
 
 // WCAG AA contrast helpers — used to ensure syntax token colors meet 4.5:1 ratio
 function srgbToLinear(c: number): number {
@@ -58,7 +58,7 @@ function tokenizePlugin(): Plugin {
     engine: createJavaScriptRegexEngine(),
   })
 
-  const allQuestions = [...level1Questions, ...level2Questions, ...level3Questions]
+  const allQuestions = levels.flatMap((l) => l.questions)
   const seen = new Set<string>()
   const darkTokenMap: Record<string, Array<Array<{ content: string; color?: string; offset: number }>>> = {}
   const lightTokenMap: Record<string, Array<Array<{ content: string; color?: string; offset: number }>>> = {}

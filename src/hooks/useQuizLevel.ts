@@ -19,7 +19,7 @@ interface UseQuizLevelReturn {
 export function useQuizLevel(): UseQuizLevelReturn {
   const params = useParams();
   const [, setLocation] = useLocation();
-  const levelId = parseInt(params.levelId ?? '0', 10);
+  const levelId = parseFloat(params.levelId ?? '0');
   const level = levels.find((l) => l.id === levelId);
 
   const saveState = useMemo((): SaveState | null => {

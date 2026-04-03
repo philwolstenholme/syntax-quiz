@@ -13,8 +13,8 @@ const getLevel = (levelId: number) => {
 
 const pickLevel = async (page: Page, levelId: number) => {
   await page.goto('/');
-  await page.getByRole('link', { name: new RegExp(`Level ${levelId}`) }).click();
-  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
+  await page.getByRole('link', { name: new RegExp(`Level ${escapeRegExp(String(levelId))}(?![\\d.])`) }).click();
+  await expect(page).toHaveURL(new RegExp(`/level/${escapeRegExp(String(levelId))}/questions$`));
 };
 
 const currentQuestionPanel = (page: Page): Locator => page.getByTestId('question-panel').last();
@@ -159,6 +159,11 @@ test('requires retry round when 25% of answers are wrong on Level 1', async ({ p
   await runRetryRoundLevel(page, 1);
 });
 
+test('requires retry round when 25% of answers are wrong on Level 1.5', async ({ page }) => {
+  test.setTimeout(120_000);
+  await runRetryRoundLevel(page, 1.5);
+});
+
 test('correct answer shows feedback banner that can be paused/resumed and skipped', async ({ page }) => {
   const levelId = 1;
 
@@ -254,7 +259,8 @@ test('level selection page lists available levels and navigates to selected leve
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Syntax Quiz' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Level 1/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 1(?![\d.])/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 1\.5/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Level 2/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Level 3/i })).toBeVisible();
 

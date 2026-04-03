@@ -20,7 +20,7 @@ export interface Level {
   color: string;
 }
 
-export const level1Questions: Question[] = [
+const level1Questions: Question[] = [
   {
     code: `function greet(name: string) {
   return \`Hello, \${name}!\`;
@@ -201,6 +201,9 @@ greet('Alice');`,
     explanation: "Parentheses `( )` surround function parameters in declarations and arguments in calls. They also group expressions to control evaluation order. Curly braces `{ }` enclose code blocks, square brackets `[ ]` define arrays, and angle brackets `< >` are used for type parameters in TypeScript.",
     docsLink: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
   },
+];
+
+const level1_5Questions: Question[] = [
   {
     code: `interface User {
   name: string;
@@ -373,7 +376,7 @@ console.log(selectedUser, cachedValue);`,
   }
 ];
 
-export const level2Questions: Question[] = [
+const level2Questions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
     highlight: '<number>',
@@ -709,7 +712,7 @@ title ||= 'Untitled';`,
   },
 ];
 
-export const level3Questions: Question[] = [
+const level3Questions: Question[] = [
   {
     code: `const value: unknown = getValue();
 const str = value as string;`,
@@ -872,6 +875,14 @@ export const levels: Level[] = [
     description: "Basic syntax fundamentals",
     questions: level1Questions,
     color: "from-green-500 to-emerald-500"
+  },
+  {
+    id: 1.5,
+    name: "Level 1.5",
+    subtitle: "Easy+",
+    description: "More syntax fundamentals",
+    questions: level1_5Questions,
+    color: "from-emerald-500 to-teal-500"
   },
   {
     id: 2,

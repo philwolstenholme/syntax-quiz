@@ -259,7 +259,7 @@ test('level selection page lists available levels and navigates to selected leve
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Syntax Quiz' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Level 1$/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Level 1(?![\d.])/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Level 1\.5/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Level 2/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Level 3/i })).toBeVisible();

@@ -37,21 +37,23 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
               {level.name}
             </span>
           </div>
-          <div data-testid="streak-value" className="flex items-center gap-1 h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums">
-            <Flame size={12} aria-hidden="true" />
+          <div data-testid="streak-value" className="flex items-center h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums">
             <span
               key={streak}
+              className="flex items-center gap-1"
               style={STREAK_MILESTONES.has(streak) && streak > 0 ? { animation: 'streak-pulse 0.6s ease-out' } : undefined}
             >
+              <Flame size={12} aria-hidden="true" />
               {formatNumber(streak)}
             </span>
           </div>
-          <div data-testid="score-value" className="flex items-center gap-1 h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums">
-            <Star size={12} aria-hidden="true" />
+          <div data-testid="score-value" className="flex items-center h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums">
             <span
               key={score}
+              className="flex items-center gap-1"
               style={score > 0 ? { animation: 'score-pop 0.3s ease-out' } : undefined}
             >
+              <Star size={12} aria-hidden="true" />
               {formatNumber(score)}
             </span>
           </div>

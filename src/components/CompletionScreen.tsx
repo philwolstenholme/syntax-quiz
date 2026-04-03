@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Trophy, Target, CheckCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { Link } from 'wouter';
 import { m, useReducedMotion } from 'motion/react';
@@ -21,6 +22,19 @@ export const CompletionScreen = ({ score, correctAnswers, totalQuestions, level 
   const isPerfect = correctAnswers === totalQuestions;
   const accuracy = formatPercent(correctAnswers / totalQuestions);
   const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!isPerfect || prefersReducedMotion) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      const confetti = (await import('canvas-confetti')).default;
+      if (cancelled) return;
+      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
+      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'] });
+    }, 1000);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [isPerfect, prefersReducedMotion]);
 
   const stagger = (i: number) =>
     prefersReducedMotion

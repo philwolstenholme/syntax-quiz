@@ -119,10 +119,11 @@ export const AnswerOptions = ({
   eliminatedOptions = EMPTY_ELIMINATED,
 }: AnswerOptionsProps) => {
   // Compute keyboard hint numbers: non-eliminated options get sequential 1, 2, 3…
+  const eliminatedSet = new Set(eliminatedOptions);
   const keyHints: (number | null)[] = [];
   let keyCount = 0;
   for (const option of options) {
-    if (eliminatedOptions.includes(option)) {
+    if (eliminatedSet.has(option)) {
       keyHints.push(null);
     } else {
       keyHints.push(++keyCount);
@@ -137,7 +138,7 @@ export const AnswerOptions = ({
         option={option}
         keyHint={keyHints[i] ?? null}
         disabled={disabled}
-        eliminated={eliminatedOptions.includes(option)}
+        eliminated={eliminatedSet.has(option)}
         isCode={isCode}
         onAnswer={onAnswer}
       />

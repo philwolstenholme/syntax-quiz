@@ -5,7 +5,7 @@ import type { GlowData } from './GlowEffect';
 interface WebGLNoiseProps extends GlowData {
   isDark: boolean;
   isHovered: boolean;
-  scrollLeftRef: React.RefObject<number>;
+  scrollElRef: React.RefObject<HTMLElement | null>;
 }
 
 const VERT = `
@@ -75,7 +75,7 @@ function compileShader(gl: WebGLRenderingContext, type: number, src: string): We
   return s;
 }
 
-export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHovered, scrollLeftRef }: WebGLNoiseProps) => {
+export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHovered, scrollElRef }: WebGLNoiseProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const isHoveredRef = useRef(isHovered);
@@ -147,7 +147,7 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
 
       const t = (now - start) / 1000;
       gl.uniform2f(uRes,      canvasW, canvasH);
-      const scrollOff = scrollLeftRef.current ?? 0;
+      const scrollOff = scrollElRef.current?.scrollLeft ?? 0;
       gl.uniform2f(uHlCenter, hlX + hlW / 2 - scrollOff, hlY + hlH / 2);
       gl.uniform1f(uHlW,      hlW);
       gl.uniform1f(uHlH,      hlH);

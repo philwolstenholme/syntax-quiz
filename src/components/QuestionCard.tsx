@@ -1,4 +1,4 @@
-import { useMemo, useRef, useLayoutEffect, useState } from 'react';
+import { useMemo, useRef, useLayoutEffect, useEffect, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import type { Question } from '../data/questions';
@@ -84,6 +84,8 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { resolvedTheme } = useTheme();
   // cardRef: the outer card — canvas lives here for room to spread
   const cardRef = useRef<HTMLDivElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
+  const glowTransformRef = useRef<HTMLDivElement>(null);
   const [glowData, setGlowData] = useState<GlowData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -106,12 +108,15 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
       if (!spans.length) { setGlowData(null); return; }
 
       const cardRect = card.getBoundingClientRect();
+      // Account for current scroll offset so glow coordinates are always
+      // relative to the unscrolled position (scroll sync is handled separately)
+      const scrollLeft = preRef.current?.scrollLeft ?? 0;
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       spans.forEach((span) => {
         const r = span.getBoundingClientRect();
-        minX = Math.min(minX, r.left - cardRect.left);
+        minX = Math.min(minX, r.left - cardRect.left + scrollLeft);
         minY = Math.min(minY, r.top - cardRect.top);
-        maxX = Math.max(maxX, r.right - cardRect.left);
+        maxX = Math.max(maxX, r.right - cardRect.left + scrollLeft);
         maxY = Math.max(maxY, r.bottom - cardRect.top);
       });
 
@@ -123,6 +128,11 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         canvasW: cardRect.width,
         canvasH: cardRect.height,
       });
+
+      // Re-apply scroll transform after measurement
+      if (glowTransformRef.current && scrollLeft > 0) {
+        glowTransformRef.current.style.transform = `translateX(${-scrollLeft}px)`;
+      }
     };
 
     measure();
@@ -130,6 +140,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     ro.observe(card);
     return () => ro.disconnect();
   }, [tokenLines, hlRange]);
+
+  // Sync glow position with horizontal scroll of the code snippet
+  useEffect(() => {
+    const pre = preRef.current;
+    const glowTransform = glowTransformRef.current;
+    if (!pre || !glowTransform) return;
+
+    const onScroll = () => {
+      glowTransform.style.transform = `translateX(${-pre.scrollLeft}px)`;
+    };
+
+    pre.addEventListener('scroll', onScroll, { passive: true });
+    return () => pre.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div
@@ -141,14 +165,16 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
       {glowData && (
         <div
           key={question.code}
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none overflow-hidden"
           style={{ animation: 'glow-enter 1.4s ease-out forwards' }}
         >
           <div
+            ref={glowTransformRef}
             className="absolute inset-0 pointer-events-none"
             style={{
               opacity: isHovered ? 1 : 0.6,
               transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+              willChange: 'transform',
             }}
           >
             <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
@@ -180,7 +206,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
             </span>
           </div>
         )}
-        <pre className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
+        <pre ref={preRef} className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
           <span className={clsx(
             'block transition-transform duration-150 ease-out origin-center',
             isOver && 'scale-[98%]'

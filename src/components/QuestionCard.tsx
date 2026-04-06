@@ -141,7 +141,9 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     return () => ro.disconnect();
   }, [tokenLines, hlRange]);
 
-  // Sync glow position with horizontal scroll of the code snippet
+  // Sync glow position with horizontal scroll of the code snippet.
+  // Depends on glowData because glowTransformRef is inside {glowData && …}
+  // and won't exist until glow data is measured.
   useEffect(() => {
     const pre = preRef.current;
     const glowTransform = glowTransformRef.current;
@@ -153,7 +155,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
 
     pre.addEventListener('scroll', onScroll, { passive: true });
     return () => pre.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [glowData]);
 
   return (
     <div

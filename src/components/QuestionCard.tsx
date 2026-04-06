@@ -85,7 +85,8 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   // cardRef: the outer card — canvas lives here for room to spread
   const cardRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
-  const glowTransformRef = useRef<HTMLDivElement>(null);
+  const scrollLeftRef = useRef(0);
+  const glowEffectRef = useRef<HTMLDivElement>(null);
   const [glowData, setGlowData] = useState<GlowData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -128,11 +129,6 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         canvasW: cardRect.width,
         canvasH: cardRect.height,
       });
-
-      // Re-apply scroll transform after measurement
-      if (glowTransformRef.current && scrollLeft > 0) {
-        glowTransformRef.current.style.transform = `translateX(${-scrollLeft}px)`;
-      }
     };
 
     measure();
@@ -142,20 +138,31 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   }, [tokenLines, hlRange]);
 
   // Sync glow position with horizontal scroll of the code snippet.
-  // Depends on glowData because glowTransformRef is inside {glowData && …}
-  // and won't exist until glow data is measured.
+  // Updates scrollLeftRef (read by WebGLNoise in its rAF loop) and
+  // directly updates GlowEffect's background gradient via DOM ref.
   useEffect(() => {
     const pre = preRef.current;
-    const glowTransform = glowTransformRef.current;
-    if (!pre || !glowTransform) return;
+    if (!pre) return;
 
     const onScroll = () => {
-      glowTransform.style.transform = `translateX(${-pre.scrollLeft}px)`;
+      const sl = pre.scrollLeft;
+      scrollLeftRef.current = sl;
+
+      // Update GlowEffect gradient position directly (no re-render)
+      const div = glowEffectRef.current;
+      if (div && glowData) {
+        const cx = glowData.hlX + glowData.hlW / 2 - sl;
+        const cy = glowData.hlY + glowData.hlH / 2;
+        const rx = Math.max(glowData.hlW * 0.7, 120);
+        const ry = 55 + glowData.hlH * 0.4;
+        const color = resolvedTheme === 'dark' ? 'rgba(0, 255, 136, 0.35)' : 'rgba(34, 180, 85, 0.28)';
+        div.style.background = `radial-gradient(${rx}px ${ry}px at ${cx}px ${cy}px, ${color} 0%, transparent 100%)`;
+      }
     };
 
     pre.addEventListener('scroll', onScroll, { passive: true });
     return () => pre.removeEventListener('scroll', onScroll);
-  }, [glowData]);
+  }, [glowData, resolvedTheme]);
 
   return (
     <div
@@ -167,20 +174,18 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
       {glowData && (
         <div
           key={question.code}
-          className="absolute inset-0 pointer-events-none overflow-hidden"
+          className="absolute inset-0 pointer-events-none"
           style={{ animation: 'glow-enter 1.4s ease-out forwards' }}
         >
           <div
-            ref={glowTransformRef}
             className="absolute inset-0 pointer-events-none"
             style={{
               opacity: isHovered ? 1 : 0.6,
               transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-              willChange: 'transform',
             }}
           >
-            <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
-            <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} />
+            <GlowEffect ref={glowEffectRef} {...glowData} isDark={resolvedTheme === 'dark'} scrollLeftRef={scrollLeftRef} />
+            <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} scrollLeftRef={scrollLeftRef} />
           </div>
         </div>
       )}

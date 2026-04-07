@@ -174,6 +174,7 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
       ref={canvasRef}
       aria-hidden="true"
       className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ imageRendering: 'pixelated' }}
     />
   );
 };

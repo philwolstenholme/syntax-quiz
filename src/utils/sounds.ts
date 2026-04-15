@@ -109,3 +109,47 @@ function enqueue(key: SoundKey): void {
 export const playKeycapSound = (): void => enqueue('keycap');
 export const playCorrectSound = (): void => enqueue('correct');
 export const playIncorrectSound = (): void => enqueue('incorrect');
+
+// ─── Global keycap sound on any interactive element ───────────────────────────
+
+function isInteractive(el: Element): boolean {
+  const tag = el.tagName;
+  if (tag === 'BUTTON') return !(el as HTMLButtonElement).disabled;
+  if (tag === 'A') return (el as HTMLAnchorElement).href.length > 0;
+  if (tag === 'INPUT') {
+    const input = el as HTMLInputElement;
+    return !input.disabled && input.type !== 'hidden';
+  }
+  if (tag === 'SELECT') return !(el as HTMLSelectElement).disabled;
+  if (tag === 'TEXTAREA') return !(el as HTMLTextAreaElement).disabled;
+  const role = el.getAttribute('role');
+  if (role && ['button', 'link', 'tab', 'menuitem', 'option'].includes(role)) {
+    return el.getAttribute('aria-disabled') !== 'true';
+  }
+  return false;
+}
+
+if (typeof document !== 'undefined') {
+  // Pointer: walk from the touch/click target up to the nearest interactive ancestor.
+  document.addEventListener('pointerdown', (e: PointerEvent) => {
+    let el = e.target as Element | null;
+    while (el && el !== document.documentElement) {
+      if (isInteractive(el)) { playKeycapSound(); return; }
+      el = el.parentElement;
+    }
+  }, { passive: true });
+
+  // Keyboard: Space/Enter activate buttons and links — but not text entry in inputs/textareas.
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    const focused = document.activeElement;
+    if (!focused) return;
+    const tag = focused.tagName;
+    if (tag === 'TEXTAREA') return;
+    if (tag === 'INPUT') {
+      const type = (focused as HTMLInputElement).type;
+      if (!['button', 'submit', 'reset', 'checkbox', 'radio'].includes(type)) return;
+    }
+    if (isInteractive(focused)) playKeycapSound();
+  });
+}

@@ -1,5 +1,6 @@
-import type { MouseEvent } from 'react';
+import type { MouseEvent, PointerEvent, KeyboardEvent } from 'react';
 import { m, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
+import { playKeycapSound } from '../utils/sounds';
 import { GripVertical } from 'lucide-react';
 import clsx from 'clsx';
 import { useDraggable } from '@dnd-kit/core';
@@ -64,6 +65,18 @@ const DraggableOption = ({
     mouseY.set(0);
   };
 
+  const handlePointerDown = (e: PointerEvent<HTMLButtonElement>) => {
+    if (!isDisabled && !e.defaultPrevented) {
+      playKeycapSound();
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if ((e.key === ' ' || e.key === 'Enter') && !isDisabled) {
+      playKeycapSound();
+    }
+  };
+
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     // Prevent click from triggering after drag
     if (e.defaultPrevented) return;
@@ -81,6 +94,8 @@ const DraggableOption = ({
       inert={isDragging ? true : undefined}
       type="button"
       disabled={isDisabled}
+      onPointerDown={handlePointerDown}
+      onKeyDown={handleKeyDown}
       onClick={handleClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

@@ -19,6 +19,7 @@ import { AnswerOptions } from '../components/AnswerOptions';
 import { HintButton } from '../components/HintButton';
 import { FEEDBACK_DELAY_MS } from '../constants';
 import { useQuiz } from '../hooks/useQuiz';
+import { playKeycapSound } from '../utils/sounds';
 
 export const QuestionsPage = () => {
   const {
@@ -67,6 +68,7 @@ export const QuestionsPage = () => {
       );
       const selected = visibleOptions[index];
       if (selected) {
+        playKeycapSound();
         handleAnswer(selected);
       }
     }

@@ -58,7 +58,7 @@ function getEffectiveDuration(buffer: AudioBuffer): number {
   for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
     const data = buffer.getChannelData(ch);
     for (let i = data.length - 1; i >= 0; i--) {
-      if (Math.abs(data[i]) > threshold) {
+      if (Math.abs(data[i] ?? 0) > threshold) {
         if (i > lastAudibleFrame) lastAudibleFrame = i;
         break;
       }
@@ -113,7 +113,7 @@ async function drain(): Promise<void> {
         audio.play().catch(() => res());
         setTimeout(res, 3000); // safety timeout
       });
-    } catch {}
+    } catch { /* ignore fallback playback errors */ }
   }
   draining = false;
 }

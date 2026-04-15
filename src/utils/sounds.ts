@@ -48,6 +48,29 @@ function getFallback(key: SoundKey): HTMLAudioElement {
   return fallbacks[key]!;
 }
 
+// Scans the decoded waveform to find where audible content actually ends.
+// MP3 files commonly have encoder padding / trailing silence that inflates
+// buffer.duration beyond the last real sample. Using the raw duration for
+// queue scheduling causes the next sound to be held back for that silence.
+function getEffectiveDuration(buffer: AudioBuffer): number {
+  const threshold = 0.001; // ≈ −60 dB
+  let lastAudibleFrame = 0;
+  for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+    const data = buffer.getChannelData(ch);
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (Math.abs(data[i]) > threshold) {
+        if (i > lastAudibleFrame) lastAudibleFrame = i;
+        break;
+      }
+    }
+  }
+  // Keep 50 ms of tail so reverb/release isn't clipped, then cap at file duration.
+  return Math.min(
+    (lastAudibleFrame + buffer.sampleRate * 0.05) / buffer.sampleRate,
+    buffer.duration,
+  );
+}
+
 // Sequential queue. Uses AudioContext timeline scheduling for Web Audio path
 // (sounds are scheduled back-to-back on the hardware timeline with no gaps),
 // and an ended-event chain for the HTMLAudioElement fallback path.
@@ -72,7 +95,10 @@ async function drain(): Promise<void> {
         gain.connect(ctx.destination);
         const t = Math.max(ctx.currentTime, nextStart);
         src.start(t);
-        nextStart = t + buf.duration;
+        const eff = getEffectiveDuration(buf);
+        // Log so you can open DevTools and see full vs audible duration for each sound.
+        console.debug(`[sound] ${key}: file=${buf.duration.toFixed(3)}s audible=${eff.toFixed(3)}s`);
+        nextStart = t + eff;
         continue;
       }
     } catch { /* fall through to HTMLAudioElement */ }

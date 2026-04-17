@@ -5,6 +5,15 @@ const SOUND_URLS = {
   keycap: 'https://cdn.freesound.org/previews/378/378085_6260145-lq.mp3',
 } as const;
 
+const MUTE_KEY = 'syntax-quiz-muted';
+let _muted = typeof localStorage !== 'undefined' && localStorage.getItem(MUTE_KEY) === 'true';
+
+export function isMuted(): boolean { return _muted; }
+export function setMuted(v: boolean): void {
+  _muted = v;
+  if (typeof localStorage !== 'undefined') localStorage.setItem(MUTE_KEY, String(v));
+}
+
 type SoundKey = keyof typeof SOUND_URLS;
 
 // Pre-fetch raw bytes immediately at module load — no AudioContext needed yet.
@@ -127,6 +136,7 @@ function warmupAll(): void {
 }
 
 function enqueue(key: SoundKey): void {
+  if (_muted) return;
   warmupAll();
   queue.push(key);
   drain().catch(() => {});

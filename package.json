@@ -16,7 +16,8 @@
     "test:e2e:headed": "playwright test --project=chromium --headed",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "oxfmt ."
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",

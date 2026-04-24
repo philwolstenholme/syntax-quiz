@@ -1,65 +1,65 @@
 # Netlify configuration for syntax-quiz SPA
 
 [build]
-  publish = "dist"
-  command = "npm run build"
+publish = "dist"
+command = "npm run build"
 
 [functions]
-  directory = "netlify/functions"
+directory = "netlify/functions"
 
 [[redirects]]
-  from = "/syntax-quiz/level/1/questions"
-  to = "/level/1/questions"
-  status = 301
+from = "/syntax-quiz/level/1/questions"
+to = "/level/1/questions"
+status = 301
 
 [[redirects]]
-  from = "/syntax-quiz/level/1/score"
-  to = "/level/1/score"
-  status = 301
+from = "/syntax-quiz/level/1/score"
+to = "/level/1/score"
+status = 301
 
 [[redirects]]
-  from = "/syntax-quiz/level/2/questions"
-  to = "/level/2/questions"
-  status = 301
+from = "/syntax-quiz/level/2/questions"
+to = "/level/2/questions"
+status = 301
 
 [[redirects]]
-  from = "/syntax-quiz/level/2/score"
-  to = "/level/2/score"
-  status = 301
+from = "/syntax-quiz/level/2/score"
+to = "/level/2/score"
+status = 301
 
 [[redirects]]
-  from = "/syntax-quiz/level/3/questions"
-  to = "/level/3/questions"
-  status = 301
+from = "/syntax-quiz/level/3/questions"
+to = "/level/3/questions"
+status = 301
 
 [[redirects]]
-  from = "/syntax-quiz/level/3/score"
-  to = "/level/3/score"
-  status = 301
+from = "/syntax-quiz/level/3/score"
+to = "/level/3/score"
+status = 301
 
 # Route API requests to the Netlify function
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-  force = true
+from = "/api/*"
+to = "/.netlify/functions/api/:splat"
+status = 200
+force = true
 
 # Redirect all requests to index.html for client-side routing
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200
 
 # Hashed assets are immutable — cache forever in both browser and CDN
 [[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-    Netlify-CDN-Cache-Control = "public, durable, s-maxage=31536000, stale-while-revalidate=31536000"
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+Netlify-CDN-Cache-Control = "public, durable, s-maxage=31536000, stale-while-revalidate=31536000"
 
 # index.html must revalidate in browser, but CDN can serve stale while revalidating
 [[headers]]
-  for = "/index.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-    Netlify-CDN-Cache-Control = "public, durable, s-maxage=31536000, stale-while-revalidate=31536000"
+for = "/index.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+Netlify-CDN-Cache-Control = "public, durable, s-maxage=31536000, stale-while-revalidate=31536000"

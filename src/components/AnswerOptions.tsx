@@ -1,9 +1,9 @@
-import type { MouseEvent } from 'react';
-import { m, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
-import { GripVertical } from 'lucide-react';
-import clsx from 'clsx';
-import { useDraggable } from '@dnd-kit/core';
-import { Tooltip } from '@base-ui/react/tooltip';
+import type { MouseEvent } from "react";
+import { m, useMotionValue, useSpring, useTransform, useReducedMotion } from "motion/react";
+import { GripVertical } from "lucide-react";
+import clsx from "clsx";
+import { useDraggable } from "@dnd-kit/core";
+import { Tooltip } from "@base-ui/react/tooltip";
 
 // Detects if a string looks like a code expression (e.g. TypeScript type syntax)
 function looksLikeCode(s: string): boolean {
@@ -84,42 +84,55 @@ const DraggableOption = ({
       onClick={handleClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={!prefersReducedMotion && !isDisabled ? {
-        rotateX,
-        rotateY,
-        transformPerspective: 900,
-        zIndex: 1,
-      } : undefined}
+      style={
+        !prefersReducedMotion && !isDisabled
+          ? {
+              rotateX,
+              rotateY,
+              transformPerspective: 900,
+              zIndex: 1,
+            }
+          : undefined
+      }
       className={clsx(
-        'relative flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800',
-        'bg-white dark:bg-neutral-900/50 text-neutral-800 dark:text-neutral-200 font-medium text-base',
-        'transition-[color,background-color,border-color,opacity] duration-150 select-none',
-        eliminated && 'opacity-25 line-through cursor-not-allowed',
+        "relative flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800",
+        "bg-white dark:bg-neutral-900/50 text-neutral-800 dark:text-neutral-200 font-medium text-base",
+        "transition-[color,background-color,border-color,opacity] duration-150 select-none",
+        eliminated && "opacity-25 line-through cursor-not-allowed",
         !isDisabled
-          ? 'hover:bg-neutral-100 hover:border-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:border-neutral-700 active:scale-[0.98]'
-          : !eliminated && 'opacity-40 cursor-not-allowed',
-        isDragging && 'opacity-30',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
-        'touch-manipulation',
-        'overflow-hidden'
+          ? "hover:bg-neutral-100 hover:border-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:border-neutral-700 active:scale-[0.98]"
+          : !eliminated && "opacity-40 cursor-not-allowed",
+        isDragging && "opacity-30",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]",
+        "touch-manipulation",
+        "overflow-hidden",
       )}
     >
       <span
         {...listeners}
         className={clsx(
-          'relative shrink-0 cursor-move',
+          "relative shrink-0 cursor-move",
           "after:content-[''] after:absolute after:-inset-4 pointer-coarse:after:w-[min(300px,50vw)] pointer-fine:after:w-[400px]",
         )}
-        style={!isDisabled ? { touchAction: 'none'  } : {pointerEvents: 'none'}}
+        style={!isDisabled ? { touchAction: "none" } : { pointerEvents: "none" }}
       >
-        <GripVertical className="text-neutral-400 dark:text-neutral-600" size={16} aria-hidden="true" />
+        <GripVertical
+          className="text-neutral-400 dark:text-neutral-600"
+          size={16}
+          aria-hidden="true"
+        />
       </span>
-      <span className={clsx('flex-1 min-w-0 text-left wrap-break-word', isCode && 'font-mono')}>{option}</span>
+      <span className={clsx("flex-1 min-w-0 text-left wrap-break-word", isCode && "font-mono")}>
+        {option}
+      </span>
       {keyHint !== null && !isDisabled && (
         <Tooltip.Root>
           <Tooltip.Trigger
             render={
-              <kbd aria-hidden="true" className="relative z-10 hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500">
+              <kbd
+                aria-hidden="true"
+                className="relative z-10 hidden pointer-fine:inline-flex shrink-0 items-center justify-center h-5 w-5 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-[10px] font-mono text-neutral-400 dark:text-neutral-500"
+              >
                 {keyHint}
               </kbd>
             }
@@ -166,18 +179,18 @@ export const AnswerOptions = ({
   }
   const isCode = anyOptionIsCode(options);
   return (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
-    {options.map((option, i) => (
-      <DraggableOption
-        key={option}
-        option={option}
-        keyHint={keyHints[i] ?? null}
-        disabled={disabled}
-        eliminated={eliminatedSet.has(option)}
-        isCode={isCode}
-        onAnswer={onAnswer}
-      />
-    ))}
-  </div>
-);
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="answer-options">
+      {options.map((option, i) => (
+        <DraggableOption
+          key={option}
+          option={option}
+          keyHint={keyHints[i] ?? null}
+          disabled={disabled}
+          eliminated={eliminatedSet.has(option)}
+          isCode={isCode}
+          onAnswer={onAnswer}
+        />
+      ))}
+    </div>
+  );
 };

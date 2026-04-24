@@ -7,12 +7,14 @@ This directory contains comprehensive end-to-end tests for the Syntax Quiz game 
 The test suite covers all major game functionality:
 
 ### ✅ Passing Tests
+
 1. **Level Selection UI** - Verifies home page elements and level options
 2. **Feedback Banner Controls** - Tests pause, resume, and skip buttons
 3. **Hint System** - Validates hint button functionality and option elimination
 4. **Save Modal** - Tests save functionality and URL generation
 
 ### 🔄 Tests in Progress (timing improvements needed)
+
 5. **Navigation** - Home to quiz questions page
 6. **Answer & Feedback** - Question answering and feedback display
 7. **Score & Streak** - Score tracking and streak calculation
@@ -43,10 +45,12 @@ npm run test:e2e:debug
 ## CI/CD Integration
 
 Tests are automatically run on:
+
 - Pull requests to `main` branch
 - Pushes to `main` branch
 
 The GitHub Actions workflow:
+
 - Installs Playwright browsers
 - Runs all E2E tests
 - Uploads test results and screenshots as artifacts
@@ -62,6 +66,7 @@ e2e/
 ## Configuration
 
 Test configuration is in `playwright.config.ts`:
+
 - **Browser**: Chromium (desktop)
 - **Base URL**: http://localhost:5173
 - **Dev Server**: Auto-starts Vite dev server
@@ -71,6 +76,7 @@ Test configuration is in `playwright.config.ts`:
 ## Writing New Tests
 
 When adding new features, ensure:
+
 1. Tests are order-independent (handle shuffled questions)
 2. Use `data-testid` attributes for reliable element selection
 3. Add appropriate waits for async operations
@@ -80,16 +86,19 @@ When adding new features, ensure:
 ## Troubleshooting
 
 ### Tests timing out
+
 - Increase `page.waitForLoadState('networkidle')` usage
 - Add explicit waits for dynamic content
 - Check dev server is running properly
 
 ### Flaky tests
+
 - Use `data-testid` attributes instead of CSS selectors
 - Add `.catch()` handlers for optional elements
 - Increase timeout for slow operations
 
 ### Can't find elements
+
 - Verify element selectors in browser DevTools
 - Check if element is hidden or disabled
 - Use Playwright Inspector: `npm run test:e2e:debug`

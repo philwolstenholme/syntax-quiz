@@ -123,24 +123,24 @@ Drag-and-drop is offered as an alternative input method alongside click: players
 
 ## Technology Choices
 
-| Concern | Library |
-|---|---|
-| UI framework | React 19 |
-| Language | TypeScript (strict mode) |
-| Build tool | Vite |
-| Styling | Tailwind CSS 4 |
-| Animations | Motion (Framer Motion) |
-| Routing | wouter |
-| Drag and drop | dnd-kit |
-| Gesture detection | @use-gesture/react |
-| Dialog | @base-ui/react |
-| Syntax highlighting | Shiki (build-time) |
-| Save state validation | Zod |
-| Utility functions | es-toolkit |
-| Icons | Lucide React |
-| API framework | oRPC + Hono |
-| API documentation | Scalar |
-| E2E testing | Playwright |
-| Hosting | Netlify |
+| Concern               | Library                  |
+| --------------------- | ------------------------ |
+| UI framework          | React 19                 |
+| Language              | TypeScript (strict mode) |
+| Build tool            | Vite                     |
+| Styling               | Tailwind CSS 4           |
+| Animations            | Motion (Framer Motion)   |
+| Routing               | wouter                   |
+| Drag and drop         | dnd-kit                  |
+| Gesture detection     | @use-gesture/react       |
+| Dialog                | @base-ui/react           |
+| Syntax highlighting   | Shiki (build-time)       |
+| Save state validation | Zod                      |
+| Utility functions     | es-toolkit               |
+| Icons                 | Lucide React             |
+| API framework         | oRPC + Hono              |
+| API documentation     | Scalar                   |
+| E2E testing           | Playwright               |
+| Hosting               | Netlify                  |
 
 The choice of wouter over React Router reflects a preference for minimal dependencies in a single-page app that only has three routes. The choice of @base-ui over Radix or Headless UI reflects similar thinking: it is unstyled, accessible, and brings in only what is needed. Shiki at build time rather than at runtime reflects a commitment to performance on low-end devices.

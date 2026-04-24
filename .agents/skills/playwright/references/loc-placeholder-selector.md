@@ -13,12 +13,12 @@ Placeholder text is not a substitute for labels and may change with design updat
 
 ```typescript
 // tests/search.spec.ts
-test('search for products', async ({ page }) => {
-  await page.goto('/');
+test("search for products", async ({ page }) => {
+  await page.goto("/");
 
   // Placeholders often change with design updates
-  await page.getByPlaceholder('Search for anything...').fill('shoes');
-  await page.getByPlaceholder('Enter your query').fill('shoes');
+  await page.getByPlaceholder("Search for anything...").fill("shoes");
+  await page.getByPlaceholder("Enter your query").fill("shoes");
 });
 ```
 
@@ -52,11 +52,11 @@ await page.getByLabel('Search products').fill('shoes');
 // Legacy code that can't be modified
 // Truly unlabeled search inputs (still should fix accessibility)
 
-test('search with legacy input', async ({ page }) => {
+test("search with legacy input", async ({ page }) => {
   // Document why placeholder is used
   // This input lacks proper labeling - tracked in ISSUE-123
-  await page.getByPlaceholder('Search...').fill('shoes');
-  await page.keyboard.press('Enter');
+  await page.getByPlaceholder("Search...").fill("shoes");
+  await page.keyboard.press("Enter");
 });
 ```
 

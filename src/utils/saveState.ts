@@ -1,5 +1,5 @@
-import { z } from 'zod/v4/mini';
-import { fromBase64Url, toBase64Url } from './base64url';
+import { z } from "zod/v4/mini";
+import { fromBase64Url, toBase64Url } from "./base64url";
 
 const SaveStateSchema = z.object({
   v: z.literal(1),

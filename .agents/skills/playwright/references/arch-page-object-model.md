@@ -13,19 +13,19 @@ Duplicating selectors across tests creates a maintenance burden. Page objects ce
 
 ```typescript
 // tests/login.spec.ts
-test('successful login', async ({ page }) => {
-  await page.goto('/login');
-  await page.locator('input[name="email"]').fill('user@example.com');
-  await page.locator('input[name="password"]').fill('password123');
+test("successful login", async ({ page }) => {
+  await page.goto("/login");
+  await page.locator('input[name="email"]').fill("user@example.com");
+  await page.locator('input[name="password"]').fill("password123");
   await page.locator('button[type="submit"]').click();
-  await expect(page.locator('.dashboard-header')).toBeVisible();
+  await expect(page.locator(".dashboard-header")).toBeVisible();
 });
 
 // tests/logout.spec.ts
-test('logout from dashboard', async ({ page }) => {
+test("logout from dashboard", async ({ page }) => {
   // Same selectors duplicated
-  await page.locator('input[name="email"]').fill('user@example.com');
-  await page.locator('input[name="password"]').fill('password123');
+  await page.locator('input[name="email"]').fill("user@example.com");
+  await page.locator('input[name="password"]').fill("password123");
   await page.locator('button[type="submit"]').click();
   // If selector changes, both files need updates
 });
@@ -35,7 +35,7 @@ test('logout from dashboard', async ({ page }) => {
 
 ```typescript
 // pages/LoginPage.ts
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator, expect } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -45,13 +45,13 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInput = page.getByLabel('Email');
-    this.passwordInput = page.getByLabel('Password');
-    this.submitButton = page.getByRole('button', { name: 'Sign in' });
+    this.emailInput = page.getByLabel("Email");
+    this.passwordInput = page.getByLabel("Password");
+    this.submitButton = page.getByRole("button", { name: "Sign in" });
   }
 
   async goto() {
-    await this.page.goto('/login');
+    await this.page.goto("/login");
   }
 
   async login(email: string, password: string) {
@@ -62,17 +62,18 @@ export class LoginPage {
 }
 
 // tests/login.spec.ts
-import { LoginPage } from '../pages/LoginPage';
+import { LoginPage } from "../pages/LoginPage";
 
-test('successful login', async ({ page }) => {
+test("successful login", async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.goto();
-  await loginPage.login('user@example.com', 'password123');
-  await expect(page.getByTestId('dashboard-header')).toBeVisible();
+  await loginPage.login("user@example.com", "password123");
+  await expect(page.getByTestId("dashboard-header")).toBeVisible();
 });
 ```
 
 **Benefits:**
+
 - Single source of truth for selectors
 - Readable, domain-specific test code
 - Easy to update when UI changes

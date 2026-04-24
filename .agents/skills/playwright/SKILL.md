@@ -10,6 +10,7 @@ Comprehensive testing optimization guide for Playwright with Next.js application
 ## When to Apply
 
 Reference these guidelines when:
+
 - Writing new Playwright tests for Next.js apps
 - Debugging flaky or failing tests
 - Optimizing test execution speed
@@ -20,16 +21,16 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Test Architecture | CRITICAL | `arch-` |
-| 2 | Selectors & Locators | CRITICAL | `loc-` |
-| 3 | Waiting & Assertions | HIGH | `wait-` |
-| 4 | Authentication & State | HIGH | `auth-` |
-| 5 | Mocking & Network | MEDIUM-HIGH | `mock-` |
-| 6 | Next.js Integration | MEDIUM | `next-` |
-| 7 | Performance & Speed | MEDIUM | `perf-` |
-| 8 | Debugging & CI | LOW-MEDIUM | `debug-` |
+| Priority | Category               | Impact      | Prefix   |
+| -------- | ---------------------- | ----------- | -------- |
+| 1        | Test Architecture      | CRITICAL    | `arch-`  |
+| 2        | Selectors & Locators   | CRITICAL    | `loc-`   |
+| 3        | Waiting & Assertions   | HIGH        | `wait-`  |
+| 4        | Authentication & State | HIGH        | `auth-`  |
+| 5        | Mocking & Network      | MEDIUM-HIGH | `mock-`  |
+| 6        | Next.js Integration    | MEDIUM      | `next-`  |
+| 7        | Performance & Speed    | MEDIUM      | `perf-`  |
+| 8        | Debugging & CI         | LOW-MEDIUM  | `debug-` |
 
 ## Quick Reference
 
@@ -109,9 +110,9 @@ Read individual reference files for detailed explanations and code examples:
 
 ## Reference Files
 
-| File | Description |
-|------|-------------|
-| [AGENTS.md](AGENTS.md) | Complete compiled guide with all rules |
-| [references/_sections.md](references/_sections.md) | Category definitions and ordering |
-| [assets/templates/_template.md](assets/templates/_template.md) | Template for new rules |
-| [metadata.json](metadata.json) | Version and reference information |
+| File                                                            | Description                            |
+| --------------------------------------------------------------- | -------------------------------------- |
+| [AGENTS.md](AGENTS.md)                                          | Complete compiled guide with all rules |
+| [references/\_sections.md](references/_sections.md)             | Category definitions and ordering      |
+| [assets/templates/\_template.md](assets/templates/_template.md) | Template for new rules                 |
+| [metadata.json](metadata.json)                                  | Version and reference information      |

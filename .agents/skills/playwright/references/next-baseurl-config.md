@@ -13,13 +13,13 @@ Setting `baseURL` in config eliminates repetitive full URLs in tests and makes s
 
 ```typescript
 // tests/navigation.spec.ts
-test('navigate through pages', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
-  await page.getByRole('link', { name: 'Products' }).click();
-  await expect(page).toHaveURL('http://localhost:3000/products');
+test("navigate through pages", async ({ page }) => {
+  await page.goto("http://localhost:3000/");
+  await page.getByRole("link", { name: "Products" }).click();
+  await expect(page).toHaveURL("http://localhost:3000/products");
 
-  await page.goto('http://localhost:3000/about');
-  await expect(page).toHaveURL('http://localhost:3000/about');
+  await page.goto("http://localhost:3000/about");
+  await expect(page).toHaveURL("http://localhost:3000/about");
 
   // Hard to change for staging/production
 });
@@ -31,25 +31,25 @@ test('navigate through pages', async ({ page }) => {
 // playwright.config.ts
 export default defineConfig({
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
   },
 
   webServer: {
-    command: 'npm run build && npm run start',
-    url: 'http://localhost:3000',
+    command: "npm run build && npm run start",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
   },
 });
 
 // tests/navigation.spec.ts
-test('navigate through pages', async ({ page }) => {
+test("navigate through pages", async ({ page }) => {
   // Clean relative URLs
-  await page.goto('/');
-  await page.getByRole('link', { name: 'Products' }).click();
-  await expect(page).toHaveURL('/products');
+  await page.goto("/");
+  await page.getByRole("link", { name: "Products" }).click();
+  await expect(page).toHaveURL("/products");
 
-  await page.goto('/about');
-  await expect(page).toHaveURL('/about');
+  await page.goto("/about");
+  await expect(page).toHaveURL("/about");
 });
 ```
 
@@ -58,24 +58,25 @@ test('navigate through pages', async ({ page }) => {
 ```typescript
 // playwright.config.ts
 const environments = {
-  local: 'http://localhost:3000',
-  staging: 'https://staging.example.com',
-  production: 'https://example.com',
+  local: "http://localhost:3000",
+  staging: "https://staging.example.com",
+  production: "https://example.com",
 };
 
 export default defineConfig({
   use: {
-    baseURL: environments[process.env.TEST_ENV || 'local'],
+    baseURL: environments[process.env.TEST_ENV || "local"],
   },
 
   // Only start local server when testing locally
-  webServer: process.env.TEST_ENV === 'local' || !process.env.TEST_ENV
-    ? {
-        command: 'npm run build && npm run start',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-      }
-    : undefined,
+  webServer:
+    process.env.TEST_ENV === "local" || !process.env.TEST_ENV
+      ? {
+          command: "npm run build && npm run start",
+          url: "http://localhost:3000",
+          reuseExistingServer: !process.env.CI,
+        }
+      : undefined,
 });
 
 // Run against different environments:
@@ -91,12 +92,12 @@ export default defineConfig({
 export default defineConfig({
   projects: [
     {
-      name: 'local',
-      use: { baseURL: 'http://localhost:3000' },
+      name: "local",
+      use: { baseURL: "http://localhost:3000" },
     },
     {
-      name: 'staging',
-      use: { baseURL: 'https://staging.example.com' },
+      name: "staging",
+      use: { baseURL: "https://staging.example.com" },
     },
   ],
 });

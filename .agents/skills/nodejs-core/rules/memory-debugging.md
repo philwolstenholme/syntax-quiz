@@ -43,8 +43,8 @@ node -e "console.log(v8.getHeapStatistics())"
 ### Taking Snapshots
 
 ```javascript
-const v8 = require('node:v8');
-const fs = require('node:fs');
+const v8 = require("node:v8");
+const fs = require("node:fs");
 
 // Method 1: Write to file
 function takeSnapshot(filename) {
@@ -55,7 +55,7 @@ function takeSnapshot(filename) {
 }
 
 // Method 2: Using inspector
-const inspector = require('node:inspector');
+const inspector = require("node:inspector");
 
 async function takeSnapshotWithInspector() {
   const session = new inspector.Session();
@@ -64,17 +64,17 @@ async function takeSnapshotWithInspector() {
   return new Promise((resolve, reject) => {
     const chunks = [];
 
-    session.on('HeapProfiler.addHeapSnapshotChunk', (m) => {
+    session.on("HeapProfiler.addHeapSnapshotChunk", (m) => {
       chunks.push(m.params.chunk);
     });
 
-    session.post('HeapProfiler.takeHeapSnapshot', null, (err) => {
+    session.post("HeapProfiler.takeHeapSnapshot", null, (err) => {
       session.disconnect();
       if (err) return reject(err);
 
-      const snapshot = chunks.join('');
-      fs.writeFileSync('heap.heapsnapshot', snapshot);
-      resolve('heap.heapsnapshot');
+      const snapshot = chunks.join("");
+      fs.writeFileSync("heap.heapsnapshot", snapshot);
+      resolve("heap.heapsnapshot");
     });
   });
 }
@@ -84,7 +84,7 @@ async function takeSnapshotWithInspector() {
 
 ```javascript
 // Take baseline
-const snapshot1 = takeSnapshot('before.heapsnapshot');
+const snapshot1 = takeSnapshot("before.heapsnapshot");
 
 // Run operation that may leak
 await runPotentiallyLeakyOperation();
@@ -95,7 +95,7 @@ if (global.gc) {
 }
 
 // Take comparison snapshot
-const snapshot2 = takeSnapshot('after.heapsnapshot');
+const snapshot2 = takeSnapshot("after.heapsnapshot");
 
 // Compare in Chrome DevTools:
 // 1. Open DevTools -> Memory tab
@@ -107,12 +107,14 @@ const snapshot2 = takeSnapshot('after.heapsnapshot');
 ### Reading Heap Snapshots
 
 Key terms:
+
 - **Shallow Size**: Memory used by object itself
 - **Retained Size**: Memory that would be freed if object is GC'd
 - **Distance**: Shortest path from GC root
 - **Retainers**: Objects holding references
 
 Common patterns to look for:
+
 ```
 High Retained Size + Low Shallow Size = Holding references to large objects
 Growing Object Count = Likely leak
@@ -125,7 +127,7 @@ Detached DOM nodes = Event listener leaks (in browser-like environments)
 ### Monitoring Memory Growth
 
 ```javascript
-const v8 = require('node:v8');
+const v8 = require("node:v8");
 
 class MemoryMonitor {
   constructor(options = {}) {
@@ -157,7 +159,7 @@ class MemoryMonitor {
     this.history.push({
       timestamp: Date.now(),
       used: current,
-      delta
+      delta,
     });
 
     // Keep last 100 measurements
@@ -168,9 +170,7 @@ class MemoryMonitor {
     // Check for consistent growth
     if (this.history.length >= 10) {
       const recent = this.history.slice(-10);
-      const allGrowing = recent.every((m, i) =>
-        i === 0 || m.used > recent[i - 1].used
-      );
+      const allGrowing = recent.every((m, i) => i === 0 || m.used > recent[i - 1].used);
 
       if (allGrowing && delta > this.thresholdMb) {
         console.warn(`[MEMORY WARNING] Heap grew by ${delta.toFixed(2)}MB`);
@@ -184,7 +184,7 @@ class MemoryMonitor {
     return {
       baseline: this.baseline,
       current: this.getHeapUsed(),
-      history: this.history
+      history: this.history,
     };
   }
 }
@@ -193,7 +193,7 @@ class MemoryMonitor {
 ### Finding Leaks with Async Hooks
 
 ```javascript
-const async_hooks = require('node:async_hooks');
+const async_hooks = require("node:async_hooks");
 
 const resources = new Map();
 
@@ -204,12 +204,12 @@ const hook = async_hooks.createHook({
       type,
       triggerAsyncId,
       stack,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   },
   destroy(asyncId) {
     resources.delete(asyncId);
-  }
+  },
 });
 
 hook.enable();
@@ -220,7 +220,8 @@ setInterval(() => {
   const longLived = [];
 
   for (const [id, resource] of resources) {
-    if (now - resource.timestamp > 60000) {  // Older than 1 minute
+    if (now - resource.timestamp > 60000) {
+      // Older than 1 minute
       longLived.push({ id, ...resource });
     }
   }
@@ -253,10 +254,10 @@ function getData(key) {
 }
 
 // FIX: Use LRU cache
-const LRU = require('lru-cache');
+const LRU = require("lru-cache");
 const cache = new LRU({
   max: 500,
-  ttl: 1000 * 60 * 5  // 5 minutes
+  ttl: 1000 * 60 * 5, // 5 minutes
 });
 ```
 
@@ -265,21 +266,21 @@ const cache = new LRU({
 ```javascript
 // LEAK: Listeners added but never removed
 function subscribe(emitter, handler) {
-  emitter.on('data', handler);
+  emitter.on("data", handler);
   // Never cleaned up!
 }
 
 // FIX: Return cleanup function
 function subscribe(emitter, handler) {
-  emitter.on('data', handler);
-  return () => emitter.off('data', handler);
+  emitter.on("data", handler);
+  return () => emitter.off("data", handler);
 }
 
 // Or use AbortController
 function subscribe(emitter, handler, signal) {
-  emitter.on('data', handler);
-  signal?.addEventListener('abort', () => {
-    emitter.off('data', handler);
+  emitter.on("data", handler);
+  signal?.addEventListener("abort", () => {
+    emitter.off("data", handler);
   });
 }
 ```
@@ -293,7 +294,7 @@ function createProcessor(largeData) {
   const summary = processData(largeData);
 
   // This closure retains largeData even though it only needs summary
-  return function() {
+  return function () {
     return summary;
   };
 }
@@ -303,7 +304,7 @@ function createProcessor(largeData) {
   const summary = processData(largeData);
   // largeData can now be GC'd
 
-  return function() {
+  return function () {
     return summary;
   };
 }
@@ -316,7 +317,7 @@ function createProcessor(largeData) {
 class Service {
   start() {
     this.timer = setInterval(() => {
-      this.doWork();  // 'this' keeps Service alive
+      this.doWork(); // 'this' keeps Service alive
     }, 1000);
   }
 
@@ -341,11 +342,11 @@ class Service {
 ### Tracking External Memory
 
 ```javascript
-const v8 = require('node:v8');
+const v8 = require("node:v8");
 
 // V8 tracks external memory (Buffers, etc.)
 const stats = v8.getHeapStatistics();
-console.log('External memory:', stats.external_memory / 1024 / 1024, 'MB');
+console.log("External memory:", stats.external_memory / 1024 / 1024, "MB");
 ```
 
 ### Using process.memoryUsage()
@@ -354,11 +355,11 @@ console.log('External memory:', stats.external_memory / 1024 / 1024, 'MB');
 function logMemory() {
   const usage = process.memoryUsage();
   console.log({
-    rss: (usage.rss / 1024 / 1024).toFixed(2) + ' MB',
-    heapTotal: (usage.heapTotal / 1024 / 1024).toFixed(2) + ' MB',
-    heapUsed: (usage.heapUsed / 1024 / 1024).toFixed(2) + ' MB',
-    external: (usage.external / 1024 / 1024).toFixed(2) + ' MB',
-    arrayBuffers: (usage.arrayBuffers / 1024 / 1024).toFixed(2) + ' MB'
+    rss: (usage.rss / 1024 / 1024).toFixed(2) + " MB",
+    heapTotal: (usage.heapTotal / 1024 / 1024).toFixed(2) + " MB",
+    heapUsed: (usage.heapUsed / 1024 / 1024).toFixed(2) + " MB",
+    external: (usage.external / 1024 / 1024).toFixed(2) + " MB",
+    arrayBuffers: (usage.arrayBuffers / 1024 / 1024).toFixed(2) + " MB",
   });
 }
 
@@ -406,21 +407,21 @@ clinic heapprofiler -- node app.js
 ### memwatch-next
 
 ```javascript
-const memwatch = require('@airbnb/node-memwatch');
+const memwatch = require("@airbnb/node-memwatch");
 
-memwatch.on('leak', (info) => {
-  console.log('Memory leak detected:', info);
+memwatch.on("leak", (info) => {
+  console.log("Memory leak detected:", info);
 });
 
-memwatch.on('stats', (stats) => {
-  console.log('GC stats:', stats);
+memwatch.on("stats", (stats) => {
+  console.log("GC stats:", stats);
 });
 
 // Take heap diff
 const hd = new memwatch.HeapDiff();
 // ... run code ...
 const diff = hd.end();
-console.log('Heap diff:', JSON.stringify(diff, null, 2));
+console.log("Heap diff:", JSON.stringify(diff, null, 2));
 ```
 
 ### Node.js --heapsnapshot-signal
@@ -502,22 +503,22 @@ function cacheWithCleanup(key, obj) {
 
 ```javascript
 // BAD: Load entire file into memory
-const data = await fs.promises.readFile('huge-file.json');
+const data = await fs.promises.readFile("huge-file.json");
 const parsed = JSON.parse(data);
 
 // GOOD: Stream processing
-const { pipeline } = require('node:stream/promises');
-const JSONStream = require('JSONStream');
+const { pipeline } = require("node:stream/promises");
+const JSONStream = require("JSONStream");
 
 await pipeline(
-  fs.createReadStream('huge-file.json'),
-  JSONStream.parse('items.*'),
+  fs.createReadStream("huge-file.json"),
+  JSONStream.parse("items.*"),
   async function* (source) {
     for await (const item of source) {
       yield processItem(item);
     }
   },
-  fs.createWriteStream('output.json')
+  fs.createWriteStream("output.json"),
 );
 ```
 
@@ -548,7 +549,7 @@ class ObjectPool {
 // Usage
 const bufferPool = new ObjectPool(
   () => Buffer.allocUnsafe(1024),
-  (buf) => buf.fill(0)
+  (buf) => buf.fill(0),
 );
 ```
 

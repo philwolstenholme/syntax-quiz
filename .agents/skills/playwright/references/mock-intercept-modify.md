@@ -12,20 +12,20 @@ Sometimes you need real API response structure but want to modify specific value
 **Incorrect (fully mocked response may miss fields):**
 
 ```typescript
-test('handles zero inventory', async ({ page }) => {
+test("handles zero inventory", async ({ page }) => {
   // May miss required fields that real API returns
-  await page.route('/api/product/1', async (route) => {
+  await page.route("/api/product/1", async (route) => {
     await route.fulfill({
       body: JSON.stringify({
         id: 1,
-        name: 'Widget',
+        name: "Widget",
         inventory: 0, // Testing this
         // Missing: price, description, images, reviews, etc.
       }),
     });
   });
 
-  await page.goto('/product/1');
+  await page.goto("/product/1");
   // Test may fail due to missing fields
 });
 ```
@@ -33,8 +33,8 @@ test('handles zero inventory', async ({ page }) => {
 **Correct (intercept and modify real response):**
 
 ```typescript
-test('handles zero inventory', async ({ page }) => {
-  await page.route('/api/product/1', async (route) => {
+test("handles zero inventory", async ({ page }) => {
+  await page.route("/api/product/1", async (route) => {
     // Get real response
     const response = await route.fetch();
     const json = await response.json();
@@ -49,31 +49,31 @@ test('handles zero inventory', async ({ page }) => {
     });
   });
 
-  await page.goto('/product/1');
+  await page.goto("/product/1");
 
-  await expect(page.getByText('Out of Stock')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Add to Cart' })).toBeDisabled();
+  await expect(page.getByText("Out of Stock")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add to Cart" })).toBeDisabled();
 });
 ```
 
 **Modify response headers:**
 
 ```typescript
-test('handles expired cache', async ({ page }) => {
-  await page.route('/api/data', async (route) => {
+test("handles expired cache", async ({ page }) => {
+  await page.route("/api/data", async (route) => {
     const response = await route.fetch();
 
     await route.fulfill({
       response,
       headers: {
         ...response.headers(),
-        'cache-control': 'no-cache', // Force fresh data
-        'x-cache': 'MISS',
+        "cache-control": "no-cache", // Force fresh data
+        "x-cache": "MISS",
       },
     });
   });
 
-  await page.goto('/dashboard');
+  await page.goto("/dashboard");
   // Verify app handles cache miss correctly
 });
 ```
@@ -81,20 +81,20 @@ test('handles expired cache', async ({ page }) => {
 **Add delay to real response:**
 
 ```typescript
-test('shows loading state', async ({ page }) => {
-  await page.route('/api/slow-data', async (route) => {
+test("shows loading state", async ({ page }) => {
+  await page.route("/api/slow-data", async (route) => {
     // Add artificial delay to test loading UI
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await route.continue();
   });
 
-  await page.goto('/dashboard');
+  await page.goto("/dashboard");
 
   // Loading state should be visible during delay
-  await expect(page.getByTestId('loading-spinner')).toBeVisible();
+  await expect(page.getByTestId("loading-spinner")).toBeVisible();
 
   // Then data appears
-  await expect(page.getByTestId('data-content')).toBeVisible();
+  await expect(page.getByTestId("data-content")).toBeVisible();
 });
 ```
 

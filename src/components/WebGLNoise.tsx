@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { useReducedMotion } from 'motion/react';
-import type { GlowData } from './GlowEffect';
+import { useEffect, useRef } from "react";
+import { useReducedMotion } from "motion/react";
+import type { GlowData } from "./GlowEffect";
 
 interface WebGLNoiseProps extends GlowData {
   isDark: boolean;
@@ -57,16 +57,13 @@ const FRAG = `
 `;
 
 // 8×8 Bayer matrix, values 0–63 mapped to 0–255
-const BAYER_8 = new Uint8Array([
-   0, 32,  8, 40,  2, 34, 10, 42,
-  48, 16, 56, 24, 50, 18, 58, 26,
-  12, 44,  4, 36, 14, 46,  6, 38,
-  60, 28, 52, 20, 62, 30, 54, 22,
-   3, 35, 11, 43,  1, 33,  9, 41,
-  51, 19, 59, 27, 49, 17, 57, 25,
-  15, 47,  7, 39, 13, 45,  5, 37,
-  63, 31, 55, 23, 61, 29, 53, 21,
-].map(v => Math.round(v * 255 / 63)));
+const BAYER_8 = new Uint8Array(
+  [
+    0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60,
+    28, 52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47,
+    7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
+  ].map((v) => Math.round((v * 255) / 63)),
+);
 
 function compileShader(gl: WebGLRenderingContext, type: number, src: string): WebGLShader {
   const s = gl.createShader(type)!;
@@ -75,7 +72,17 @@ function compileShader(gl: WebGLRenderingContext, type: number, src: string): We
   return s;
 }
 
-export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHovered, scrollElRef }: WebGLNoiseProps) => {
+export const WebGLNoise = ({
+  hlX,
+  hlY,
+  hlW,
+  hlH,
+  canvasW,
+  canvasH,
+  isDark,
+  isHovered,
+  scrollElRef,
+}: WebGLNoiseProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const isHoveredRef = useRef(isHovered);
@@ -89,7 +96,7 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
     const canvas = canvasRef.current;
     if (!canvas || prefersReducedMotion) return;
 
-    const gl = canvas.getContext('webgl') as WebGLRenderingContext | null;
+    const gl = canvas.getContext("webgl") as WebGLRenderingContext | null;
     if (!gl) return;
 
     const prog = gl.createProgram()!;
@@ -101,8 +108,8 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
 
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-    const aPos = gl.getAttribLocation(prog, 'a_pos');
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, "a_pos");
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
@@ -114,18 +121,18 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-    const uRes       = gl.getUniformLocation(prog, 'u_res');
-    const uHlCenter  = gl.getUniformLocation(prog, 'u_hlCenter');
-    const uHlW       = gl.getUniformLocation(prog, 'u_hlW');
-    const uHlH       = gl.getUniformLocation(prog, 'u_hlH');
-    const uTime      = gl.getUniformLocation(prog, 'u_time');
-    const uDark      = gl.getUniformLocation(prog, 'u_dark');
-    const uAreaScale = gl.getUniformLocation(prog, 'u_areaScale');
-    const uBayer     = gl.getUniformLocation(prog, 'u_bayer');
+    const uRes = gl.getUniformLocation(prog, "u_res");
+    const uHlCenter = gl.getUniformLocation(prog, "u_hlCenter");
+    const uHlW = gl.getUniformLocation(prog, "u_hlW");
+    const uHlH = gl.getUniformLocation(prog, "u_hlH");
+    const uTime = gl.getUniformLocation(prog, "u_time");
+    const uDark = gl.getUniformLocation(prog, "u_dark");
+    const uAreaScale = gl.getUniformLocation(prog, "u_areaScale");
+    const uBayer = gl.getUniformLocation(prog, "u_bayer");
 
     gl.uniform1i(uBayer, 0);
 
-    canvas.width  = canvasW;
+    canvas.width = canvasW;
     canvas.height = canvasH;
     gl.viewport(0, 0, canvasW, canvasH);
 
@@ -146,18 +153,18 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
       const pulseT = t - 0.36;
       const inMountPulse = !isHoveredRef.current && pulseT > 0 && pulseT < 1.36;
       if (inMountPulse) {
-        areaScaleRef.current = 1.0 + Math.sin(Math.PI * pulseT / 1.36) * 0.2;
+        areaScaleRef.current = 1.0 + Math.sin((Math.PI * pulseT) / 1.36) * 0.2;
       } else {
         const target = isHoveredRef.current ? 1.2 : 1.0;
         areaScaleRef.current += (target - areaScaleRef.current) * (1 - Math.pow(0.02, dt));
       }
-      gl.uniform2f(uRes,      canvasW, canvasH);
+      gl.uniform2f(uRes, canvasW, canvasH);
       const scrollOff = scrollElRef.current?.scrollLeft ?? 0;
       gl.uniform2f(uHlCenter, hlX + hlW / 2 - scrollOff, hlY + hlH / 2);
-      gl.uniform1f(uHlW,      hlW);
-      gl.uniform1f(uHlH,      hlH);
-      gl.uniform1f(uTime,     t);
-      gl.uniform1f(uDark,     isDark ? 1.0 : 0.0);
+      gl.uniform1f(uHlW, hlW);
+      gl.uniform1f(uHlH, hlH);
+      gl.uniform1f(uTime, t);
+      gl.uniform1f(uDark, isDark ? 1.0 : 0.0);
       gl.uniform1f(uAreaScale, areaScaleRef.current);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       rafId = requestAnimationFrame(render);
@@ -179,7 +186,7 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
       ref={canvasRef}
       aria-hidden="true"
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ imageRendering: 'pixelated' }}
+      style={{ imageRendering: "pixelated" }}
     />
   );
 };

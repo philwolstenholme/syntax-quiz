@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { shuffle } from 'es-toolkit';
-import { MAX_HINTS, HINTS_TO_ELIMINATE } from '../constants';
-import type { AnswerFeedback } from './types';
-import type { QuestionWithIndex } from './types';
+import { useState } from "react";
+import { shuffle } from "es-toolkit";
+import { MAX_HINTS, HINTS_TO_ELIMINATE } from "../constants";
+import type { AnswerFeedback } from "./types";
+import type { QuestionWithIndex } from "./types";
 
 interface UseAnswerInteractionInput {
   initialHintsUsed?: number;

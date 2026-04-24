@@ -13,17 +13,17 @@ Playwright's `storageState` saves cookies and localStorage, but NOT sessionStora
 
 ```typescript
 // Your app stores JWT in sessionStorage
-sessionStorage.setItem('authToken', 'jwt-token-here');
+sessionStorage.setItem("authToken", "jwt-token-here");
 
 // auth.setup.ts
-setup('authenticate', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('user@example.com');
-  await page.getByLabel('Password').fill('password');
-  await page.getByRole('button', { name: 'Sign in' }).click();
+setup("authenticate", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("user@example.com");
+  await page.getByLabel("Password").fill("password");
+  await page.getByRole("button", { name: "Sign in" }).click();
 
   // This ONLY saves cookies and localStorage, NOT sessionStorage!
-  await page.context().storageState({ path: 'playwright/.auth/user.json' });
+  await page.context().storageState({ path: "playwright/.auth/user.json" });
 });
 
 // Tests fail because sessionStorage auth token is lost
@@ -33,37 +33,32 @@ setup('authenticate', async ({ page }) => {
 
 ```typescript
 // auth.setup.ts
-import { test as setup } from '@playwright/test';
-import fs from 'fs';
+import { test as setup } from "@playwright/test";
+import fs from "fs";
 
-setup('authenticate', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('user@example.com');
-  await page.getByLabel('Password').fill('password');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('/dashboard');
+setup("authenticate", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("user@example.com");
+  await page.getByLabel("Password").fill("password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.waitForURL("/dashboard");
 
   // Save regular storage state
-  await page.context().storageState({ path: 'playwright/.auth/user.json' });
+  await page.context().storageState({ path: "playwright/.auth/user.json" });
 
   // Save sessionStorage separately
-  const sessionStorage = await page.evaluate(() =>
-    JSON.stringify(sessionStorage)
-  );
-  fs.writeFileSync('playwright/.auth/session.json', sessionStorage);
+  const sessionStorage = await page.evaluate(() => JSON.stringify(sessionStorage));
+  fs.writeFileSync("playwright/.auth/session.json", sessionStorage);
 });
 
 // fixtures/auth.ts
-import { test as base } from '@playwright/test';
-import fs from 'fs';
+import { test as base } from "@playwright/test";
+import fs from "fs";
 
 export const test = base.extend({
   page: async ({ page }, use) => {
     // Restore sessionStorage before each test
-    const sessionStorageData = fs.readFileSync(
-      'playwright/.auth/session.json',
-      'utf-8'
-    );
+    const sessionStorageData = fs.readFileSync("playwright/.auth/session.json", "utf-8");
 
     await page.addInitScript((data) => {
       const entries = JSON.parse(data);
@@ -77,11 +72,11 @@ export const test = base.extend({
 });
 
 // tests/dashboard.spec.ts
-import { test } from '../fixtures/auth';
+import { test } from "../fixtures/auth";
 
-test('dashboard loads with session token', async ({ page }) => {
-  await page.goto('/dashboard');
-  await expect(page.getByTestId('user-profile')).toBeVisible();
+test("dashboard loads with session token", async ({ page }) => {
+  await page.goto("/dashboard");
+  await expect(page.getByTestId("user-profile")).toBeVisible();
 });
 ```
 
@@ -91,14 +86,14 @@ test('dashboard loads with session token', async ({ page }) => {
 // If your app accepts auth via API
 test.beforeEach(async ({ page, request }) => {
   // Get token via API
-  const response = await request.post('/api/auth/login', {
-    data: { email: 'user@example.com', password: 'password' },
+  const response = await request.post("/api/auth/login", {
+    data: { email: "user@example.com", password: "password" },
   });
   const { token } = await response.json();
 
   // Set token in sessionStorage before navigating
   await page.addInitScript((authToken) => {
-    window.sessionStorage.setItem('authToken', authToken);
+    window.sessionStorage.setItem("authToken", authToken);
   }, token);
 });
 ```

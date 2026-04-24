@@ -34,10 +34,10 @@ export default defineConfig({
 export default defineConfig({
   use: {
     // Screenshots on failure
-    screenshot: 'only-on-failure',
+    screenshot: "only-on-failure",
 
     // Video on failure
-    video: 'retain-on-failure',
+    video: "retain-on-failure",
   },
 });
 
@@ -53,7 +53,7 @@ export default defineConfig({
 export default defineConfig({
   use: {
     video: {
-      mode: 'retain-on-failure',
+      mode: "retain-on-failure",
       size: { width: 1280, height: 720 }, // Video resolution
     },
   },
@@ -80,10 +80,10 @@ export default defineConfig({
 
 **Storage considerations:**
 
-| Artifact | Typical Size | Recommendation |
-|----------|--------------|----------------|
-| Screenshot | 100-500KB | Always capture on failure |
-| Video (30s) | 2-5MB | Retain on failure only |
-| Trace | 5-20MB | On first retry |
+| Artifact    | Typical Size | Recommendation            |
+| ----------- | ------------ | ------------------------- |
+| Screenshot  | 100-500KB    | Always capture on failure |
+| Video (30s) | 2-5MB        | Retain on failure only    |
+| Trace       | 5-20MB       | On first retry            |
 
 Reference: [Playwright Screenshots](https://playwright.dev/docs/screenshots)

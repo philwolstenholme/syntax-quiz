@@ -13,18 +13,18 @@ Web-first assertions automatically retry until conditions are met or timeout is 
 
 ```typescript
 // tests/loading.spec.ts
-test('shows success message after save', async ({ page }) => {
-  await page.goto('/settings');
-  await page.getByLabel('Name').fill('John Doe');
-  await page.getByRole('button', { name: 'Save' }).click();
+test("shows success message after save", async ({ page }) => {
+  await page.goto("/settings");
+  await page.getByLabel("Name").fill("John Doe");
+  await page.getByRole("button", { name: "Save" }).click();
 
   // WRONG: checks once, fails if element isn't immediately visible
-  const isVisible = await page.getByText('Settings saved').isVisible();
+  const isVisible = await page.getByText("Settings saved").isVisible();
   expect(isVisible).toBe(true);
 
   // WRONG: same problem with getAttribute
-  const text = await page.locator('.status').textContent();
-  expect(text).toBe('Success');
+  const text = await page.locator(".status").textContent();
+  expect(text).toBe("Success");
 });
 ```
 
@@ -32,16 +32,16 @@ test('shows success message after save', async ({ page }) => {
 
 ```typescript
 // tests/loading.spec.ts
-test('shows success message after save', async ({ page }) => {
-  await page.goto('/settings');
-  await page.getByLabel('Name').fill('John Doe');
-  await page.getByRole('button', { name: 'Save' }).click();
+test("shows success message after save", async ({ page }) => {
+  await page.goto("/settings");
+  await page.getByLabel("Name").fill("John Doe");
+  await page.getByRole("button", { name: "Save" }).click();
 
   // Auto-retries until visible or timeout
-  await expect(page.getByText('Settings saved')).toBeVisible();
+  await expect(page.getByText("Settings saved")).toBeVisible();
 
   // Auto-retries text content check
-  await expect(page.locator('.status')).toHaveText('Success');
+  await expect(page.locator(".status")).toHaveText("Success");
 });
 ```
 
@@ -53,25 +53,25 @@ await expect(locator).toBeVisible();
 await expect(locator).toBeHidden();
 
 // Text content
-await expect(locator).toHaveText('Expected');
-await expect(locator).toContainText('partial');
+await expect(locator).toHaveText("Expected");
+await expect(locator).toContainText("partial");
 
 // Attributes
-await expect(locator).toHaveAttribute('href', '/home');
+await expect(locator).toHaveAttribute("href", "/home");
 await expect(locator).toHaveClass(/active/);
 
 // Form state
 await expect(locator).toBeEnabled();
 await expect(locator).toBeDisabled();
 await expect(locator).toBeChecked();
-await expect(locator).toHaveValue('input value');
+await expect(locator).toHaveValue("input value");
 
 // Count
 await expect(locator).toHaveCount(5);
 
 // URL
-await expect(page).toHaveURL('/dashboard');
-await expect(page).toHaveTitle('Dashboard');
+await expect(page).toHaveURL("/dashboard");
+await expect(page).toHaveTitle("Dashboard");
 ```
 
 **Configuring assertion timeout:**

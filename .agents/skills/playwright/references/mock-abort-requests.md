@@ -12,9 +12,9 @@ Analytics, tracking, ads, and large images slow down tests without adding value.
 **Incorrect (loading all resources):**
 
 ```typescript
-test('homepage loads', async ({ page }) => {
+test("homepage loads", async ({ page }) => {
   // Loads everything: analytics, fonts, images, third-party scripts
-  await page.goto('/');
+  await page.goto("/");
 
   // Test waits for all resources including:
   // - Google Analytics
@@ -28,41 +28,41 @@ test('homepage loads', async ({ page }) => {
 
 ```typescript
 // tests/homepage.spec.ts
-test('homepage loads', async ({ page }) => {
+test("homepage loads", async ({ page }) => {
   // Block analytics and tracking
-  await page.route('**/*', (route) => {
+  await page.route("**/*", (route) => {
     const url = route.request().url();
     if (
-      url.includes('google-analytics.com') ||
-      url.includes('googletagmanager.com') ||
-      url.includes('facebook.net') ||
-      url.includes('hotjar.com') ||
-      url.includes('intercom.io')
+      url.includes("google-analytics.com") ||
+      url.includes("googletagmanager.com") ||
+      url.includes("facebook.net") ||
+      url.includes("hotjar.com") ||
+      url.includes("intercom.io")
     ) {
       return route.abort();
     }
     return route.continue();
   });
 
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Welcome" })).toBeVisible();
 });
 ```
 
 **Block by resource type:**
 
 ```typescript
-test('fast page load', async ({ page }) => {
+test("fast page load", async ({ page }) => {
   // Block images and fonts for faster tests
-  await page.route('**/*', (route) => {
+  await page.route("**/*", (route) => {
     const resourceType = route.request().resourceType();
-    if (['image', 'font', 'media'].includes(resourceType)) {
+    if (["image", "font", "media"].includes(resourceType)) {
       return route.abort();
     }
     return route.continue();
   });
 
-  await page.goto('/products');
+  await page.goto("/products");
   // Test functionality without waiting for images
 });
 ```
@@ -71,20 +71,20 @@ test('fast page load', async ({ page }) => {
 
 ```typescript
 // fixtures/fast-page.ts
-import { test as base } from '@playwright/test';
+import { test as base } from "@playwright/test";
 
 export const test = base.extend({
   page: async ({ page }, use) => {
     // Block tracking on all pages
-    await page.route('**/*', (route) => {
+    await page.route("**/*", (route) => {
       const url = route.request().url();
       const blocklist = [
-        'google-analytics',
-        'googletagmanager',
-        'facebook',
-        'hotjar',
-        'segment',
-        'mixpanel',
+        "google-analytics",
+        "googletagmanager",
+        "facebook",
+        "hotjar",
+        "segment",
+        "mixpanel",
       ];
       if (blocklist.some((domain) => url.includes(domain))) {
         return route.abort();
@@ -100,6 +100,7 @@ export const test = base.extend({
 ```
 
 **When NOT to block:**
+
 - Testing third-party integrations
 - Testing cookie consent flows
 - Testing ads functionality

@@ -13,10 +13,10 @@ Server Actions handle form submissions and mutations. Test them through the UI t
 
 ```typescript
 // tests/contact.spec.ts
-test('submit form', async ({ page }) => {
-  await page.goto('/contact');
-  await page.getByLabel('Name').fill('John');
-  await page.getByRole('button', { name: 'Submit' }).click();
+test("submit form", async ({ page }) => {
+  await page.goto("/contact");
+  await page.getByLabel("Name").fill("John");
+  await page.getByRole("button", { name: "Submit" }).click();
   // Only checks button was clicked - doesn't verify:
   // - Server action completed
   // - Success/error feedback appeared
@@ -28,62 +28,62 @@ test('submit form', async ({ page }) => {
 
 ```typescript
 // tests/contact.spec.ts
-test('submit contact form via server action', async ({ page }) => {
-  await page.goto('/contact');
+test("submit contact form via server action", async ({ page }) => {
+  await page.goto("/contact");
 
   // Fill out form
-  await page.getByLabel('Name').fill('John Doe');
-  await page.getByLabel('Email').fill('john@example.com');
-  await page.getByLabel('Message').fill('Hello, this is a test message.');
+  await page.getByLabel("Name").fill("John Doe");
+  await page.getByLabel("Email").fill("john@example.com");
+  await page.getByLabel("Message").fill("Hello, this is a test message.");
 
   // Submit triggers server action
-  await page.getByRole('button', { name: 'Send Message' }).click();
+  await page.getByRole("button", { name: "Send Message" }).click();
 
   // Verify success feedback (server action completed)
-  await expect(page.getByText('Message sent successfully')).toBeVisible();
+  await expect(page.getByText("Message sent successfully")).toBeVisible();
 
   // Form should reset
-  await expect(page.getByLabel('Name')).toHaveValue('');
+  await expect(page.getByLabel("Name")).toHaveValue("");
 });
 ```
 
 **Test Server Action error handling:**
 
 ```typescript
-test('server action validation errors', async ({ page }) => {
-  await page.goto('/contact');
+test("server action validation errors", async ({ page }) => {
+  await page.goto("/contact");
 
   // Submit without required fields
-  await page.getByRole('button', { name: 'Send Message' }).click();
+  await page.getByRole("button", { name: "Send Message" }).click();
 
   // Server action returns validation errors
-  await expect(page.getByText('Name is required')).toBeVisible();
-  await expect(page.getByText('Email is required')).toBeVisible();
+  await expect(page.getByText("Name is required")).toBeVisible();
+  await expect(page.getByText("Email is required")).toBeVisible();
 });
 ```
 
 **Test useFormStatus integration:**
 
 ```typescript
-test('shows pending state during server action', async ({ page }) => {
+test("shows pending state during server action", async ({ page }) => {
   // Slow down the server action
-  await page.route('/contact', async (route) => {
-    if (route.request().method() === 'POST') {
+  await page.route("/contact", async (route) => {
+    if (route.request().method() === "POST") {
       await new Promise((r) => setTimeout(r, 2000));
     }
     await route.continue();
   });
 
-  await page.goto('/contact');
-  await page.getByLabel('Name').fill('John Doe');
-  await page.getByLabel('Email').fill('john@example.com');
-  await page.getByLabel('Message').fill('Test');
+  await page.goto("/contact");
+  await page.getByLabel("Name").fill("John Doe");
+  await page.getByLabel("Email").fill("john@example.com");
+  await page.getByLabel("Message").fill("Test");
 
-  await page.getByRole('button', { name: 'Send Message' }).click();
+  await page.getByRole("button", { name: "Send Message" }).click();
 
   // Button should show pending state
-  await expect(page.getByRole('button', { name: 'Sending...' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sending...' })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Sending..." })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sending..." })).toBeDisabled();
 });
 ```
 

@@ -13,27 +13,27 @@ Repeating setup code in every test is error-prone and slow. Fixtures provide reu
 
 ```typescript
 // tests/admin.spec.ts
-test('admin can view users', async ({ page }) => {
+test("admin can view users", async ({ page }) => {
   // Setup duplicated in every admin test
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('admin@example.com');
-  await page.getByLabel('Password').fill('adminpass');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('/admin/dashboard');
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("admin@example.com");
+  await page.getByLabel("Password").fill("adminpass");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.waitForURL("/admin/dashboard");
 
-  await page.goto('/admin/users');
-  await expect(page.getByRole('table')).toBeVisible();
+  await page.goto("/admin/users");
+  await expect(page.getByRole("table")).toBeVisible();
 });
 
-test('admin can create user', async ({ page }) => {
+test("admin can create user", async ({ page }) => {
   // Same setup repeated
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('admin@example.com');
-  await page.getByLabel('Password').fill('adminpass');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('/admin/dashboard');
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("admin@example.com");
+  await page.getByLabel("Password").fill("adminpass");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.waitForURL("/admin/dashboard");
 
-  await page.goto('/admin/users/new');
+  await page.goto("/admin/users/new");
   // ...
 });
 ```
@@ -42,7 +42,7 @@ test('admin can create user', async ({ page }) => {
 
 ```typescript
 // fixtures/admin.ts
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect } from "@playwright/test";
 
 type AdminFixtures = {
   adminPage: Page;
@@ -51,37 +51,38 @@ type AdminFixtures = {
 export const test = base.extend<AdminFixtures>({
   adminPage: async ({ page }, use) => {
     // Setup: login as admin
-    await page.goto('/login');
-    await page.getByLabel('Email').fill('admin@example.com');
-    await page.getByLabel('Password').fill('adminpass');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await page.waitForURL('/admin/dashboard');
+    await page.goto("/login");
+    await page.getByLabel("Email").fill("admin@example.com");
+    await page.getByLabel("Password").fill("adminpass");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL("/admin/dashboard");
 
     // Provide the authenticated page to the test
     await use(page);
 
     // Teardown: logout (optional)
-    await page.goto('/logout');
+    await page.goto("/logout");
   },
 });
 
 export { expect };
 
 // tests/admin.spec.ts
-import { test, expect } from '../fixtures/admin';
+import { test, expect } from "../fixtures/admin";
 
-test('admin can view users', async ({ adminPage }) => {
-  await adminPage.goto('/admin/users');
-  await expect(adminPage.getByRole('table')).toBeVisible();
+test("admin can view users", async ({ adminPage }) => {
+  await adminPage.goto("/admin/users");
+  await expect(adminPage.getByRole("table")).toBeVisible();
 });
 
-test('admin can create user', async ({ adminPage }) => {
-  await adminPage.goto('/admin/users/new');
-  await expect(adminPage.getByRole('form')).toBeVisible();
+test("admin can create user", async ({ adminPage }) => {
+  await adminPage.goto("/admin/users/new");
+  await expect(adminPage.getByRole("form")).toBeVisible();
 });
 ```
 
 **Benefits:**
+
 - DRY principle enforced
 - Automatic setup and teardown
 - Composable fixtures for complex scenarios

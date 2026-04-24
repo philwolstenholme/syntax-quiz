@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { shuffle } from 'es-toolkit';
-import type { Level } from '../data/questions';
-import type { QuestionWithIndex } from './types';
+import { useState } from "react";
+import { shuffle } from "es-toolkit";
+import type { Level } from "../data/questions";
+import type { QuestionWithIndex } from "./types";
 
 interface UseQuestionProgressionInput {
   initialQuestions: QuestionWithIndex[];
@@ -47,11 +47,11 @@ export function useQuestionProgression({
   };
 
   const addMissedQuestion = (q: QuestionWithIndex) => {
-    setMissedQuestions(prev => [...prev, q]);
+    setMissedQuestions((prev) => [...prev, q]);
   };
 
   const startRetryRound = () => {
-    const retryQuestions = shuffle([...missedQuestions]).map(q => ({
+    const retryQuestions = shuffle([...missedQuestions]).map((q) => ({
       ...q,
       options: shuffle(q.options),
     }));

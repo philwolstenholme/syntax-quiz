@@ -8,14 +8,14 @@ Each question follows the `Question` interface:
 
 ```ts
 interface Question {
-  code: string;        // Code snippet shown to the user
-  highlight: string;   // Substring of `code` that gets visually highlighted
-  question: string;    // The question prompt
-  correct: string;     // The correct answer (must appear in options)
-  options: string[];   // Exactly 4 answer choices, correct answer first
-  hint: string;        // Clue shown when the user requests a hint
+  code: string; // Code snippet shown to the user
+  highlight: string; // Substring of `code` that gets visually highlighted
+  question: string; // The question prompt
+  correct: string; // The correct answer (must appear in options)
+  options: string[]; // Exactly 4 answer choices, correct answer first
+  hint: string; // Clue shown when the user requests a hint
   explanation: string; // Shown after answering — see writing guide below
-  docsLink?: string;   // Optional direct URL for the "Learn more" link
+  docsLink?: string; // Optional direct URL for the "Learn more" link
 }
 ```
 
@@ -59,11 +59,11 @@ The explanation is the most important educational content. It appears in the fee
 
 ### 1. Fully explain the correct answer first
 
-Open by clearly defining the correct term/concept. Explain *why* it's the right answer in the context of the code shown. Reference the official JavaScript or TypeScript terminology.
+Open by clearly defining the correct term/concept. Explain _why_ it's the right answer in the context of the code shown. Reference the official JavaScript or TypeScript terminology.
 
 ### 2. Explain why each incorrect option is wrong
 
-Address every distractor option and explain why it doesn't apply. This is critical for learning — students need to understand the boundaries between similar concepts. Explain what each wrong term *actually* means so the learner builds accurate mental models.
+Address every distractor option and explain why it doesn't apply. This is critical for learning — students need to understand the boundaries between similar concepts. Explain what each wrong term _actually_ means so the learner builds accurate mental models.
 
 ### 3. Use backticks around code references
 

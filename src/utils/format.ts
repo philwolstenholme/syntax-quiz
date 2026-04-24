@@ -1,6 +1,6 @@
 const numberFormatter = new Intl.NumberFormat();
 const percentFormatter = new Intl.NumberFormat(undefined, {
-  style: 'percent',
+  style: "percent",
   maximumFractionDigits: 0,
 });
 

@@ -28,10 +28,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
 
   // Use reporter to track which tests needed retries
-  reporter: [
-    ['html', { open: 'never' }],
-    ['list'],
-  ],
+  reporter: [["html", { open: "never" }], ["list"]],
 });
 ```
 
@@ -44,9 +41,9 @@ export default defineConfig({
 
   // Only rerun failed tests, not entire file
   use: {
-    trace: 'on-first-retry', // Capture trace on retry for debugging
-    video: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    trace: "on-first-retry", // Capture trace on retry for debugging
+    video: "on-first-retry",
+    screenshot: "only-on-failure",
   },
 });
 ```
@@ -55,20 +52,20 @@ export default defineConfig({
 
 ```typescript
 // tests/critical.spec.ts
-import { test } from '@playwright/test';
+import { test } from "@playwright/test";
 
 // Critical tests get extra retries
-test.describe('payment flow', () => {
+test.describe("payment flow", () => {
   test.describe.configure({ retries: 3 });
 
-  test('complete checkout', async ({ page }) => {
+  test("complete checkout", async ({ page }) => {
     // This test gets 3 retries
   });
 });
 
 // Unstable third-party integration
-test('external API test', async ({ page }) => {
-  test.info().annotations.push({ type: 'flaky', description: 'External API' });
+test("external API test", async ({ page }) => {
+  test.info().annotations.push({ type: "flaky", description: "External API" });
   // ...
 });
 ```
@@ -79,16 +76,16 @@ test('external API test', async ({ page }) => {
 // Instead of relying on retries, fix the root cause
 
 // BAD: Flaky due to timing
-test('shows notification', async ({ page }) => {
-  await page.click('#trigger');
+test("shows notification", async ({ page }) => {
+  await page.click("#trigger");
   await page.waitForTimeout(1000); // Hoping it's enough
-  await expect(page.getByText('Done')).toBeVisible();
+  await expect(page.getByText("Done")).toBeVisible();
 });
 
 // GOOD: Deterministic wait
-test('shows notification', async ({ page }) => {
-  await page.click('#trigger');
-  await expect(page.getByText('Done')).toBeVisible(); // Auto-retries
+test("shows notification", async ({ page }) => {
+  await page.click("#trigger");
+  await expect(page.getByText("Done")).toBeVisible(); // Auto-retries
 });
 ```
 

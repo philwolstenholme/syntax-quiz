@@ -1,4 +1,4 @@
-import type { Question } from '../data/questions';
+import type { Question } from "../data/questions";
 
 export interface QuestionWithIndex extends Question {
   originalIndex: number;

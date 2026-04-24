@@ -13,11 +13,11 @@ Playwright Inspector lets you step through tests interactively, inspect selector
 
 ```typescript
 // tests/checkout.spec.ts
-test('complete checkout', async ({ page }) => {
-  await page.goto('/checkout');
+test("complete checkout", async ({ page }) => {
+  await page.goto("/checkout");
 
   // Something fails here but you don't know why
-  await page.getByRole('button', { name: 'Pay' }).click();
+  await page.getByRole("button", { name: "Pay" }).click();
   // Error: locator.click: Target closed
 
   // Without inspector, you're guessing:
@@ -34,8 +34,8 @@ test('complete checkout', async ({ page }) => {
 
 ```typescript
 // tests/checkout.spec.ts
-test('complete checkout', async ({ page }) => {
-  await page.goto('/checkout');
+test("complete checkout", async ({ page }) => {
+  await page.goto("/checkout");
 
   // Add breakpoint to pause and inspect
   await page.pause();
@@ -44,7 +44,7 @@ test('complete checkout', async ({ page }) => {
   // - See the actual page state
   // - Test different selectors
   // - Step through one action at a time
-  await page.getByRole('button', { name: 'Pay' }).click();
+  await page.getByRole("button", { name: "Pay" }).click();
 });
 
 // Run: npx playwright test --debug

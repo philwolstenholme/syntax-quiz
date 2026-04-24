@@ -13,14 +13,14 @@ CSS selectors break when class names change or DOM structure shifts. Role-based 
 
 ```typescript
 // tests/navigation.spec.ts
-test('navigate to about page', async ({ page }) => {
-  await page.goto('/');
+test("navigate to about page", async ({ page }) => {
+  await page.goto("/");
   // Breaks when class name changes
-  await page.click('.nav-link.about-link');
+  await page.click(".nav-link.about-link");
   // Breaks when nesting changes
-  await page.click('div > ul > li:nth-child(2) > a');
+  await page.click("div > ul > li:nth-child(2) > a");
   // Breaks when ID changes
-  await page.click('#about-nav-item');
+  await page.click("#about-nav-item");
 });
 ```
 
@@ -28,17 +28,17 @@ test('navigate to about page', async ({ page }) => {
 
 ```typescript
 // tests/navigation.spec.ts
-test('navigate to about page', async ({ page }) => {
-  await page.goto('/');
+test("navigate to about page", async ({ page }) => {
+  await page.goto("/");
 
   // Uses ARIA role - stable across CSS/DOM changes
-  await page.getByRole('link', { name: 'About' }).click();
+  await page.getByRole("link", { name: "About" }).click();
 
   // For navigation elements
-  await page.getByRole('navigation').getByRole('link', { name: 'About' }).click();
+  await page.getByRole("navigation").getByRole("link", { name: "About" }).click();
 
   // For buttons (even if styled as links)
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByRole("button", { name: "Submit" }).click();
 });
 ```
 
@@ -46,27 +46,28 @@ test('navigate to about page', async ({ page }) => {
 
 ```typescript
 // Buttons
-page.getByRole('button', { name: 'Save' })
+page.getByRole("button", { name: "Save" });
 
 // Links
-page.getByRole('link', { name: 'Home' })
+page.getByRole("link", { name: "Home" });
 
 // Headings
-page.getByRole('heading', { name: 'Welcome', level: 1 })
+page.getByRole("heading", { name: "Welcome", level: 1 });
 
 // Form elements
-page.getByRole('textbox', { name: 'Email' })
-page.getByRole('checkbox', { name: 'Remember me' })
-page.getByRole('combobox', { name: 'Country' })
+page.getByRole("textbox", { name: "Email" });
+page.getByRole("checkbox", { name: "Remember me" });
+page.getByRole("combobox", { name: "Country" });
 
 // Lists
-page.getByRole('list').getByRole('listitem')
+page.getByRole("list").getByRole("listitem");
 
 // Dialogs
-page.getByRole('dialog', { name: 'Confirm' })
+page.getByRole("dialog", { name: "Confirm" });
 ```
 
 **Benefits:**
+
 - Selectors match how users perceive the page
 - Encourages accessible markup
 - Survives CSS refactors

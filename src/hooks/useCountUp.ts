@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useReducedMotion } from 'motion/react';
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "motion/react";
 
 /**
  * Animates a number from 0 to the target value over a duration.

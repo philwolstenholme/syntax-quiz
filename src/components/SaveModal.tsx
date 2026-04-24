@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { Dialog } from '@base-ui/react/dialog';
-import { Save, X, Check, Copy, Link } from 'lucide-react';
-import { SubtleButton } from './SubtleButton';
+import { useState, useRef, useEffect } from "react";
+import { Dialog } from "@base-ui/react/dialog";
+import { Save, X, Check, Copy, Link } from "lucide-react";
+import { SubtleButton } from "./SubtleButton";
 
 interface SaveModalProps {
   onSave: () => string;
@@ -38,7 +38,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
       resetCopiedAfterDelay();
     } catch {
       // Clipboard API unavailable — select the text so the user can copy manually
-      const urlEl = document.querySelector<HTMLElement>('[data-save-url]');
+      const urlEl = document.querySelector<HTMLElement>("[data-save-url]");
       if (urlEl) {
         const selection = window.getSelection();
         const range = document.createRange();
@@ -51,10 +51,7 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
 
   return (
     <Dialog.Root onOpenChange={handleOpenChange}>
-      <Dialog.Trigger
-        disabled={disabled}
-        render={<SubtleButton />}
-      >
+      <Dialog.Trigger disabled={disabled} render={<SubtleButton />}>
         <Save size={16} aria-hidden="true" />
         <span className="hidden sm:inline text-sm">Save</span>
       </Dialog.Trigger>
@@ -85,7 +82,10 @@ export const SaveModal = ({ onSave, disabled }: SaveModalProps) => {
                   {/* URL display */}
                   <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
                     <Link size={12} className="shrink-0 text-neutral-400" aria-hidden="true" />
-                    <span data-save-url className="flex-1 text-xs text-neutral-600 dark:text-neutral-400 truncate font-mono min-w-0 select-all">
+                    <span
+                      data-save-url
+                      className="flex-1 text-xs text-neutral-600 dark:text-neutral-400 truncate font-mono min-w-0 select-all"
+                    >
                       {saveUrl}
                     </span>
                   </div>

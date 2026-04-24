@@ -13,18 +13,18 @@ Playwright actions like `click()` and `fill()` automatically wait for elements t
 
 ```typescript
 // tests/form.spec.ts
-test('submit contact form', async ({ page }) => {
-  await page.goto('/contact');
+test("submit contact form", async ({ page }) => {
+  await page.goto("/contact");
 
   // WRONG: unnecessary waits before actions
   await page.waitForSelector('input[name="name"]');
-  await page.getByLabel('Name').fill('John Doe');
+  await page.getByLabel("Name").fill("John Doe");
 
-  await page.waitForSelector('input[name="email"]', { state: 'visible' });
-  await page.getByLabel('Email').fill('john@example.com');
+  await page.waitForSelector('input[name="email"]', { state: "visible" });
+  await page.getByLabel("Email").fill("john@example.com");
 
-  await page.waitForSelector('button[type="submit"]', { state: 'attached' });
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.waitForSelector('button[type="submit"]', { state: "attached" });
+  await page.getByRole("button", { name: "Submit" }).click();
 });
 ```
 
@@ -32,15 +32,15 @@ test('submit contact form', async ({ page }) => {
 
 ```typescript
 // tests/form.spec.ts
-test('submit contact form', async ({ page }) => {
-  await page.goto('/contact');
+test("submit contact form", async ({ page }) => {
+  await page.goto("/contact");
 
   // Actions auto-wait for elements to be actionable
-  await page.getByLabel('Name').fill('John Doe');
-  await page.getByLabel('Email').fill('john@example.com');
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByLabel("Name").fill("John Doe");
+  await page.getByLabel("Email").fill("john@example.com");
+  await page.getByRole("button", { name: "Submit" }).click();
 
-  await expect(page.getByText('Message sent')).toBeVisible();
+  await expect(page.getByText("Message sent")).toBeVisible();
 });
 ```
 
@@ -58,26 +58,26 @@ test('submit contact form', async ({ page }) => {
 // - Element is editable
 
 // This all happens automatically - no manual waits needed
-await page.getByRole('button', { name: 'Submit' }).click();
+await page.getByRole("button", { name: "Submit" }).click();
 ```
 
 **When manual waits ARE needed:**
 
 ```typescript
 // When waiting for element to disappear
-await page.getByRole('button', { name: 'Submit' }).click();
-await expect(page.getByTestId('loading')).toBeHidden();
+await page.getByRole("button", { name: "Submit" }).click();
+await expect(page.getByTestId("loading")).toBeHidden();
 
 // When element state determines test flow
-const submitButton = page.getByRole('button', { name: 'Submit' });
-await submitButton.waitFor({ state: 'visible' });
+const submitButton = page.getByRole("button", { name: "Submit" });
+await submitButton.waitFor({ state: "visible" });
 const isDisabled = await submitButton.isDisabled();
 if (isDisabled) {
   // Handle disabled state
 }
 
 // When waiting for element to be removed from DOM entirely
-await expect(page.getByTestId('modal')).not.toBeAttached();
+await expect(page.getByTestId("modal")).not.toBeAttached();
 ```
 
 Reference: [Playwright Auto-Waiting](https://playwright.dev/docs/actionability)

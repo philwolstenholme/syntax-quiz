@@ -13,19 +13,19 @@ Leftover state from tests can cause subsequent tests to fail. Clean up any data 
 
 ```typescript
 // tests/posts.spec.ts
-test('create new post', async ({ page }) => {
-  await page.goto('/posts/new');
-  await page.getByLabel('Title').fill('Test Post');
-  await page.getByLabel('Content').fill('Test content');
-  await page.getByRole('button', { name: 'Publish' }).click();
-  await expect(page.getByText('Post published')).toBeVisible();
+test("create new post", async ({ page }) => {
+  await page.goto("/posts/new");
+  await page.getByLabel("Title").fill("Test Post");
+  await page.getByLabel("Content").fill("Test content");
+  await page.getByRole("button", { name: "Publish" }).click();
+  await expect(page.getByText("Post published")).toBeVisible();
   // Post remains in database, affects other tests
 });
 
-test('list shows no posts for new user', async ({ page }) => {
-  await page.goto('/posts');
+test("list shows no posts for new user", async ({ page }) => {
+  await page.goto("/posts");
   // Fails because previous test created a post
-  await expect(page.getByText('No posts yet')).toBeVisible();
+  await expect(page.getByText("No posts yet")).toBeVisible();
 });
 ```
 
@@ -33,7 +33,7 @@ test('list shows no posts for new user', async ({ page }) => {
 
 ```typescript
 // tests/posts.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
 let createdPostIds: string[] = [];
 
@@ -45,23 +45,23 @@ test.afterEach(async ({ request }) => {
   createdPostIds = [];
 });
 
-test('create new post', async ({ page, request }) => {
-  await page.goto('/posts/new');
-  await page.getByLabel('Title').fill('Test Post');
-  await page.getByLabel('Content').fill('Test content');
-  await page.getByRole('button', { name: 'Publish' }).click();
+test("create new post", async ({ page, request }) => {
+  await page.goto("/posts/new");
+  await page.getByLabel("Title").fill("Test Post");
+  await page.getByLabel("Content").fill("Test content");
+  await page.getByRole("button", { name: "Publish" }).click();
 
   // Track created post for cleanup
-  const postId = await page.getByTestId('post-id').textContent();
+  const postId = await page.getByTestId("post-id").textContent();
   createdPostIds.push(postId!);
 
-  await expect(page.getByText('Post published')).toBeVisible();
+  await expect(page.getByText("Post published")).toBeVisible();
 });
 
-test('list shows no posts for new user', async ({ page }) => {
-  await page.goto('/posts');
+test("list shows no posts for new user", async ({ page }) => {
+  await page.goto("/posts");
   // Clean state - no posts from previous test
-  await expect(page.getByText('No posts yet')).toBeVisible();
+  await expect(page.getByText("No posts yet")).toBeVisible();
 });
 ```
 
@@ -76,7 +76,7 @@ export default async function globalSetup() {
 
 // playwright.config.ts
 export default defineConfig({
-  globalSetup: require.resolve('./global-setup'),
+  globalSetup: require.resolve("./global-setup"),
 });
 ```
 

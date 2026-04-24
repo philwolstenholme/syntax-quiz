@@ -17,7 +17,7 @@ When running tests in parallel, each worker needs its own authentication to avoi
 export default defineConfig({
   workers: 4,
   use: {
-    storageState: 'playwright/.auth/user.json', // Same for all workers!
+    storageState: "playwright/.auth/user.json", // Same for all workers!
   },
 });
 ```
@@ -26,14 +26,14 @@ export default defineConfig({
 
 ```typescript
 // fixtures/auth.ts
-import { test as base } from '@playwright/test';
+import { test as base } from "@playwright/test";
 
 // Test users - one per potential parallel worker
 const testUsers = [
-  { email: 'test1@example.com', password: 'pass1' },
-  { email: 'test2@example.com', password: 'pass2' },
-  { email: 'test3@example.com', password: 'pass3' },
-  { email: 'test4@example.com', password: 'pass4' },
+  { email: "test1@example.com", password: "pass1" },
+  { email: "test2@example.com", password: "pass2" },
+  { email: "test3@example.com", password: "pass3" },
+  { email: "test4@example.com", password: "pass4" },
 ];
 
 export const test = base.extend<{}, { workerStorageState: string }>({
@@ -49,18 +49,18 @@ export const test = base.extend<{}, { workerStorageState: string }>({
       const context = await browser.newContext();
       const page = await context.newPage();
 
-      await page.goto('/login');
-      await page.getByLabel('Email').fill(user.email);
-      await page.getByLabel('Password').fill(user.password);
-      await page.getByRole('button', { name: 'Sign in' }).click();
-      await page.waitForURL('/dashboard');
+      await page.goto("/login");
+      await page.getByLabel("Email").fill(user.email);
+      await page.getByLabel("Password").fill(user.password);
+      await page.getByRole("button", { name: "Sign in" }).click();
+      await page.waitForURL("/dashboard");
 
       await context.storageState({ path: fileName });
       await context.close();
 
       await use(fileName);
     },
-    { scope: 'worker' },
+    { scope: "worker" },
   ],
 
   // Override storageState to use worker-specific auth
@@ -69,17 +69,17 @@ export const test = base.extend<{}, { workerStorageState: string }>({
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";
 
 // tests/dashboard.spec.ts
-import { test, expect } from '../fixtures/auth';
+import { test, expect } from "../fixtures/auth";
 
-test('user can update profile', async ({ page }) => {
+test("user can update profile", async ({ page }) => {
   // Each worker has isolated user - no conflicts
-  await page.goto('/profile');
-  await page.getByLabel('Bio').fill('Updated bio');
-  await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByText('Profile updated')).toBeVisible();
+  await page.goto("/profile");
+  await page.getByLabel("Bio").fill("Updated bio");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText("Profile updated")).toBeVisible();
 });
 ```
 

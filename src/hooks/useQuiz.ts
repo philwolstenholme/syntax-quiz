@@ -1,16 +1,16 @@
-import { playCorrectSound, playIncorrectSound } from '../utils/sounds';
-import { vibrateCorrect, vibrateIncorrect } from '../utils/vibrate';
-import { encodeSaveState } from '../utils/saveState';
-import type { SaveState } from '../utils/saveState';
-import { ROUTES } from '../routes';
-import { useQuizResult } from '../context/useQuizResult';
-import type { AnswerFeedback } from './types';
-import type { Level } from '../data/questions';
-import type { QuestionWithIndex } from './types';
-import { useQuizLevel } from './useQuizLevel';
-import { useScoring } from './useScoring';
-import { useAnswerInteraction } from './useAnswerInteraction';
-import { useQuestionProgression } from './useQuestionProgression';
+import { playCorrectSound, playIncorrectSound } from "../utils/sounds";
+import { vibrateCorrect, vibrateIncorrect } from "../utils/vibrate";
+import { encodeSaveState } from "../utils/saveState";
+import type { SaveState } from "../utils/saveState";
+import { ROUTES } from "../routes";
+import { useQuizResult } from "../context/useQuizResult";
+import type { AnswerFeedback } from "./types";
+import type { Level } from "../data/questions";
+import type { QuestionWithIndex } from "./types";
+import { useQuizLevel } from "./useQuizLevel";
+import { useScoring } from "./useScoring";
+import { useAnswerInteraction } from "./useAnswerInteraction";
+import { useQuestionProgression } from "./useQuestionProgression";
 
 interface UseQuizReturn {
   level: Level | undefined;
@@ -39,11 +39,12 @@ export function useQuiz(): UseQuizReturn {
   const { level, levelId, saveState, initialQuestions, setLocation } = useQuizLevel();
   const { setResult } = useQuizResult();
 
-  const { score, streak, correctAnswers, totalAttempts, recordCorrect, recordIncorrect } = useScoring({
-    initialScore: saveState?.s,
-    initialStreak: saveState?.k,
-    initialCorrect: saveState?.c,
-  });
+  const { score, streak, correctAnswers, totalAttempts, recordCorrect, recordIncorrect } =
+    useScoring({
+      initialScore: saveState?.s,
+      initialStreak: saveState?.k,
+      initialCorrect: saveState?.c,
+    });
 
   const {
     lastAnswer,
@@ -86,7 +87,13 @@ export function useQuiz(): UseQuizReturn {
     }
 
     // Quiz truly complete — navigate to score page via context
-    setResult({ score, correctAnswers, totalQuestions: totalAttempts, levelId, flawless: !isRetryRound });
+    setResult({
+      score,
+      correctAnswers,
+      totalQuestions: totalAttempts,
+      levelId,
+      flawless: !isRetryRound,
+    });
     setLocation(ROUTES.score(levelId));
   };
 
@@ -136,7 +143,7 @@ export function useQuiz(): UseQuizReturn {
   };
 
   const handleSave = (): string => {
-    const remainingIndices = questions.slice(currentQuestionIndex).map(q => q.originalIndex);
+    const remainingIndices = questions.slice(currentQuestionIndex).map((q) => q.originalIndex);
 
     const state: SaveState = {
       v: 1,

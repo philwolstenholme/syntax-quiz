@@ -23,6 +23,7 @@
     "@orpc/openapi": "^1.13.6",
     "@orpc/server": "^1.13.6",
     "@orpc/zod": "^1.13.6",
+    "@rexa-developer/tiks": "^0.1.8",
     "@tweakpane/core": "^2.0.5",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",

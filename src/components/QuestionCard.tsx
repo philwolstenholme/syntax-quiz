@@ -87,6 +87,11 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const preRef = useRef<HTMLPreElement>(null);
   const [glowData, setGlowData] = useState<GlowData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [mountAnimDone, setMountAnimDone] = useState(false);
+
+  useLayoutEffect(() => {
+    setMountAnimDone(false);
+  }, [question.code]);
 
   const tokenMap = resolvedTheme === 'dark' ? darkTokenMap : lightTokenMap;
   const tokenLines = useMemo(() => tokenMap[code] ?? [], [tokenMap, code]);
@@ -154,7 +159,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   return (
     <div
       ref={cardRef}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => { setIsHovered(true); setMountAnimDone(true); }}
       onMouseLeave={() => setIsHovered(false)}
       className="relative rounded-lg border border-neutral-200 bg-white/80 dark:border-neutral-800 dark:bg-neutral-900/50 p-5 sm:p-6 mb-4"
     >
@@ -162,18 +167,27 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         <div
           key={question.code}
           className="absolute inset-0 pointer-events-none"
-          style={{ animation: 'glow-enter 1.4s ease-out forwards' }}
+          style={
+            mountAnimDone
+              ? {
+                  opacity: isHovered ? 1 : 0.6,
+                  transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                }
+              : isHovered
+                ? {
+                    opacity: 1,
+                    transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }
+                : {
+                    animation: 'glow-enter-pulse 2s linear forwards',
+                  }
+          }
+          onAnimationEnd={(e) => {
+            if (e.animationName === 'glow-enter-pulse') setMountAnimDone(true);
+          }}
         >
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              opacity: isHovered ? 1 : 0.6,
-              transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-          >
-            <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
-            <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} scrollElRef={preRef} />
-          </div>
+          <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
+          <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} scrollElRef={preRef} />
         </div>
       )}
       <h2 className="relative text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">

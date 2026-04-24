@@ -141,11 +141,16 @@ export const WebGLNoise = ({ hlX, hlY, hlW, hlH, canvasW, canvasH, isDark, isHov
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
-      // Lerp area scale toward target — framerate-independent exponential ease
-      const target = isHoveredRef.current ? 1.2 : 1.0;
-      areaScaleRef.current += (target - areaScaleRef.current) * (1 - Math.pow(0.02, dt));
-
       const t = (now - start) / 1000;
+
+      const pulseT = t - 0.36;
+      const inMountPulse = !isHoveredRef.current && pulseT > 0 && pulseT < 1.36;
+      if (inMountPulse) {
+        areaScaleRef.current = 1.0 + Math.sin(Math.PI * pulseT / 1.36) * 0.2;
+      } else {
+        const target = isHoveredRef.current ? 1.2 : 1.0;
+        areaScaleRef.current += (target - areaScaleRef.current) * (1 - Math.pow(0.02, dt));
+      }
       gl.uniform2f(uRes,      canvasW, canvasH);
       const scrollOff = scrollElRef.current?.scrollLeft ?? 0;
       gl.uniform2f(uHlCenter, hlX + hlW / 2 - scrollOff, hlY + hlH / 2);

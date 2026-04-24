@@ -20,6 +20,7 @@ export function setMuted(v: boolean): void {
 }
 
 export const playKeycapSound = (): void => { ensureInit(); tiks.click(); };
+export const playPopSound = (): void => { ensureInit(); tiks.pop(); };
 export const playCorrectSound = (): void => { ensureInit(); tiks.success(); };
 export const playIncorrectSound = (): void => { ensureInit(); tiks.error(); };
 
@@ -47,7 +48,11 @@ if (typeof document !== 'undefined') {
   document.addEventListener('pointerdown', (e: PointerEvent) => {
     let el = e.target as Element | null;
     while (el && el !== document.documentElement) {
-      if (isInteractive(el)) { playKeycapSound(); return; }
+      if (isInteractive(el)) {
+        const sound = (el as HTMLElement).dataset?.sound;
+        if (sound === 'pop') playPopSound(); else playKeycapSound();
+        return;
+      }
       el = el.parentElement;
     }
   }, { passive: true });
@@ -63,6 +68,9 @@ if (typeof document !== 'undefined') {
       const type = (focused as HTMLInputElement).type;
       if (!['button', 'submit', 'reset', 'checkbox', 'radio'].includes(type)) return;
     }
-    if (isInteractive(focused)) playKeycapSound();
+    if (isInteractive(focused)) {
+      const sound = (focused as HTMLElement).dataset?.sound;
+      if (sound === 'pop') playPopSound(); else playKeycapSound();
+    }
   });
 }

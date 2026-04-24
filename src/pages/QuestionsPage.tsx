@@ -183,6 +183,7 @@ export const QuestionsPage = () => {
               <div className="mt-4 text-center">
                 <SubtleButton
                   data-testid="skip-question"
+                  data-sound="pop"
                   onClick={handleSkip}
                   disabled={isAnswering}
                 >

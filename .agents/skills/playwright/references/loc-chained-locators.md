@@ -13,16 +13,14 @@ When a single locator matches multiple elements, chain locators to narrow scope.
 
 ```typescript
 // tests/products.spec.ts
-test("add featured product to cart", async ({ page }) => {
-  await page.goto("/products");
+test('add featured product to cart', async ({ page }) => {
+  await page.goto('/products');
 
   // Brittle: depends on exact DOM structure
-  await page
-    .locator("section.featured-products div.product-card:first-child button.add-to-cart")
-    .click();
+  await page.locator('section.featured-products div.product-card:first-child button.add-to-cart').click();
 
   // Ambiguous: might match wrong element
-  await page.getByRole("button", { name: "Add to Cart" }).click();
+  await page.getByRole('button', { name: 'Add to Cart' }).click();
 });
 ```
 
@@ -30,13 +28,13 @@ test("add featured product to cart", async ({ page }) => {
 
 ```typescript
 // tests/products.spec.ts
-test("add featured product to cart", async ({ page }) => {
-  await page.goto("/products");
+test('add featured product to cart', async ({ page }) => {
+  await page.goto('/products');
 
   // Chain from container to specific element
-  const featuredSection = page.getByRole("region", { name: "Featured Products" });
-  const firstProduct = featuredSection.getByTestId("product-card").first();
-  await firstProduct.getByRole("button", { name: "Add to Cart" }).click();
+  const featuredSection = page.getByRole('region', { name: 'Featured Products' });
+  const firstProduct = featuredSection.getByTestId('product-card').first();
+  await firstProduct.getByRole('button', { name: 'Add to Cart' }).click();
 });
 ```
 
@@ -44,12 +42,16 @@ test("add featured product to cart", async ({ page }) => {
 
 ```typescript
 // Find product by name, then interact with it
-const productCard = page.getByTestId("product-card").filter({ hasText: "Wireless Headphones" });
+const productCard = page
+  .getByTestId('product-card')
+  .filter({ hasText: 'Wireless Headphones' });
 
-await productCard.getByRole("button", { name: "Add to Cart" }).click();
+await productCard.getByRole('button', { name: 'Add to Cart' }).click();
 
 // Filter by child element
-const discountedProducts = page.getByTestId("product-card").filter({ has: page.getByText("Sale") });
+const discountedProducts = page
+  .getByTestId('product-card')
+  .filter({ has: page.getByText('Sale') });
 
 await expect(discountedProducts).toHaveCount(3);
 ```
@@ -59,15 +61,14 @@ await expect(discountedProducts).toHaveCount(3);
 ```typescript
 // Products that are both in-stock AND discounted
 const availableDeals = page
-  .getByTestId("product-card")
-  .filter({ has: page.getByText("In Stock") })
-  .filter({ has: page.getByTestId("discount-badge") });
+  .getByTestId('product-card')
+  .filter({ has: page.getByText('In Stock') })
+  .filter({ has: page.getByTestId('discount-badge') });
 
 await availableDeals.first().click();
 ```
 
 **Benefits:**
-
 - Each step is readable and debuggable
 - Survives partial DOM changes
 - Self-documenting test intent

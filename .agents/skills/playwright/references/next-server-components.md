@@ -26,15 +26,15 @@ test('renders user profile', () => {
 
 ```typescript
 // tests/user-profile.spec.ts
-test("server component renders user data", async ({ page }) => {
-  await page.goto("/user/123");
+test('server component renders user data', async ({ page }) => {
+  await page.goto('/user/123');
 
   // RSC has rendered and streamed to client
-  await expect(page.getByTestId("user-name")).toHaveText("John Doe");
-  await expect(page.getByTestId("user-email")).toHaveText("john@example.com");
+  await expect(page.getByTestId('user-name')).toHaveText('John Doe');
+  await expect(page.getByTestId('user-email')).toHaveText('john@example.com');
 
   // Server-fetched data is present
-  await expect(page.getByTestId("user-posts")).toHaveCount(5);
+  await expect(page.getByTestId('user-posts')).toHaveCount(5);
 });
 ```
 
@@ -45,47 +45,47 @@ test("server component renders user data", async ({ page }) => {
 // This intercepts server-side fetch calls
 
 // tests/user-profile.spec.ts
-import { setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 
-test("RSC with mocked data", async ({ page }) => {
+test('RSC with mocked data', async ({ page }) => {
   // Playwright can't mock RSC's server-side fetches directly
   // Instead, mock at the API level
 
-  await page.route("/api/user/*", async (route) => {
+  await page.route('/api/user/*', async (route) => {
     await route.fulfill({
       body: JSON.stringify({
-        id: "123",
-        name: "Test User",
-        email: "test@example.com",
+        id: '123',
+        name: 'Test User',
+        email: 'test@example.com',
       }),
     });
   });
 
-  await page.goto("/user/123");
+  await page.goto('/user/123');
 
-  await expect(page.getByTestId("user-name")).toHaveText("Test User");
+  await expect(page.getByTestId('user-name')).toHaveText('Test User');
 });
 ```
 
 **Test Suspense boundaries:**
 
 ```typescript
-test("shows loading state then content", async ({ page }) => {
+test('shows loading state then content', async ({ page }) => {
   // Slow down API to see loading state
-  await page.route("/api/slow-data", async (route) => {
+  await page.route('/api/slow-data', async (route) => {
     await new Promise((r) => setTimeout(r, 2000));
-    await route.fulfill({ body: JSON.stringify({ data: "loaded" }) });
+    await route.fulfill({ body: JSON.stringify({ data: 'loaded' }) });
   });
 
-  await page.goto("/dashboard");
+  await page.goto('/dashboard');
 
   // Suspense fallback should show first
-  await expect(page.getByTestId("loading-skeleton")).toBeVisible();
+  await expect(page.getByTestId('loading-skeleton')).toBeVisible();
 
   // Then real content streams in
-  await expect(page.getByTestId("dashboard-content")).toBeVisible();
-  await expect(page.getByTestId("loading-skeleton")).toBeHidden();
+  await expect(page.getByTestId('dashboard-content')).toBeVisible();
+  await expect(page.getByTestId('loading-skeleton')).toBeHidden();
 });
 ```
 

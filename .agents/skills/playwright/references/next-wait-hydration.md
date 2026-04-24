@@ -12,12 +12,12 @@ Next.js renders HTML on the server, then hydrates it with JavaScript. Interactin
 **Incorrect (interact before hydration):**
 
 ```typescript
-test("submit form", async ({ page }) => {
-  await page.goto("/contact");
+test('submit form', async ({ page }) => {
+  await page.goto('/contact');
 
   // May interact with server-rendered HTML before JS loads
   // Button might not have click handler attached yet
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByRole('button', { name: 'Submit' }).click();
 
   // Nothing happens - JS wasn't ready
 });
@@ -26,18 +26,18 @@ test("submit form", async ({ page }) => {
 **Correct (wait for hydration indicators):**
 
 ```typescript
-test("submit form", async ({ page }) => {
-  await page.goto("/contact");
+test('submit form', async ({ page }) => {
+  await page.goto('/contact');
 
   // Wait for hydration - JavaScript has loaded and attached handlers
   // Option 1: Wait for client-only element to appear
-  await expect(page.getByTestId("hydration-complete")).toBeVisible();
+  await expect(page.getByTestId('hydration-complete')).toBeVisible();
 
   // Option 2: Wait for interactive element state
-  await expect(page.getByRole("button", { name: "Submit" })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
 
   // Now safe to interact
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByRole('button', { name: 'Submit' }).click();
 });
 ```
 
@@ -45,9 +45,9 @@ test("submit form", async ({ page }) => {
 
 ```tsx
 // components/HydrationMarker.tsx
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export function HydrationMarker() {
   const [hydrated, setHydrated] = useState(false);
@@ -58,7 +58,7 @@ export function HydrationMarker() {
 
   if (!hydrated) return null;
 
-  return <div data-testid="hydration-complete" style={{ display: "none" }} />;
+  return <div data-testid="hydration-complete" style={{ display: 'none' }} />;
 }
 
 // app/layout.tsx
@@ -77,29 +77,29 @@ export default function RootLayout({ children }) {
 **Wait for specific interactive behavior:**
 
 ```typescript
-test("interactive dropdown works", async ({ page }) => {
-  await page.goto("/settings");
+test('interactive dropdown works', async ({ page }) => {
+  await page.goto('/settings');
 
-  const dropdown = page.getByRole("combobox", { name: "Language" });
+  const dropdown = page.getByRole('combobox', { name: 'Language' });
 
   // Wait for dropdown to be interactive (hydrated)
-  await dropdown.waitFor({ state: "visible" });
+  await dropdown.waitFor({ state: 'visible' });
 
   // Verify it responds to click (JS attached)
   await dropdown.click();
-  await expect(page.getByRole("option", { name: "English" })).toBeVisible();
+  await expect(page.getByRole('option', { name: 'English' })).toBeVisible();
 });
 ```
 
 **Alternative: networkidle for full hydration:**
 
 ```typescript
-test("fully hydrated page", async ({ page }) => {
+test('fully hydrated page', async ({ page }) => {
   // networkidle waits for all JS to load and execute
-  await page.goto("/dashboard", { waitUntil: "networkidle" });
+  await page.goto('/dashboard', { waitUntil: 'networkidle' });
 
   // Page is fully hydrated
-  await page.getByRole("button", { name: "Action" }).click();
+  await page.getByRole('button', { name: 'Action' }).click();
 });
 ```
 

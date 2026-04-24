@@ -13,27 +13,27 @@ Logging in for every test wastes time. Playwright can save and reuse authenticat
 
 ```typescript
 // tests/dashboard.spec.ts
-test("view user stats", async ({ page }) => {
+test('view user stats', async ({ page }) => {
   // Login repeated in every single test
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("user@example.com");
-  await page.getByLabel("Password").fill("password123");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await page.waitForURL("/dashboard");
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@example.com');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.waitForURL('/dashboard');
 
-  await expect(page.getByTestId("stats")).toBeVisible();
+  await expect(page.getByTestId('stats')).toBeVisible();
 });
 
-test("view notifications", async ({ page }) => {
+test('view notifications', async ({ page }) => {
   // Same login code repeated
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("user@example.com");
-  await page.getByLabel("Password").fill("password123");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await page.waitForURL("/dashboard");
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@example.com');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.waitForURL('/dashboard');
 
-  await page.goto("/notifications");
-  await expect(page.getByTestId("notification-list")).toBeVisible();
+  await page.goto('/notifications');
+  await expect(page.getByTestId('notification-list')).toBeVisible();
 });
 ```
 
@@ -41,16 +41,16 @@ test("view notifications", async ({ page }) => {
 
 ```typescript
 // auth.setup.ts
-import { test as setup, expect } from "@playwright/test";
+import { test as setup, expect } from '@playwright/test';
 
-const authFile = "playwright/.auth/user.json";
+const authFile = 'playwright/.auth/user.json';
 
-setup("authenticate", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("user@example.com");
-  await page.getByLabel("Password").fill("password123");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await page.waitForURL("/dashboard");
+setup('authenticate', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@example.com');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.waitForURL('/dashboard');
 
   // Save authentication state
   await page.context().storageState({ path: authFile });
@@ -60,30 +60,30 @@ setup("authenticate", async ({ page }) => {
 export default defineConfig({
   projects: [
     // Setup project runs first
-    { name: "setup", testMatch: /.*\.setup\.ts/ },
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
 
     // Tests use saved auth state
     {
-      name: "chromium",
+      name: 'chromium',
       use: {
-        ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/user.json",
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
       },
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
   ],
 });
 
 // tests/dashboard.spec.ts
-test("view user stats", async ({ page }) => {
+test('view user stats', async ({ page }) => {
   // Already logged in via storage state!
-  await page.goto("/dashboard");
-  await expect(page.getByTestId("stats")).toBeVisible();
+  await page.goto('/dashboard');
+  await expect(page.getByTestId('stats')).toBeVisible();
 });
 
-test("view notifications", async ({ page }) => {
-  await page.goto("/notifications");
-  await expect(page.getByTestId("notification-list")).toBeVisible();
+test('view notifications', async ({ page }) => {
+  await page.goto('/notifications');
+  await expect(page.getByTestId('notification-list')).toBeVisible();
 });
 ```
 

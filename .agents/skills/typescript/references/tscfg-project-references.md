@@ -66,7 +66,9 @@ my-app/
     "declaration": true,
     "outDir": "dist"
   },
-  "references": [{ "path": "../shared" }],
+  "references": [
+    { "path": "../shared" }
+  ],
   "include": ["src/**/*"]
 }
 ```
@@ -88,7 +90,6 @@ tsc --build  # Builds only changed projects
 ```
 
 **Benefits:**
-
 - Parallel compilation of independent projects
 - Change in `shared/` only rebuilds dependents
 - Declaration files used as API boundaries

@@ -13,8 +13,8 @@ XPath selectors require full DOM traversal and are significantly slower than CSS
 
 ```typescript
 // tests/table.spec.ts
-test("edit user in table", async ({ page }) => {
-  await page.goto("/admin/users");
+test('edit user in table', async ({ page }) => {
+  await page.goto('/admin/users');
 
   // Slow: full DOM traversal
   await page.locator('//table//tr[contains(.,"john@example.com")]//button[text()="Edit"]').click();
@@ -31,15 +31,15 @@ test("edit user in table", async ({ page }) => {
 
 ```typescript
 // tests/table.spec.ts
-test("edit user in table", async ({ page }) => {
-  await page.goto("/admin/users");
+test('edit user in table', async ({ page }) => {
+  await page.goto('/admin/users');
 
   // Find row by content, then action button
-  const userRow = page.getByRole("row", { name: /john@example.com/ });
-  await userRow.getByRole("button", { name: "Edit" }).click();
+  const userRow = page.getByRole('row', { name: /john@example.com/ });
+  await userRow.getByRole('button', { name: 'Edit' }).click();
 
   // Or use data-testid for complex tables
-  await page.getByTestId("user-row-john").getByRole("button", { name: "Edit" }).click();
+  await page.getByTestId('user-row-john').getByRole('button', { name: 'Edit' }).click();
 });
 ```
 
@@ -47,27 +47,27 @@ test("edit user in table", async ({ page }) => {
 
 ```typescript
 // Filter locators instead of XPath
-const activeUsers = page.getByRole("row").filter({
-  has: page.getByText("Active"),
+const activeUsers = page.getByRole('row').filter({
+  has: page.getByText('Active'),
 });
-await activeUsers.first().getByRole("button", { name: "Edit" }).click();
+await activeUsers.first().getByRole('button', { name: 'Edit' }).click();
 
 // Chain locators for specificity
 await page
-  .getByRole("table", { name: "Users" })
-  .getByRole("row")
-  .filter({ hasText: "john@example.com" })
-  .getByRole("button", { name: "Edit" })
+  .getByRole('table', { name: 'Users' })
+  .getByRole('row')
+  .filter({ hasText: 'john@example.com' })
+  .getByRole('button', { name: 'Edit' })
   .click();
 ```
 
 **Performance comparison:**
 
 | Selector Type | Relative Speed |
-| ------------- | -------------- |
-| getByRole     | 1× (fastest)   |
-| getByTestId   | 1.1×           |
-| CSS           | 1.2×           |
-| XPath         | 3-5× (slowest) |
+|--------------|----------------|
+| getByRole | 1× (fastest) |
+| getByTestId | 1.1× |
+| CSS | 1.2× |
+| XPath | 3-5× (slowest) |
 
 Reference: [Playwright Locator Best Practices](https://playwright.dev/docs/best-practices#use-locators)

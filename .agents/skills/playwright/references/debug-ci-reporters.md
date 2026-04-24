@@ -33,13 +33,13 @@ export default defineConfig({
 export default defineConfig({
   reporter: process.env.CI
     ? [
-        ["github"], // GitHub Actions annotations
-        ["junit", { outputFile: "test-results/junit.xml" }], // CI systems
-        ["html", { open: "never" }], // Detailed HTML report
+        ['github'], // GitHub Actions annotations
+        ['junit', { outputFile: 'test-results/junit.xml' }], // CI systems
+        ['html', { open: 'never' }], // Detailed HTML report
       ]
     : [
-        ["list"], // Console output
-        ["html", { open: "on-failure" }], // Open HTML on failure
+        ['list'], // Console output
+        ['html', { open: 'on-failure' }], // Open HTML on failure
       ],
 });
 

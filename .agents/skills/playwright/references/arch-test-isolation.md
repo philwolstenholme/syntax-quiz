@@ -17,22 +17,22 @@ export default defineConfig({
   use: {
     // Reusing context causes state leakage
     launchOptions: {
-      args: ["--disable-web-security"],
+      args: ['--disable-web-security'],
     },
   },
 });
 
 // tests/checkout.spec.ts
-test("add to cart", async ({ page }) => {
-  await page.goto("/product/1");
-  await page.getByRole("button", { name: "Add to Cart" }).click();
+test('add to cart', async ({ page }) => {
+  await page.goto('/product/1');
+  await page.getByRole('button', { name: 'Add to Cart' }).click();
   // Cart state persists to next test!
 });
 
-test("checkout empty cart", async ({ page }) => {
-  await page.goto("/checkout");
+test('checkout empty cart', async ({ page }) => {
+  await page.goto('/checkout');
   // Fails because cart has items from previous test
-  await expect(page.getByText("Your cart is empty")).toBeVisible();
+  await expect(page.getByText('Your cart is empty')).toBeVisible();
 });
 ```
 
@@ -40,21 +40,20 @@ test("checkout empty cart", async ({ page }) => {
 
 ```typescript
 // tests/checkout.spec.ts
-test("add to cart", async ({ page }) => {
-  await page.goto("/product/1");
-  await page.getByRole("button", { name: "Add to Cart" }).click();
-  await expect(page.getByTestId("cart-count")).toHaveText("1");
+test('add to cart', async ({ page }) => {
+  await page.goto('/product/1');
+  await page.getByRole('button', { name: 'Add to Cart' }).click();
+  await expect(page.getByTestId('cart-count')).toHaveText('1');
 });
 
-test("checkout empty cart", async ({ page }) => {
+test('checkout empty cart', async ({ page }) => {
   // Fresh context - no cart items from previous test
-  await page.goto("/checkout");
-  await expect(page.getByText("Your cart is empty")).toBeVisible();
+  await page.goto('/checkout');
+  await expect(page.getByText('Your cart is empty')).toBeVisible();
 });
 ```
 
 **Benefits:**
-
 - Tests can run in any order
 - Failures are isolated and easier to debug
 - Parallel execution becomes safe

@@ -31,7 +31,7 @@ export default defineConfig({
 export default defineConfig({
   use: {
     // Capture trace only when test fails or retries
-    trace: "on-first-retry",
+    trace: 'on-first-retry',
 
     // Alternative options:
     // trace: 'on' - Always capture (large files)

@@ -28,7 +28,6 @@ Faster animations don't just complete quicker—they make your entire interface 
 ```
 
 **The Speed Principle:**
-
 - Animations improve perceived performance when fast
 - Animations degrade perceived performance when slow
 - When in doubt, make it faster

@@ -25,9 +25,7 @@ Opacity changes don't affect perceived position, size, or shape—they're safe f
 
 ```css
 .sidebar {
-  transition:
-    transform 300ms ease-out,
-    opacity 300ms ease-out;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19,9 +19,9 @@ export default defineConfig({
 });
 
 // tests/heavy-page.spec.ts
-test("loads data visualization", async ({ page }) => {
-  await page.goto("/analytics"); // Times out on slow networks
-  await expect(page.getByTestId("chart")).toBeVisible(); // Times out waiting for data
+test('loads data visualization', async ({ page }) => {
+  await page.goto('/analytics'); // Times out on slow networks
+  await expect(page.getByTestId('chart')).toBeVisible(); // Times out waiting for data
 });
 ```
 
@@ -50,14 +50,14 @@ export default defineConfig({
 
 ```typescript
 // For a single slow test
-test("generates large report", async ({ page }) => {
+test('generates large report', async ({ page }) => {
   test.setTimeout(120000); // 2 minutes for this test only
 
-  await page.goto("/reports/generate");
-  await page.getByRole("button", { name: "Generate Full Report" }).click();
+  await page.goto('/reports/generate');
+  await page.getByRole('button', { name: 'Generate Full Report' }).click();
 
   // This assertion gets extra time
-  await expect(page.getByText("Report ready")).toBeVisible({
+  await expect(page.getByText('Report ready')).toBeVisible({
     timeout: 60000,
   });
 });
@@ -84,13 +84,13 @@ export default defineConfig({
 
 ```typescript
 // Add test info to understand where time is spent
-test("slow page investigation", async ({ page }) => {
+test('slow page investigation', async ({ page }) => {
   const start = Date.now();
 
-  await page.goto("/dashboard");
+  await page.goto('/dashboard');
   console.log(`Navigation: ${Date.now() - start}ms`);
 
-  await expect(page.getByTestId("content")).toBeVisible();
+  await expect(page.getByTestId('content')).toBeVisible();
   console.log(`Content visible: ${Date.now() - start}ms`);
 });
 ```

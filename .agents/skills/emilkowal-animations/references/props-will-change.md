@@ -30,4 +30,4 @@ If you notice a 1px shift at the end of your animation, use `will-change: transf
 
 **Caution:** Don't overuse `will-change`—it consumes memory. Only apply to elements that will animate frequently.
 
-Reference: [@emilkowalski\_](https://x.com/emilkowalski_/status/1981352193262256182)
+Reference: [@emilkowalski_](https://x.com/emilkowalski_/status/1981352193262256182)

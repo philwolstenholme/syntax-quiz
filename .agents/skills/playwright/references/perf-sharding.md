@@ -88,18 +88,18 @@ jobs:
 // playwright.config.ts
 export default defineConfig({
   reporter: process.env.CI
-    ? [["blob"], ["github"]] // Blob for merging, GitHub for annotations
-    : [["html", { open: "never" }]],
+    ? [['blob'], ['github']] // Blob for merging, GitHub for annotations
+    : [['html', { open: 'never' }]],
 });
 ```
 
 **Optimal shard count:**
 
 | Test Count | Recommended Shards |
-| ---------- | ------------------ |
-| < 50       | 1 (no sharding)    |
-| 50-200     | 2-4                |
-| 200-500    | 4-8                |
-| 500+       | 8-16               |
+|------------|-------------------|
+| < 50 | 1 (no sharding) |
+| 50-200 | 2-4 |
+| 200-500 | 4-8 |
+| 500+ | 8-16 |
 
 Reference: [Playwright Sharding](https://playwright.dev/docs/test-sharding)

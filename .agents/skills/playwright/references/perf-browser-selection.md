@@ -15,11 +15,11 @@ Testing all browsers on every commit is slow. Run quick Chromium tests on PRs, f
 // playwright.config.ts
 export default defineConfig({
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
-    { name: "mobile-chrome", use: { ...devices["Pixel 5"] } },
-    { name: "mobile-safari", use: { ...devices["iPhone 12"] } },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'mobile-chrome', use: { ...devices['Pixel 5'] } },
+    { name: 'mobile-safari', use: { ...devices['iPhone 12'] } },
   ],
   // All 5 browsers run on every commit - 5× the time
 });
@@ -30,18 +30,18 @@ export default defineConfig({
 ```typescript
 // playwright.config.ts
 const isCI = process.env.CI;
-const isMainBranch = process.env.GITHUB_REF === "refs/heads/main";
+const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main';
 
 export default defineConfig({
   projects: [
     // Always run Chromium - fastest feedback
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 
     // Cross-browser only on main or scheduled
     ...(isMainBranch || process.env.FULL_TEST
       ? [
-          { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-          { name: "webkit", use: { ...devices["Desktop Safari"] } },
+          { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+          { name: 'webkit', use: { ...devices['Desktop Safari'] } },
         ]
       : []),
   ],
@@ -59,7 +59,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "0 0 * * *" # Nightly
+    - cron: '0 0 * * *' # Nightly
 
 jobs:
   test-quick:
@@ -96,10 +96,10 @@ npx playwright test --project=firefox
 
 **Speed comparison:**
 
-| Strategy           | Time | Coverage      |
-| ------------------ | ---- | ------------- |
-| Chromium only      | 1×   | 70% of issues |
-| Chromium + Firefox | 2×   | 90% of issues |
-| All 5 browsers     | 5×   | 99% of issues |
+| Strategy | Time | Coverage |
+|----------|------|----------|
+| Chromium only | 1× | 70% of issues |
+| Chromium + Firefox | 2× | 90% of issues |
+| All 5 browsers | 5× | 99% of issues |
 
 Reference: [Playwright Projects](https://playwright.dev/docs/test-projects)

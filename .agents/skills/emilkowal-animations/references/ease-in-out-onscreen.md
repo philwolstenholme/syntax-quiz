@@ -28,7 +28,6 @@ For elements already visible that move from one position to another, ease-in-out
 ```
 
 **When to use ease-in-out:**
-
 - Carousel slides
 - Tab indicator movement
 - Drag-and-drop repositioning

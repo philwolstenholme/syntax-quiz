@@ -32,28 +32,27 @@ export default defineConfig({
 });
 
 // tests/dashboard.spec.ts
-import { test } from "@playwright/test";
+import { test } from '@playwright/test';
 
-test.describe.configure({ mode: "parallel" });
+test.describe.configure({ mode: 'parallel' });
 
-test("loads user stats", async ({ page }) => {
-  await page.goto("/dashboard/stats");
-  await expect(page.getByTestId("stats-panel")).toBeVisible();
+test('loads user stats', async ({ page }) => {
+  await page.goto('/dashboard/stats');
+  await expect(page.getByTestId('stats-panel')).toBeVisible();
 });
 
-test("loads notifications", async ({ page }) => {
-  await page.goto("/dashboard/notifications");
-  await expect(page.getByTestId("notification-list")).toBeVisible();
+test('loads notifications', async ({ page }) => {
+  await page.goto('/dashboard/notifications');
+  await expect(page.getByTestId('notification-list')).toBeVisible();
 });
 
-test("loads settings", async ({ page }) => {
-  await page.goto("/dashboard/settings");
-  await expect(page.getByTestId("settings-form")).toBeVisible();
+test('loads settings', async ({ page }) => {
+  await page.goto('/dashboard/settings');
+  await expect(page.getByTestId('settings-form')).toBeVisible();
 });
 ```
 
 **When NOT to use parallel execution:**
-
 - Tests that modify shared database state
 - Tests that use the same external service account
 - Tests with intentional sequential dependencies

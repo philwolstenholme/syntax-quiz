@@ -100,10 +100,11 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const [glowData, setGlowData] = useState<GlowData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [mountAnimDone, setMountAnimDone] = useState(false);
-
-  useLayoutEffect(() => {
+  const [prevCode, setPrevCode] = useState(question.code);
+  if (prevCode !== question.code) {
+    setPrevCode(question.code);
     setMountAnimDone(false);
-  }, [question.code]);
+  }
 
   const tokenMap = resolvedTheme === "dark" ? darkTokenMap : lightTokenMap;
   const tokenLines = useMemo(() => tokenMap[code] ?? [], [tokenMap, code]);

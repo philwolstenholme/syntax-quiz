@@ -26,7 +26,7 @@ export const playKeycapSound = (): void => {
   ensureInit();
   tiks.click();
 };
-export const playPopSound = (): void => {
+const playPopSound = (): void => {
   ensureInit();
   tiks.pop();
 };

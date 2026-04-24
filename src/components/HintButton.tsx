@@ -38,6 +38,7 @@ export const HintButton = ({ hint, hintsUsed, onUseHint, disabled }: HintButtonP
         <SubtleButton
           onClick={onUseHint}
           disabled={disabled}
+          data-sound="pop"
         >
           <Lightbulb size={16} aria-hidden="true" />
           {showEliminate ? 'Eliminate 2 answers (−50% points)' : 'Show hint (−50% points)'}

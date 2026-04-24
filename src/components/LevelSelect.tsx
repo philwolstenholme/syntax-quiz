@@ -1,12 +1,12 @@
-import { useRef } from 'react';
-import { Code2, ChevronRight } from 'lucide-react';
-import { Link } from 'wouter';
-import clsx from 'clsx';
-import { levels } from '../data/questions';
-import { PageLayout } from './PageLayout';
-import { ROUTES } from '../routes';
-import { formatNumber } from '../utils/format';
-import { CRTBackground } from './CRTBackground';
+import { useRef } from "react";
+import { Code2, ChevronRight } from "lucide-react";
+import { Link } from "wouter";
+import clsx from "clsx";
+import { levels } from "../data/questions";
+import { PageLayout } from "./PageLayout";
+import { ROUTES } from "../routes";
+import { formatNumber } from "../utils/format";
+import { CRTBackground } from "./CRTBackground";
 
 export const LevelSelect = () => {
   const topRef = useRef<HTMLDivElement>(null);
@@ -20,9 +20,14 @@ export const LevelSelect = () => {
         <div ref={topRef} className="mb-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
-              <Code2 className="w-4 h-4 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+              <Code2
+                className="w-4 h-4 text-neutral-500 dark:text-neutral-400"
+                aria-hidden="true"
+              />
             </div>
-            <span className="text-sm text-neutral-500 dark:text-neutral-400 font-mono">syntax-quiz</span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400 font-mono">
+              syntax-quiz
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
             Syntax Quiz
@@ -39,11 +44,11 @@ export const LevelSelect = () => {
               to={ROUTES.questions(level.id)}
               ref={index === lastIndex ? bottomRef : undefined}
               className={clsx(
-                'group flex items-center justify-between gap-4 py-4 px-1 rounded-md',
-                'transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]',
-                'touch-manipulation',
-                index < levels.length - 1 && 'border-b border-neutral-200 dark:border-neutral-800',
+                "group flex items-center justify-between gap-4 py-4 px-1 rounded-md",
+                "transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900/50",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]",
+                "touch-manipulation",
+                index < levels.length - 1 && "border-b border-neutral-200 dark:border-neutral-800",
               )}
             >
               <div className="flex items-center gap-4 min-w-0">
@@ -68,7 +73,10 @@ export const LevelSelect = () => {
                 <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono tabular-nums">
                   {formatNumber(level.questions.length)}
                 </span>
-                <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-[color,transform] duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                <ChevronRight
+                  className="w-4 h-4 text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 transition-[color,transform] duration-150 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
               </div>
             </Link>
           ))}

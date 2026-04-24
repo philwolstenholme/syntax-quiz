@@ -1,16 +1,16 @@
-import { Monitor, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
-import { useTheme } from '../context/useTheme';
-import { useMute } from '../hooks/useMute';
-import type { ThemePreference } from '../context/themeContextValue';
+import { Monitor, Sun, Moon, Volume2, VolumeX } from "lucide-react";
+import { useTheme } from "../context/useTheme";
+import { useMute } from "../hooks/useMute";
+import type { ThemePreference } from "../context/themeContextValue";
 
 const themeOptions: { value: ThemePreference; icon: typeof Sun; label: string }[] = [
-  { value: 'system', icon: Monitor, label: 'System theme' },
-  { value: 'light', icon: Sun, label: 'Light theme' },
-  { value: 'dark', icon: Moon, label: 'Dark theme' },
+  { value: "system", icon: Monitor, label: "System theme" },
+  { value: "light", icon: Sun, label: "Light theme" },
+  { value: "dark", icon: Moon, label: "Dark theme" },
 ];
 
 const btnBase =
-  'flex h-7 w-7 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]';
+  "flex h-7 w-7 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]";
 const btnActive = `${btnBase} bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100`;
 const btnInactive = `${btnBase} text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300`;
 
@@ -42,11 +42,15 @@ export const ThemeToggle = () => {
       <button
         type="button"
         onClick={toggleMute}
-        aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
+        aria-label={muted ? "Unmute sounds" : "Mute sounds"}
         aria-pressed={muted}
         className={muted ? btnActive : btnInactive}
       >
-        {muted ? <VolumeX size={14} aria-hidden="true" /> : <Volume2 size={14} aria-hidden="true" />}
+        {muted ? (
+          <VolumeX size={14} aria-hidden="true" />
+        ) : (
+          <Volume2 size={14} aria-hidden="true" />
+        )}
       </button>
     </div>
   );

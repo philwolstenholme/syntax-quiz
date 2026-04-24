@@ -1,11 +1,11 @@
-import { useMemo, useRef, useLayoutEffect, useEffect, useState } from 'react';
-import { useDroppable } from '@dnd-kit/core';
-import clsx from 'clsx';
-import type { Question } from '../data/questions';
-import { darkTokenMap, lightTokenMap } from 'virtual:tokens';
-import { useTheme } from '../context/useTheme';
-import { GlowEffect, type GlowData } from './GlowEffect';
-import { WebGLNoise } from './WebGLNoise';
+import { useMemo, useRef, useLayoutEffect, useEffect, useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
+import clsx from "clsx";
+import type { Question } from "../data/questions";
+import { darkTokenMap, lightTokenMap } from "virtual:tokens";
+import { useTheme } from "../context/useTheme";
+import { GlowEffect, type GlowData } from "./GlowEffect";
+import { WebGLNoise } from "./WebGLNoise";
 
 interface QuestionCardProps {
   question: Question;
@@ -30,8 +30,16 @@ const TokenizedCode = ({
       const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
       const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
       elements.push(
-        <span key={key++} data-hl={inHighlight ? 'true' : undefined} className={inHighlight ? 'bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200' : undefined}>
-          {'\n'}
+        <span
+          key={key++}
+          data-hl={inHighlight ? "true" : undefined}
+          className={
+            inHighlight
+              ? "bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"
+              : undefined
+          }
+        >
+          {"\n"}
         </span>,
       );
     }
@@ -60,7 +68,11 @@ const TokenizedCode = ({
       const hlStart = Math.max(0, hlRange.start - tokenStart);
       const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
       elements.push(
-        <span key={key++} data-hl="true" className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200">
+        <span
+          key={key++}
+          data-hl="true"
+          className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"
+        >
           {token.content.substring(hlStart, hlEnd)}
         </span>,
       );
@@ -80,7 +92,7 @@ const TokenizedCode = ({
 
 export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
-  const { isOver, setNodeRef: setDropRef } = useDroppable({ id: 'dropzone' });
+  const { isOver, setNodeRef: setDropRef } = useDroppable({ id: "dropzone" });
   const { resolvedTheme } = useTheme();
   // cardRef: the outer card — canvas lives here for room to spread
   const cardRef = useRef<HTMLDivElement>(null);
@@ -88,12 +100,13 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
   const [glowData, setGlowData] = useState<GlowData | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [mountAnimDone, setMountAnimDone] = useState(false);
-
-  useLayoutEffect(() => {
+  const [prevCode, setPrevCode] = useState(question.code);
+  if (prevCode !== question.code) {
+    setPrevCode(question.code);
     setMountAnimDone(false);
-  }, [question.code]);
+  }
 
-  const tokenMap = resolvedTheme === 'dark' ? darkTokenMap : lightTokenMap;
+  const tokenMap = resolvedTheme === "dark" ? darkTokenMap : lightTokenMap;
   const tokenLines = useMemo(() => tokenMap[code] ?? [], [tokenMap, code]);
 
   const hlRange = useMemo(() => {
@@ -109,13 +122,19 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
 
     const measure = () => {
       const spans = card.querySelectorAll<HTMLElement>('[data-hl="true"]');
-      if (!spans.length) { setGlowData(null); return; }
+      if (!spans.length) {
+        setGlowData(null);
+        return;
+      }
 
       const cardRect = card.getBoundingClientRect();
       // Account for current scroll offset so glow coordinates are always
       // relative to the unscrolled position (scroll sync is handled separately)
       const scrollLeft = preRef.current?.scrollLeft ?? 0;
-      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      let minX = Infinity,
+        minY = Infinity,
+        maxX = -Infinity,
+        maxY = -Infinity;
       spans.forEach((span) => {
         const r = span.getBoundingClientRect();
         minX = Math.min(minX, r.left - cardRect.left + scrollLeft);
@@ -149,17 +168,20 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     if (!pre || !card) return;
 
     const onScroll = () => {
-      card.style.setProperty('--scroll-left', String(pre.scrollLeft));
+      card.style.setProperty("--scroll-left", String(pre.scrollLeft));
     };
 
-    pre.addEventListener('scroll', onScroll, { passive: true });
-    return () => pre.removeEventListener('scroll', onScroll);
+    pre.addEventListener("scroll", onScroll, { passive: true });
+    return () => pre.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <div
       ref={cardRef}
-      onMouseEnter={() => { setIsHovered(true); setMountAnimDone(true); }}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        setMountAnimDone(true);
+      }}
       onMouseLeave={() => setIsHovered(false)}
       className="relative rounded-lg border border-neutral-200 bg-white/80 dark:border-neutral-800 dark:bg-neutral-900/50 p-5 sm:p-6 mb-4"
     >
@@ -171,30 +193,39 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
             mountAnimDone
               ? {
                   opacity: isHovered ? 1 : 0.6,
-                  transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
                 }
               : isHovered
                 ? {
                     opacity: 1,
-                    transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
                   }
                 : {
-                    animation: 'glow-enter-pulse 2s linear forwards',
+                    animation: "glow-enter-pulse 2s linear forwards",
                   }
           }
           onAnimationEnd={(e) => {
-            if (e.animationName === 'glow-enter-pulse') setMountAnimDone(true);
+            if (e.animationName === "glow-enter-pulse") setMountAnimDone(true);
           }}
         >
-          <GlowEffect {...glowData} isDark={resolvedTheme === 'dark'} />
-          <WebGLNoise {...glowData} isDark={resolvedTheme === 'dark'} isHovered={isHovered} scrollElRef={preRef} />
+          <GlowEffect {...glowData} isDark={resolvedTheme === "dark"} />
+          <WebGLNoise
+            {...glowData}
+            isDark={resolvedTheme === "dark"}
+            isHovered={isHovered}
+            scrollElRef={preRef}
+          />
         </div>
       )}
       <h2 className="relative text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2">
         {question.question}
       </h2>
-      <p id="question-instructions" className="relative text-neutral-500 dark:text-neutral-400 mb-4 text-sm">
-        Focus on the highlighted part of the code. Drag an answer onto the code, tap an answer, or use the keyboard number shortcuts.
+      <p
+        id="question-instructions"
+        className="relative text-neutral-500 dark:text-neutral-400 mb-4 text-sm"
+      >
+        Focus on the highlighted part of the code. Drag an answer onto the code, tap an answer, or
+        use the keyboard number shortcuts.
       </p>
       <div
         ref={setDropRef}
@@ -203,8 +234,8 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
         aria-label="Code snippet — drop an answer here"
         aria-describedby="question-instructions"
         className={clsx(
-          'relative rounded-md overflow-hidden transition-all duration-150',
-          isOver && 'ring-1 ring-blue-500',
+          "relative rounded-md overflow-hidden transition-all duration-150",
+          isOver && "ring-1 ring-blue-500",
         )}
       >
         {isOver && (
@@ -214,14 +245,19 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
             </span>
           </div>
         )}
-        <pre ref={preRef} className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed">
-          <span className={clsx(
-            'block transition-transform duration-150 ease-out origin-center',
-            isOver && 'scale-[98%]'
-          )}>
+        <pre
+          ref={preRef}
+          className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-md overflow-x-auto text-base leading-relaxed"
+        >
+          <span
+            className={clsx(
+              "block transition-transform duration-150 ease-out origin-center",
+              isOver && "scale-[98%]",
+            )}
+          >
             <code className="font-mono text-neutral-700 dark:text-neutral-300">
-            <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
-          </code>
+              <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
+            </code>
           </span>
         </pre>
       </div>

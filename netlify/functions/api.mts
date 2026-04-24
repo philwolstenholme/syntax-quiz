@@ -1,78 +1,81 @@
-import { OpenAPIHandler } from '@orpc/openapi/fetch'
-import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins'
-import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod/zod4'
-import { Hono } from 'hono'
-import { serialize } from 'hono/utils/cookie'
-import { levelsRoute } from './api/levels.mjs'
-import { COOKIE_OPTIONS, GAME_STATE_COOKIE, playRoute } from './api/play.mjs'
-import { questionsRoute } from './api/questions.mjs'
+import { OpenAPIHandler } from "@orpc/openapi/fetch";
+import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
+import { experimental_ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
+import { Hono } from "hono";
+import { serialize } from "hono/utils/cookie";
+import { levelsRoute } from "./api/levels.mjs";
+import { COOKIE_OPTIONS, GAME_STATE_COOKIE, playRoute } from "./api/play.mjs";
+import { questionsRoute } from "./api/questions.mjs";
 
 const router = {
   levels: levelsRoute,
   questions: questionsRoute,
   play: playRoute,
-}
+};
 
 const openAPIHandler = new OpenAPIHandler(router, {
   plugins: [
     new experimental_ZodSmartCoercionPlugin(),
     new OpenAPIReferencePlugin({
-      docsProvider: 'scalar',
+      docsProvider: "scalar",
       schemaConverters: [new ZodToJsonSchemaConverter()],
       specGenerateOptions: {
         info: {
-          title: 'Syntax Quiz API',
-          version: '1.0.0',
-          description: 'Retrieve quiz questions and levels for the Syntax Quiz game',
+          title: "Syntax Quiz API",
+          version: "1.0.0",
+          description: "Retrieve quiz questions and levels for the Syntax Quiz game",
         },
-        servers: [{ url: '/api' }],
+        servers: [{ url: "/api" }],
       },
     }),
   ],
-})
+});
 
-const app = new Hono()
+const app = new Hono();
 
 // Durable CDN cache: survives deploy-time purges and serves stale while revalidating,
 // so users never wait for a cold function invocation after a deploy.
-app.use('/*', async (c, next) => {
-  await next()
-  if (c.req.method === 'GET') {
-    c.res.headers.set('Cache-Control', 'no-store')
+app.use("/*", async (c, next) => {
+  await next();
+  if (c.req.method === "GET") {
+    c.res.headers.set("Cache-Control", "no-store");
     c.res.headers.set(
-      'Netlify-CDN-Cache-Control',
-      'public, durable, s-maxage=31536000, stale-while-revalidate=31536000',
-    )
+      "Netlify-CDN-Cache-Control",
+      "public, durable, s-maxage=31536000, stale-while-revalidate=31536000",
+    );
   }
-})
+});
 
-app.all('/*', async (c) => {
+app.all("/*", async (c) => {
   const { matched, response } = await openAPIHandler.handle(c.req.raw, {
-    prefix: '/api',
+    prefix: "/api",
     context: { request: c.req.raw },
-  })
+  });
 
-  if (!matched) return c.notFound()
+  if (!matched) return c.notFound();
 
   // Set the gameState cookie on play endpoint responses
-  const url = new URL(c.req.url)
-  if (c.req.method === 'POST' && url.pathname.startsWith('/api/play/') && response!.ok) {
+  const url = new URL(c.req.url);
+  if (c.req.method === "POST" && url.pathname.startsWith("/api/play/") && response!.ok) {
     // Read gameState from the response to set the cookie, without full re-serialization
-    const clone = response!.clone()
-    const body = await clone.json() as { gameState?: string }
+    const clone = response!.clone();
+    const body = (await clone.json()) as { gameState?: string };
     const res = new Response(response!.body, {
       status: response!.status,
       headers: new Headers(response!.headers),
-    })
+    });
     if (body.gameState) {
-      res.headers.set('Set-Cookie', serialize(GAME_STATE_COOKIE, body.gameState, COOKIE_OPTIONS))
+      res.headers.set("Set-Cookie", serialize(GAME_STATE_COOKIE, body.gameState, COOKIE_OPTIONS));
     } else {
-      res.headers.set('Set-Cookie', serialize(GAME_STATE_COOKIE, '', { ...COOKIE_OPTIONS, maxAge: 0 }))
+      res.headers.set(
+        "Set-Cookie",
+        serialize(GAME_STATE_COOKIE, "", { ...COOKIE_OPTIONS, maxAge: 0 }),
+      );
     }
-    return res
+    return res;
   }
 
-  return response!
-})
+  return response!;
+});
 
-export default (request: Request) => app.fetch(request)
+export default (request: Request) => app.fetch(request);

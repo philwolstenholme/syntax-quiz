@@ -1,9 +1,9 @@
-import { ChevronRight, Flame, Home, Star } from 'lucide-react';
-import { Link } from 'wouter';
-import type { Level } from '../data/questions';
-import { ROUTES } from '../routes';
-import { formatNumber } from '../utils/format';
-import { SaveModal } from './SaveModal';
+import { ChevronRight, Flame, Home, Star } from "lucide-react";
+import { Link } from "wouter";
+import type { Level } from "../data/questions";
+import { ROUTES } from "../routes";
+import { formatNumber } from "../utils/format";
+import { SaveModal } from "./SaveModal";
 
 const STREAK_MILESTONES = new Set([5, 10, 15, 20, 25]);
 
@@ -17,7 +17,15 @@ interface QuizHeaderProps {
   isAnswering: boolean;
 }
 
-export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions, level, onSave, isAnswering }: QuizHeaderProps) => {
+export const QuizHeader = ({
+  score,
+  streak,
+  currentQuestionIndex,
+  totalQuestions,
+  level,
+  onSave,
+  isAnswering,
+}: QuizHeaderProps) => {
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   return (
@@ -32,26 +40,40 @@ export const QuizHeader = ({ score, streak, currentQuestionIndex, totalQuestions
               <Home size={14} aria-hidden="true" />
               <span className="sr-only">Home</span>
             </Link>
-            <ChevronRight size={12} className="text-neutral-400 dark:text-neutral-600" aria-hidden="true" />
+            <ChevronRight
+              size={12}
+              className="text-neutral-400 dark:text-neutral-600"
+              aria-hidden="true"
+            />
             <span className="flex items-center h-7 text-xs px-1 text-neutral-600 dark:text-neutral-300 font-mono">
               {level.name}
             </span>
           </div>
-          <div data-testid="streak-value" className="flex items-center h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums">
+          <div
+            data-testid="streak-value"
+            className="flex items-center h-7 text-xs px-2 text-orange-500 dark:text-orange-400 font-mono tabular-nums"
+          >
             <span
               key={streak}
               className="flex items-center gap-1"
-              style={STREAK_MILESTONES.has(streak) && streak > 0 ? { animation: 'streak-pulse 0.6s ease-out' } : undefined}
+              style={
+                STREAK_MILESTONES.has(streak) && streak > 0
+                  ? { animation: "streak-pulse 0.6s ease-out" }
+                  : undefined
+              }
             >
               <Flame size={12} aria-hidden="true" />
               {formatNumber(streak)}
             </span>
           </div>
-          <div data-testid="score-value" className="flex items-center h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums">
+          <div
+            data-testid="score-value"
+            className="flex items-center h-7 text-xs px-2 text-blue-500 dark:text-blue-400 font-mono tabular-nums"
+          >
             <span
               key={score}
               className="flex items-center gap-1"
-              style={score > 0 ? { animation: 'score-pop 0.3s ease-out' } : undefined}
+              style={score > 0 ? { animation: "score-pop 0.3s ease-out" } : undefined}
             >
               <Star size={12} aria-hidden="true" />
               {formatNumber(score)}

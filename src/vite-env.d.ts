@@ -6,7 +6,7 @@ interface ShikiToken {
   offset: number;
 }
 
-declare module 'virtual:tokens' {
+declare module "virtual:tokens" {
   const darkTokenMap: Record<string, ShikiToken[][]>;
   const lightTokenMap: Record<string, ShikiToken[][]>;
   export { darkTokenMap, lightTokenMap };

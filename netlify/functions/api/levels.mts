@@ -1,10 +1,10 @@
-import { os } from '@orpc/server'
-import { z } from 'zod'
-import { levelMap } from './data.mjs'
-import { LevelMetaSchema } from './schemas.mjs'
+import { os } from "@orpc/server";
+import { z } from "zod";
+import { levelMap } from "./data.mjs";
+import { LevelMetaSchema } from "./schemas.mjs";
 
 export const levelsRoute = os
-  .route({ method: 'GET', path: '/levels', tags: ['Reference'], summary: 'List all levels' })
+  .route({ method: "GET", path: "/levels", tags: ["Reference"], summary: "List all levels" })
   .output(z.array(LevelMetaSchema))
   .handler(async () =>
     Array.from(levelMap.values(), (l) => ({
@@ -13,5 +13,5 @@ export const levelsRoute = os
       subtitle: l.subtitle,
       description: l.description,
       questionCount: l.questions.length,
-    }))
-  )
+    })),
+  );

@@ -1,5 +1,5 @@
 const vibrate = (pattern: VibratePattern): void => {
-  if ('vibrate' in navigator) {
+  if ("vibrate" in navigator) {
     navigator.vibrate(pattern);
   }
 };

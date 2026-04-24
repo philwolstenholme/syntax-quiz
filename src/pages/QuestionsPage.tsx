@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { m, AnimatePresence, useReducedMotion } from 'motion/react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   DndContext,
   PointerSensor,
@@ -7,19 +7,19 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
-} from '@dnd-kit/core';
-import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
-import { GripVertical, HelpCircle, RotateCcw } from 'lucide-react';
-import { SubtleButton } from '../components/SubtleButton';
-import { PageLayout } from '../components/PageLayout';
-import { QuizHeader } from '../components/QuizHeader';
-import { FeedbackBanner } from '../components/FeedbackBanner';
-import { QuestionCard } from '../components/QuestionCard';
-import { AnswerOptions } from '../components/AnswerOptions';
-import { HintButton } from '../components/HintButton';
-import { FEEDBACK_DELAY_MS } from '../constants';
-import { useQuiz } from '../hooks/useQuiz';
-import { playKeycapSound } from '../utils/sounds';
+} from "@dnd-kit/core";
+import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
+import { GripVertical, HelpCircle, RotateCcw } from "lucide-react";
+import { SubtleButton } from "../components/SubtleButton";
+import { PageLayout } from "../components/PageLayout";
+import { QuizHeader } from "../components/QuizHeader";
+import { FeedbackBanner } from "../components/FeedbackBanner";
+import { QuestionCard } from "../components/QuestionCard";
+import { AnswerOptions } from "../components/AnswerOptions";
+import { HintButton } from "../components/HintButton";
+import { FEEDBACK_DELAY_MS } from "../constants";
+import { useQuiz } from "../hooks/useQuiz";
+import { playKeycapSound } from "../utils/sounds";
 
 export const QuestionsPage = () => {
   const {
@@ -58,21 +58,24 @@ export const QuestionsPage = () => {
   // Keyboard shortcuts: 1-4 to pick an answer, or press the visible option number
   const handleKeyboardAnswerRef = useRef<(e: KeyboardEvent) => void>(() => {});
 
-  const handleKeyboardAnswer = useCallback((e: KeyboardEvent) => {
-    if (isAnswering || !currentQuestion) return;
-    const key = e.key;
-    if (key >= '1' && key <= '4') {
-      const index = parseInt(key, 10) - 1;
-      const visibleOptions = currentQuestion.options.filter(
-        (opt) => !eliminatedOptions.includes(opt),
-      );
-      const selected = visibleOptions[index];
-      if (selected) {
-        playKeycapSound();
-        handleAnswer(selected);
+  const handleKeyboardAnswer = useCallback(
+    (e: KeyboardEvent) => {
+      if (isAnswering || !currentQuestion) return;
+      const key = e.key;
+      if (key >= "1" && key <= "4") {
+        const index = parseInt(key, 10) - 1;
+        const visibleOptions = currentQuestion.options.filter(
+          (opt) => !eliminatedOptions.includes(opt),
+        );
+        const selected = visibleOptions[index];
+        if (selected) {
+          playKeycapSound();
+          handleAnswer(selected);
+        }
       }
-    }
-  }, [isAnswering, currentQuestion, eliminatedOptions, handleAnswer]);
+    },
+    [isAnswering, currentQuestion, eliminatedOptions, handleAnswer],
+  );
 
   useEffect(() => {
     handleKeyboardAnswerRef.current = handleKeyboardAnswer;
@@ -80,29 +83,29 @@ export const QuestionsPage = () => {
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => handleKeyboardAnswerRef.current(e);
-    document.addEventListener('keydown', listener);
-    return () => document.removeEventListener('keydown', listener);
+    document.addEventListener("keydown", listener);
+    return () => document.removeEventListener("keydown", listener);
   }, []);
 
   const handleDragStart = (event: DragStartEvent): void => {
     setActiveId(event.active.id as string);
-    document.body.style.userSelect = 'none';
+    document.body.style.userSelect = "none";
   };
 
   const handleDragEnd = (event: DragEndEvent): void => {
     setActiveId(null);
-    document.body.style.userSelect = '';
+    document.body.style.userSelect = "";
     if (isAnswering) return;
 
     const { active, over } = event;
-    if (over && over.id === 'dropzone' && active.data.current?.answer) {
+    if (over && over.id === "dropzone" && active.data.current?.answer) {
       handleAnswer(active.data.current.answer);
     }
   };
 
   const handleDragCancel = () => {
     setActiveId(null);
-    document.body.style.userSelect = '';
+    document.body.style.userSelect = "";
   };
 
   if (!level || quizComplete || !currentQuestion) {
@@ -122,13 +125,18 @@ export const QuestionsPage = () => {
           {isRetryRound && (
             <div className="flex items-center gap-2 mb-3 px-3 py-2.5 border border-amber-300 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/5 rounded-lg text-amber-700 dark:text-amber-300 text-sm">
               <RotateCcw size={18} aria-hidden="true" />
-              <span>Retry round — reviewing {retryQuestionCount} missed {retryQuestionCount === 1 ? 'question' : 'questions'}</span>
+              <span>
+                Retry round — reviewing {retryQuestionCount} missed{" "}
+                {retryQuestionCount === 1 ? "question" : "questions"}
+              </span>
             </div>
           )}
           <QuizHeader
             score={score}
             streak={streak}
-            currentQuestionIndex={isRetryRound ? currentQuestionIndex : answeredSoFar + currentQuestionIndex}
+            currentQuestionIndex={
+              isRetryRound ? currentQuestionIndex : answeredSoFar + currentQuestionIndex
+            }
             totalQuestions={isRetryRound ? retryQuestionCount : totalLevelQuestions}
             level={level}
             onSave={handleSave}
@@ -138,14 +146,29 @@ export const QuestionsPage = () => {
           <AnimatePresence>
             {lastAnswer && isAnswering && (
               <m.div
-                style={{ clipPath: 'inset(0 -100vw 0 -100vw)' }}
-                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0, marginBottom: 0 }}
-                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', marginBottom: 16 }}
-                exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0, marginBottom: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } }}
+                style={{ clipPath: "inset(0 -100vw 0 -100vw)" }}
+                initial={
+                  prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0, marginBottom: 0 }
+                }
+                animate={
+                  prefersReducedMotion
+                    ? { opacity: 1 }
+                    : { opacity: 1, height: "auto", marginBottom: 16 }
+                }
+                exit={
+                  prefersReducedMotion
+                    ? { opacity: 1 }
+                    : {
+                        opacity: 0,
+                        height: 0,
+                        marginBottom: 0,
+                        transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+                      }
+                }
                 transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: [0, 0, 0.2, 1] }}
               >
                 <FeedbackBanner
-                  key={`${isRetryRound ? 'retry' : 'main'}-${currentQuestion.originalIndex}-${currentQuestionIndex}`}
+                  key={`${isRetryRound ? "retry" : "main"}-${currentQuestion.originalIndex}-${currentQuestionIndex}`}
                   lastAnswer={lastAnswer}
                   durationMs={lastAnswer?.correct ? FEEDBACK_DELAY_MS : undefined}
                   onCountdownComplete={handleFeedbackComplete}
@@ -161,7 +184,11 @@ export const QuestionsPage = () => {
               data-question-index={currentQuestion.originalIndex}
               initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
               animate={{ opacity: 1 }}
-              exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 1 }
+                  : { opacity: 0, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }
+              }
               transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: [0, 0, 0.2, 1] }}
             >
               <QuestionCard question={currentQuestion} />
@@ -204,18 +231,33 @@ export const QuestionsPage = () => {
               </div>
             </m.div>
           </AnimatePresence>
-
         </div>
       </PageLayout>
       <DragOverlay>
         {activeId ? (
           <m.div
-            initial={prefersReducedMotion ? {} : { rotate: 0, scale: 1, boxShadow: '0 4px 6px rgba(0,0,0,0.07)' }}
-            animate={prefersReducedMotion ? {} : { rotate: -2, scale: 1.04, boxShadow: '0 20px 60px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.12)' }}
-            transition={{ type: 'spring', stiffness: 400, damping: 22, mass: 0.5 }}
+            initial={
+              prefersReducedMotion
+                ? {}
+                : { rotate: 0, scale: 1, boxShadow: "0 4px 6px rgba(0,0,0,0.07)" }
+            }
+            animate={
+              prefersReducedMotion
+                ? {}
+                : {
+                    rotate: -2,
+                    scale: 1.04,
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.12)",
+                  }
+            }
+            transition={{ type: "spring", stiffness: 400, damping: 22, mass: 0.5 }}
             className="flex items-center gap-3 p-3 rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-medium text-base cursor-move"
           >
-            <GripVertical className="text-neutral-400 dark:text-neutral-500 shrink-0" size={16} aria-hidden="true" />
+            <GripVertical
+              className="text-neutral-400 dark:text-neutral-500 shrink-0"
+              size={16}
+              aria-hidden="true"
+            />
             <span className="flex-1 text-left">{activeId}</span>
           </m.div>
         ) : null}

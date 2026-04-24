@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { isMuted, setMuted } from '../utils/sounds';
+import { useState, useCallback } from "react";
+import { isMuted, setMuted } from "../utils/sounds";
 
 export function useMute() {
   const [muted, setMutedState] = useState(isMuted);

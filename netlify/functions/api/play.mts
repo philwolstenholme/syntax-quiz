@@ -142,7 +142,7 @@ const start = playOs
     description:
       "Begins a new quiz game for the chosen level. Returns a shuffled first question and an opaque `gameState` token.\n\n" +
       "## How to play\n\n" +
-      "1. Call this endpoint with a level (1 = Easy, 2 = Medium, 3 = Hard) to get your first question and a `gameState` token.\n" +
+      "1. Call this endpoint with a level (1 = Easy, 1.5 = Easy+, 2 = Medium, 2.5 = Medium+, 3 = Hard) to get your first question and a `gameState` token.\n" +
       "2. Read the `question` object — it contains a code snippet, a highlighted portion, and four shuffled answer choices.\n" +
       "3. Submit your answer (or `null` to skip) to `POST /play/answer` along with the `gameState` token.\n" +
       "4. The response includes feedback on whether you were correct, the next question, and an updated `gameState`. Pass the new token back with your next answer.\n" +

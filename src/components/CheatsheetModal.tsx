@@ -37,6 +37,12 @@ const CheatsheetItem = ({ question }: { question: QuestionWithIndex }) => (
     </pre>
     <div>
       <span className="inline-block text-xs font-semibold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">
+        Question
+      </span>
+      <p className="text-sm text-neutral-700 dark:text-neutral-300">{question.question}</p>
+    </div>
+    <div>
+      <span className="inline-block text-xs font-semibold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">
         Answer
       </span>
       <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
@@ -79,7 +85,8 @@ export const CheatsheetModal = ({ missedQuestions }: CheatsheetModalProps) => {
             {/* Content */}
             <div className="p-6 pt-3">
               <Dialog.Description className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
-                Here are the questions you got wrong, with the correct answers and explanations.
+                Here are the questions you got wrong, with each question, its correct answer, and an
+                explanation.
               </Dialog.Description>
 
               <div className="grid grid-cols-1 gap-4">

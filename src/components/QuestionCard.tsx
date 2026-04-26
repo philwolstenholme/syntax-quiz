@@ -6,89 +6,11 @@ import { darkTokenMap, lightTokenMap } from "virtual:tokens";
 import { useTheme } from "../context/useTheme";
 import { GlowEffect, type GlowData } from "./GlowEffect";
 import { WebGLNoise } from "./WebGLNoise";
+import { TokenizedCode } from "./TokenizedCode";
 
 interface QuestionCardProps {
   question: Question;
 }
-
-const TokenizedCode = ({
-  tokenLines,
-  hlRange,
-}: {
-  tokenLines: ShikiToken[][];
-  hlRange: { start: number; end: number };
-}) => {
-  const elements: React.ReactNode[] = [];
-  let key = 0;
-
-  for (let lineIdx = 0; lineIdx < tokenLines.length; lineIdx++) {
-    const line = tokenLines[lineIdx]!;
-
-    if (lineIdx > 0) {
-      const prevLine = tokenLines[lineIdx - 1]!;
-      const lastToken = prevLine[prevLine.length - 1];
-      const nlOffset = lastToken ? lastToken.offset + lastToken.content.length : 0;
-      const inHighlight = nlOffset >= hlRange.start && nlOffset < hlRange.end;
-      elements.push(
-        <span
-          key={key++}
-          data-hl={inHighlight ? "true" : undefined}
-          className={
-            inHighlight
-              ? "bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"
-              : undefined
-          }
-        >
-          {"\n"}
-        </span>,
-      );
-    }
-
-    for (const token of line) {
-      const tokenStart = token.offset;
-      const tokenEnd = tokenStart + token.content.length;
-
-      if (tokenEnd <= hlRange.start || tokenStart >= hlRange.end) {
-        elements.push(
-          <span key={key++} style={{ color: token.color }}>
-            {token.content}
-          </span>,
-        );
-        continue;
-      }
-
-      if (tokenStart < hlRange.start) {
-        elements.push(
-          <span key={key++} style={{ color: token.color }}>
-            {token.content.substring(0, hlRange.start - tokenStart)}
-          </span>,
-        );
-      }
-
-      const hlStart = Math.max(0, hlRange.start - tokenStart);
-      const hlEnd = Math.min(token.content.length, hlRange.end - tokenStart);
-      elements.push(
-        <span
-          key={key++}
-          data-hl="true"
-          className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200"
-        >
-          {token.content.substring(hlStart, hlEnd)}
-        </span>,
-      );
-
-      if (tokenEnd > hlRange.end) {
-        elements.push(
-          <span key={key++} style={{ color: token.color }}>
-            {token.content.substring(hlRange.end - tokenStart)}
-          </span>,
-        );
-      }
-    }
-  }
-
-  return <>{elements}</>;
-};
 
 export const QuestionCard = ({ question }: QuestionCardProps) => {
   const { code, highlight } = question;
@@ -256,7 +178,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
             )}
           >
             <code className="font-mono text-neutral-700 dark:text-neutral-300">
-              <TokenizedCode tokenLines={tokenLines} hlRange={hlRange} />
+              <TokenizedCode code={code} highlight={highlight} />
             </code>
           </span>
         </pre>

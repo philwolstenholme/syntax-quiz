@@ -2,6 +2,7 @@ import { Dialog } from "@base-ui/react/dialog";
 import { BookOpen, X } from "lucide-react";
 import type { QuestionWithIndex } from "../hooks/types";
 import { SubtleButton } from "./SubtleButton";
+import { TokenizedCode } from "./TokenizedCode";
 
 interface CheatsheetModalProps {
   missedQuestions: QuestionWithIndex[];
@@ -27,28 +28,12 @@ const ExplanationWithCode = ({ text }: { text: string }) => {
   );
 };
 
-const HighlightedCode = ({ code, highlight }: { code: string; highlight: string }) => {
-  const start = code.indexOf(highlight);
-  if (start === -1) {
-    return <span className="text-neutral-700 dark:text-neutral-300">{code}</span>;
-  }
-  const before = code.slice(0, start);
-  const after = code.slice(start + highlight.length);
-  return (
-    <>
-      <span className="text-neutral-700 dark:text-neutral-300">{before}</span>
-      <mark className="bg-yellow-400/30 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-200 rounded-sm not-italic">
-        {highlight}
-      </mark>
-      <span className="text-neutral-700 dark:text-neutral-300">{after}</span>
-    </>
-  );
-};
-
 const CheatsheetItem = ({ question }: { question: QuestionWithIndex }) => (
   <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 p-4 flex flex-col gap-3">
-    <pre className="bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md p-3 text-sm font-mono leading-relaxed overflow-x-auto whitespace-pre">
-      <HighlightedCode code={question.code} highlight={question.highlight} />
+    <pre className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md p-3 text-sm font-mono leading-relaxed overflow-x-auto whitespace-pre">
+      <code className="font-mono text-neutral-700 dark:text-neutral-300">
+        <TokenizedCode code={question.code} highlight={question.highlight} />
+      </code>
     </pre>
     <div>
       <span className="inline-block text-xs font-semibold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">

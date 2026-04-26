@@ -411,9 +411,11 @@ test.describe("Cheatsheet modal", () => {
     await expect(dialog).toBeVisible();
     await expect(
       dialog.getByText(
-        "Here are the questions you got wrong, with the correct answers and explanations.",
+        "Here are the questions you got wrong, with each question, its correct answer, and an explanation.",
       ),
     ).toBeVisible();
+    await expect(dialog.getByText("Question").first()).toBeVisible();
+    await expect(dialog.getByText("What is the highlighted part called?")).toBeVisible();
     await expect(dialog.getByText("Answer").first()).toBeVisible();
 
     await dialog.getByRole("button", { name: "Close" }).click();

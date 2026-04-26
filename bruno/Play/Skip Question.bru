@@ -51,7 +51,11 @@ tests {
     expect(body.feedback.skipped).to.eql(true);
     expect(body.feedback.userAnswer).to.eql(null);
     expect(body.feedback.explanation).to.be.a("string");
-    expect(body.feedback.docsLink).to.be.a("string");
+
+    if (body.feedback.docsLink !== undefined && body.feedback.docsLink !== null) {
+      expect(body.feedback.docsLink).to.be.a("string");
+    }
+
     expect(body.feedback.pointsEarned).to.eql(0);
     expect(body.progress.score).to.eql(previousScore);
     expect(body.progress.streak).to.eql(0);

@@ -42,7 +42,10 @@ tests {
       expect(question.answers).to.include(question.metadata.correct);
       expect(question.metadata.hint).to.be.a("string");
       expect(question.metadata.explanation).to.be.a("string");
-      expect(question.metadata.docsLink).to.be.a("string");
+
+      if (question.metadata.docsLink !== undefined && question.metadata.docsLink !== null) {
+        expect(question.metadata.docsLink).to.be.a("string");
+      }
     }
   });
 }

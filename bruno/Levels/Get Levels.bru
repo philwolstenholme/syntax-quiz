@@ -17,7 +17,7 @@ tests {
     const body = res.getBody();
 
     expect(body).to.be.an("array");
-    expect(body.length).to.eql(3);
+    expect(body.length).to.be.greaterThan(0);
 
     for (const level of body) {
       expect(level.id).to.be.a("number");

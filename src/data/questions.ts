@@ -1,4 +1,4 @@
-export type Highlight = string;
+type Highlight = string;
 
 export interface Question {
   code: string;

@@ -826,6 +826,7 @@ title ||= 'Untitled';`,
   },
 ];
 
+// Level 2 currently has 28 questions, so split it evenly into two 14-question levels.
 const LEVEL_2_SPLIT_INDEX = 14;
 
 const level2Questions: Question[] = level2AllQuestions.slice(0, LEVEL_2_SPLIT_INDEX);

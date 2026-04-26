@@ -14,13 +14,13 @@ const ExplanationWithCode = ({ text }: { text: string }) => {
       {parts.map((part, i) =>
         i % 2 === 1 ? (
           <code
-            key={part}
+            key={i}
             className="font-mono text-[0.85em] bg-neutral-100 dark:bg-neutral-800 px-1 py-0.5 rounded"
           >
             {part}
           </code>
         ) : (
-          part
+          <span key={i}>{part}</span>
         ),
       )}
     </>

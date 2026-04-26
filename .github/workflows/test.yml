@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "bruno/**"
   pull_request:
+    paths-ignore:
+      - "bruno/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

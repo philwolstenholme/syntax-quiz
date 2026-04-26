@@ -22,6 +22,8 @@ jobs:
       WAIT_INTERVAL_SECONDS: 10
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
@@ -31,20 +33,46 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Detect Bruno-only changes
+        if: github.event_name == 'pull_request'
+        id: change-scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed_files=$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")
+
+          echo "Changed files:"
+          printf '%s\n' "${changed_files}"
+
+          if [ -z "${changed_files}" ]; then
+            echo "bruno_only=false" >> "$GITHUB_OUTPUT"
+            echo "No changed files detected; defaulting to preview deployment."
+          elif printf '%s\n' "${changed_files}" | grep -qv '^bruno/'; then
+            echo "bruno_only=false" >> "$GITHUB_OUTPUT"
+            echo "Detected non-Bruno changes; using deploy preview."
+          else
+            echo "bruno_only=true" >> "$GITHUB_OUTPUT"
+            echo "Only Bruno files changed; using production URL."
+          fi
+
       - name: Resolve Netlify URL under test
         id: resolve-url
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ steps.change-scope.outputs.bruno_only }}" != "true" ]; then
             PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--syntax-quiz.netlify.app"
             echo "base_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
             echo "Using Netlify deploy preview URL: ${PREVIEW_URL}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using production URL for Bruno-only PR changes: ${PRODUCTION_URL}"
           else
             echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
             echo "Using production URL: ${PRODUCTION_URL}"
           fi
 
       - name: Wait for Netlify deploy preview
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.change-scope.outputs.bruno_only != 'true'
         env:
           BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
         run: |

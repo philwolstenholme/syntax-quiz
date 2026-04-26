@@ -101,7 +101,7 @@ export const CheatsheetModal = ({ missedQuestions }: CheatsheetModalProps) => {
                 Here are the questions you got wrong, with the correct answers and explanations.
               </Dialog.Description>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {missedQuestions.map((q) => (
                   <CheatsheetItem key={q.originalIndex} question={q} />
                 ))}

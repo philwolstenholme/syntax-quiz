@@ -363,12 +363,13 @@ test("score and streak increment on consecutive correct answers", async ({ page 
   expect(await getStreakValue(page)).toBe(2);
 });
 
-const runLevelWithMissedAnswers = async (page: Page, levelId: number): Promise<void> => {
+const runLevelWithMissedAnswers = async (page: Page, levelId: number) => {
   const level = getLevel(levelId);
 
   await pickLevel(page, levelId);
 
   // Answer the first question incorrectly, the rest correctly
+  const { question: missedQuestion } = await getCurrentQuestion(page, levelId);
   await answerQuestionIncorrectly(page, levelId);
   await waitForAndDismissFeedback(page);
 
@@ -385,6 +386,8 @@ const runLevelWithMissedAnswers = async (page: Page, levelId: number): Promise<v
   await waitForAndDismissFeedback(page);
 
   await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
+
+  return missedQuestion;
 };
 
 test.describe("Cheatsheet modal", () => {
@@ -403,7 +406,7 @@ test.describe("Cheatsheet modal", () => {
 
   test("cheatsheet modal opens, shows content, and can be closed", async ({ page }) => {
     test.setTimeout(120_000);
-    await runLevelWithMissedAnswers(page, 1);
+    const missedQuestion = await runLevelWithMissedAnswers(page, 1);
 
     await page.getByRole("button", { name: /Review \d+ missed answer/ }).click();
 
@@ -415,7 +418,7 @@ test.describe("Cheatsheet modal", () => {
       ),
     ).toBeVisible();
     await expect(dialog.getByText("Question").first()).toBeVisible();
-    await expect(dialog.getByText("What is the highlighted part called?")).toBeVisible();
+    await expect(dialog.getByText(missedQuestion.question)).toBeVisible();
     await expect(dialog.getByText("Answer").first()).toBeVisible();
 
     await dialog.getByRole("button", { name: "Close" }).click();

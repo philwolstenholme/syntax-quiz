@@ -17,6 +17,10 @@ body:json {
   }
 }
 
+script:pre-request {
+  bru.setVar("previousScore", bru.getVar("score") || 0);
+}
+
 script:post-response {
   const body = res.getBody();
   if (body && body.gameState) {
@@ -41,6 +45,7 @@ tests {
     expect(res.getStatus()).to.eql(200);
 
     const body = res.getBody();
+    const previousScore = Number(bru.getVar("previousScore"));
 
     expect(body.feedback.correct).to.eql(false);
     expect(body.feedback.skipped).to.eql(true);
@@ -48,7 +53,7 @@ tests {
     expect(body.feedback.explanation).to.be.a("string");
     expect(body.feedback.docsLink).to.be.a("string");
     expect(body.feedback.pointsEarned).to.eql(0);
-    expect(body.progress.score).to.eql(10);
+    expect(body.progress.score).to.eql(previousScore);
     expect(body.progress.streak).to.eql(0);
     expect(body.complete).to.eql(false);
     expect(body.gameState).to.be.a("string");

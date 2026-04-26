@@ -108,7 +108,8 @@ Correct answers earn points with a streak multiplier — consecutive correct ans
 When playing from the docs site, a browser cookie handles the `gameState` automatically — you only need to provide your answer in each request.
 
 See the [API documentation](https://syntax-quiz.netlify.app/api) for full request and response schemas.
-The repository also includes a Bruno collection in `bruno/`; run `npm run test:api` to exercise the deployed API, or override `baseUrl` in CI to target a Netlify preview deployment.
+The repository also includes a Bruno collection in `bruno/`.
+Run `npm run test:api` to exercise the deployed API, or override `baseUrl` in CI to target a Netlify preview deployment.
 
 ---
 

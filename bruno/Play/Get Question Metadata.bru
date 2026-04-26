@@ -30,5 +30,6 @@ tests {
 
     expect(body).to.be.an("array");
     expect(body.length).to.be.greaterThan(0);
+    expect(bru.getVar("questionsPayload")).to.be.a("string");
   });
 }

@@ -18,6 +18,8 @@ jobs:
       checks: write
     env:
       PRODUCTION_URL: https://syntax-quiz.netlify.app
+      MAX_WAIT_ATTEMPTS: 60
+      WAIT_INTERVAL_SECONDS: 10
     steps:
       - uses: actions/checkout@v6
 
@@ -48,7 +50,7 @@ jobs:
         run: |
           echo "Waiting for Netlify preview to be ready at ${BASE_URL}"
 
-          for attempt in $(seq 1 60); do
+          for attempt in $(seq 1 "${MAX_WAIT_ATTEMPTS}"); do
             status_code=$(curl -L -s -o /dev/null -w "%{http_code}" "${BASE_URL}")
 
             if [ "$status_code" = "200" ]; then
@@ -56,8 +58,8 @@ jobs:
               exit 0
             fi
 
-            echo "Attempt ${attempt}/60: got HTTP ${status_code}, retrying in 10s..."
-            sleep 10
+            echo "Attempt ${attempt}/${MAX_WAIT_ATTEMPTS}: got HTTP ${status_code}, retrying in ${WAIT_INTERVAL_SECONDS}s..."
+            sleep "${WAIT_INTERVAL_SECONDS}"
           done
 
           echo "Timed out waiting for Netlify preview URL ${BASE_URL}"

@@ -38,11 +38,23 @@ script:post-response {
   const questionsPayload = bru.getVar("questionsPayload");
   if (questionsPayload && body && body.question) {
     const questions = JSON.parse(questionsPayload);
-    const matchingQuestion = questions.find((question) =>
-      question.code === body.question.code &&
-      question.highlight === body.question.highlight &&
-      question.question === body.question.question
-    );
+    const matchingQuestion = questions.find((question) => {
+      if (!question || !body.question) {
+        return false;
+      }
+
+      return (
+        typeof question.code === "string" &&
+        typeof question.highlight === "string" &&
+        typeof question.question === "string" &&
+        typeof body.question.code === "string" &&
+        typeof body.question.highlight === "string" &&
+        typeof body.question.question === "string" &&
+        question.code === body.question.code &&
+        question.highlight === body.question.highlight &&
+        question.question === body.question.question
+      );
+    });
 
     if (matchingQuestion && matchingQuestion.metadata && matchingQuestion.metadata.correct) {
       bru.setVar("answer", matchingQuestion.metadata.correct);

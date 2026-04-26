@@ -5,6 +5,7 @@ import { m, useReducedMotion } from "motion/react";
 import { PageLayout } from "./PageLayout";
 import { CRTBackground } from "./CRTBackground";
 import { CheatsheetModal } from "./CheatsheetModal";
+import { completionButtonClass } from "./CompletionButton";
 import type { Level } from "../data/questions";
 import type { QuestionWithIndex } from "../hooks/types";
 import { ROUTES } from "../routes";
@@ -150,23 +151,20 @@ export const CompletionScreen = ({
         </m.div>
 
         <m.div className="space-y-3" {...stagger(6)}>
+          {missedQuestions.length > 0 && <CheatsheetModal missedQuestions={missedQuestions} />}
+
           <Link
             to={ROUTES.questions(level.id)}
-            className="w-full bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-700 dark:hover:bg-white transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
+            className={completionButtonClass(missedQuestions.length > 0 ? "secondary" : "primary")}
           >
             <RotateCcw className="w-5 h-5" aria-hidden="true" />
             Try again
           </Link>
 
-          <Link
-            to={ROUTES.home}
-            className="w-full bg-transparent border border-neutral-300 text-neutral-700 dark:border-neutral-800 dark:text-neutral-300 font-medium text-sm px-4 py-2.5 rounded-lg hover:bg-neutral-100 hover:border-neutral-400 dark:hover:bg-neutral-900 dark:hover:border-neutral-700 transition-colors duration-150 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] touch-manipulation"
-          >
+          <Link to={ROUTES.home} className={completionButtonClass("secondary")}>
             <ArrowLeft className="w-5 h-5" aria-hidden="true" />
             Choose another level
           </Link>
-
-          {missedQuestions.length > 0 && <CheatsheetModal missedQuestions={missedQuestions} />}
         </m.div>
       </div>
     </PageLayout>

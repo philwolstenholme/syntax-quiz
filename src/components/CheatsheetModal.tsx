@@ -1,7 +1,7 @@
 import { Dialog } from "@base-ui/react/dialog";
 import { BookOpen, X } from "lucide-react";
 import type { QuestionWithIndex } from "../hooks/types";
-import { SubtleButton } from "./SubtleButton";
+import { CompletionButton } from "./CompletionButton";
 import { TokenizedCode } from "./TokenizedCode";
 
 interface CheatsheetModalProps {
@@ -56,12 +56,8 @@ export const CheatsheetModal = ({ missedQuestions }: CheatsheetModalProps) => {
 
   return (
     <Dialog.Root>
-      <Dialog.Trigger
-        render={
-          <SubtleButton className="w-full justify-center border border-neutral-300 dark:border-neutral-800 py-2" />
-        }
-      >
-        <BookOpen size={16} aria-hidden="true" />
+      <Dialog.Trigger render={<CompletionButton variant="primary" />}>
+        <BookOpen className="w-5 h-5" aria-hidden="true" />
         Review {missedQuestions.length} missed {missedQuestions.length === 1 ? "answer" : "answers"}
       </Dialog.Trigger>
 

@@ -70,6 +70,7 @@ export function useQuiz(): UseQuizReturn {
     isRetryRound,
     retryQuestionCount,
     missedQuestions,
+    allMissedQuestions,
     advanceQuestion,
     addMissedQuestion,
     startRetryRound,
@@ -93,6 +94,7 @@ export function useQuiz(): UseQuizReturn {
       totalQuestions: totalAttempts,
       levelId,
       flawless: !isRetryRound,
+      missedQuestions: allMissedQuestions,
     });
     setLocation(ROUTES.score(levelId));
   };

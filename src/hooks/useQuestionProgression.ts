@@ -18,6 +18,7 @@ interface UseQuestionProgressionReturn {
   isRetryRound: boolean;
   retryQuestionCount: number;
   missedQuestions: QuestionWithIndex[];
+  allMissedQuestions: QuestionWithIndex[];
   advanceQuestion: () => { isPassComplete: boolean };
   addMissedQuestion: (q: QuestionWithIndex) => void;
   startRetryRound: () => void;
@@ -30,6 +31,7 @@ export function useQuestionProgression({
   const [questions, setQuestions] = useState<QuestionWithIndex[]>(initialQuestions);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [missedQuestions, setMissedQuestions] = useState<QuestionWithIndex[]>([]);
+  const [allMissedQuestions, setAllMissedQuestions] = useState<QuestionWithIndex[]>([]);
   const [isRetryRound, setIsRetryRound] = useState(false);
 
   const totalLevelQuestions = level?.questions.length ?? 0;
@@ -48,6 +50,9 @@ export function useQuestionProgression({
 
   const addMissedQuestion = (q: QuestionWithIndex) => {
     setMissedQuestions((prev) => [...prev, q]);
+    setAllMissedQuestions((prev) =>
+      prev.some((p) => p.originalIndex === q.originalIndex) ? prev : [...prev, q],
+    );
   };
 
   const startRetryRound = () => {
@@ -71,6 +76,7 @@ export function useQuestionProgression({
     isRetryRound,
     retryQuestionCount,
     missedQuestions,
+    allMissedQuestions,
     advanceQuestion,
     addMissedQuestion,
     startRetryRound,

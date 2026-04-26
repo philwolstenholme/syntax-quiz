@@ -363,6 +363,64 @@ test("score and streak increment on consecutive correct answers", async ({ page 
   expect(await getStreakValue(page)).toBe(2);
 });
 
+const runLevelWithMissedAnswers = async (page: Page, levelId: number): Promise<void> => {
+  const level = getLevel(levelId);
+
+  await pickLevel(page, levelId);
+
+  // Answer the first question incorrectly, the rest correctly
+  await answerQuestionIncorrectly(page, levelId);
+  await waitForAndDismissFeedback(page);
+
+  for (let i = 1; i < level.questions.length; i += 1) {
+    await answerQuestionCorrectly(page, levelId);
+    await waitForAndDismissFeedback(page);
+  }
+
+  // Now in the retry round with 1 missed question
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/questions$`));
+
+  // Answer the single retry question correctly to reach the score page
+  await answerQuestionCorrectly(page, levelId);
+  await waitForAndDismissFeedback(page);
+
+  await expect(page).toHaveURL(new RegExp(`/level/${levelId}/score$`));
+};
+
+test.describe("Cheatsheet modal", () => {
+  test("review button appears on score page when questions were missed", async ({ page }) => {
+    test.setTimeout(120_000);
+    await runLevelWithMissedAnswers(page, 1);
+
+    await expect(page.getByRole("button", { name: /Review \d+ missed answer/ })).toBeVisible();
+  });
+
+  test("review button is absent after a perfect run", async ({ page }) => {
+    await runPerfectLevel(page, 1);
+
+    await expect(page.getByRole("button", { name: /Review \d+ missed/ })).not.toBeAttached();
+  });
+
+  test("cheatsheet modal opens, shows content, and can be closed", async ({ page }) => {
+    test.setTimeout(120_000);
+    await runLevelWithMissedAnswers(page, 1);
+
+    await page.getByRole("button", { name: /Review \d+ missed answer/ }).click();
+
+    const dialog = page.getByRole("dialog", { name: "Missed answers" });
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByText(
+        "Here are the questions you got wrong, with the correct answers and explanations.",
+      ),
+    ).toBeVisible();
+    await expect(dialog.getByText("Answer").first()).toBeVisible();
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).not.toBeAttached();
+  });
+});
+
 test("home breadcrumb navigates back to level select and allows picking a different level", async ({
   page,
 }) => {

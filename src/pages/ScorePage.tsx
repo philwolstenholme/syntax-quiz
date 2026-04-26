@@ -32,6 +32,7 @@ export const ScorePage = () => {
       totalQuestions={result.totalQuestions}
       level={level}
       flawless={result.flawless}
+      missedQuestions={result.missedQuestions}
     />
   );
 };

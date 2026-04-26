@@ -14,7 +14,7 @@
     "test:e2e:debug": "playwright test --debug",
     "knip": "knip",
     "test:e2e:headed": "playwright test --project=chromium --headed",
-    "test:api": "bru run bruno -r --tests-only --env Production",
+    "test:api": "cd bruno && bru run -r --tests-only --env Production",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "oxfmt .",

@@ -70,8 +70,8 @@ jobs:
           mkdir -p test-results/bruno
           npm run test:api -- \
             --env-var baseUrl=${BASE_URL} \
-            --reporter-junit test-results/bruno/junit.xml \
-            --reporter-json test-results/bruno/report.json \
+            --reporter-junit ../test-results/bruno/junit.xml \
+            --reporter-json ../test-results/bruno/report.json \
             --reporter-skip-body
 
       - name: Publish Bruno test results

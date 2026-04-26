@@ -106,7 +106,7 @@ jobs:
 
       - name: Publish Bruno test results
         if: always()
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: Bruno API Tests
           path: test-results/bruno/junit.xml

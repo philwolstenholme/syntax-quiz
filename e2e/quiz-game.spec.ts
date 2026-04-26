@@ -174,6 +174,11 @@ test("requires retry round when 25% of answers are wrong on Level 1.5", async ({
   await runRetryRoundLevel(page, 1.5);
 });
 
+test("requires retry round when 25% of answers are wrong on Level 2.5", async ({ page }) => {
+  test.setTimeout(120_000);
+  await runRetryRoundLevel(page, 2.5);
+});
+
 test("correct answer shows feedback banner that can be paused/resumed and skipped", async ({
   page,
 }) => {
@@ -277,10 +282,11 @@ test("level selection page lists available levels and navigates to selected leve
   await expect(page.getByRole("heading", { name: "Syntax Quiz" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Level 1(?![\d.])/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Level 1\.5/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Level 2/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Level 2(?![\d.])/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Level 2\.5/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Level 3/i })).toBeVisible();
 
-  await page.getByRole("link", { name: /Level 2/i }).click();
+  await page.getByRole("link", { name: /Level 2(?![\d.])/i }).click();
   await expect(page).toHaveURL(/\/level\/2\/questions$/);
 });
 

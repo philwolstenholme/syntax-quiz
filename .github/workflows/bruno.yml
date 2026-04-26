@@ -1,0 +1,92 @@
+name: Bruno API Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    env:
+      PRODUCTION_URL: https://syntax-quiz.netlify.app
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve Netlify URL under test
+        id: resolve-url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--syntax-quiz.netlify.app"
+            echo "base_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using Netlify deploy preview URL: ${PREVIEW_URL}"
+          else
+            echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using production URL: ${PRODUCTION_URL}"
+          fi
+
+      - name: Wait for Netlify deploy preview
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
+        run: |
+          echo "Waiting for Netlify preview to be ready at ${BASE_URL}"
+
+          for attempt in $(seq 1 60); do
+            status_code=$(curl -L -s -o /dev/null -w "%{http_code}" "${BASE_URL}")
+
+            if [ "$status_code" = "200" ]; then
+              echo "Netlify preview is ready (HTTP 200)."
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}/60: got HTTP ${status_code}, retrying in 10s..."
+            sleep 10
+          done
+
+          echo "Timed out waiting for Netlify preview URL ${BASE_URL}"
+          exit 1
+
+      - name: Run Bruno API tests against Netlify
+        env:
+          BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
+        run: |
+          mkdir -p test-results/bruno
+          npm run test:api -- \
+            --env-var baseUrl=${BASE_URL} \
+            --reporter-junit test-results/bruno/junit.xml \
+            --reporter-json test-results/bruno/report.json \
+            --reporter-skip-body
+
+      - name: Publish Bruno test results
+        if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Bruno API Tests
+          path: test-results/bruno/junit.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload Bruno test results
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bruno-test-results
+          path: test-results/bruno/
+          retention-days: 30

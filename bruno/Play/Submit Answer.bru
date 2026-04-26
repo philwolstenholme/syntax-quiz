@@ -39,3 +39,28 @@ script:post-response {
     bru.setVar("streak", body.progress.streak);
   }
 }
+
+tests {
+  test("Submit Answer accepts the correct answer and advances the game", function() {
+    expect(res.getStatus()).to.eql(200);
+
+    const requestBody = req.getBody();
+    const body = res.getBody();
+    const answer = bru.getVar("answer");
+
+    expect(requestBody.answer).to.eql(answer);
+    expect(body.feedback.correct).to.eql(true);
+    expect(body.feedback.skipped).to.eql(false);
+    expect(body.feedback.correctAnswer).to.eql(answer);
+    expect(body.feedback.userAnswer).to.eql(answer);
+    expect(body.feedback.explanation).to.be.a("string");
+    expect(body.feedback.docsLink).to.be.a("string");
+    expect(body.feedback.pointsEarned).to.eql(10);
+    expect(body.progress.score).to.eql(10);
+    expect(body.progress.streak).to.eql(1);
+    expect(body.progress.correctAnswers).to.eql(1);
+    expect(body.complete).to.eql(false);
+    expect(body.gameState).to.be.a("string");
+    expect(body.question).to.be.an("object");
+  });
+}

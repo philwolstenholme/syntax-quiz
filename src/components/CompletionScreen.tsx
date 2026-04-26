@@ -4,7 +4,9 @@ import { Link } from "wouter";
 import { m, useReducedMotion } from "motion/react";
 import { PageLayout } from "./PageLayout";
 import { CRTBackground } from "./CRTBackground";
+import { CheatsheetModal } from "./CheatsheetModal";
 import type { Level } from "../data/questions";
+import type { QuestionWithIndex } from "../hooks/types";
 import { ROUTES } from "../routes";
 import { formatNumber, formatPercent } from "../utils/format";
 import { useCountUp } from "../hooks/useCountUp";
@@ -15,6 +17,7 @@ interface CompletionScreenProps {
   totalQuestions: number;
   level: Level;
   flawless: boolean;
+  missedQuestions: QuestionWithIndex[];
 }
 
 export const CompletionScreen = ({
@@ -23,6 +26,7 @@ export const CompletionScreen = ({
   totalQuestions,
   level,
   flawless,
+  missedQuestions,
 }: CompletionScreenProps) => {
   const animatedScore = useCountUp(score, 1000);
   const animatedCorrect = useCountUp(correctAnswers, 800);
@@ -161,6 +165,8 @@ export const CompletionScreen = ({
             <ArrowLeft className="w-5 h-5" aria-hidden="true" />
             Choose another level
           </Link>
+
+          {missedQuestions.length > 0 && <CheatsheetModal missedQuestions={missedQuestions} />}
         </m.div>
       </div>
     </PageLayout>

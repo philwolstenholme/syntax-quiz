@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { QuestionWithIndex } from "../hooks/types";
 
 export interface QuizResult {
   score: number;
@@ -6,6 +7,7 @@ export interface QuizResult {
   totalQuestions: number;
   levelId: number;
   flawless: boolean;
+  missedQuestions: QuestionWithIndex[];
 }
 
 export interface QuizResultContextValue {

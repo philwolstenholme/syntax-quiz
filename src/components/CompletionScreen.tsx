@@ -5,7 +5,7 @@ import { m, useReducedMotion } from "motion/react";
 import { PageLayout } from "./PageLayout";
 import { CRTBackground } from "./CRTBackground";
 import { CheatsheetModal } from "./CheatsheetModal";
-import { completionButtonClass } from "./CompletionButton";
+import { completionButtonClass } from "../utils/completionButtonVariants";
 import type { Level } from "../data/questions";
 import type { QuestionWithIndex } from "../hooks/types";
 import { ROUTES } from "../routes";

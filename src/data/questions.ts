@@ -826,9 +826,11 @@ title ||= 'Untitled';`,
   },
 ];
 
-const level2Questions: Question[] = level2AllQuestions.slice(0, 14);
+const LEVEL_2_SPLIT_INDEX = 14;
 
-const level2_5Questions: Question[] = level2AllQuestions.slice(14);
+const level2Questions: Question[] = level2AllQuestions.slice(0, LEVEL_2_SPLIT_INDEX);
+
+const level2_5Questions: Question[] = level2AllQuestions.slice(LEVEL_2_SPLIT_INDEX);
 
 const level3Questions: Question[] = [
   {

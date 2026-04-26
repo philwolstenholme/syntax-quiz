@@ -34,4 +34,52 @@ script:post-response {
     bru.setVar("score", body.progress.score);
     bru.setVar("streak", body.progress.streak);
   }
+
+  const questionsPayload = bru.getVar("questionsPayload");
+  if (questionsPayload && body && body.question) {
+    const questions = JSON.parse(questionsPayload);
+    const matchingQuestion = questions.find((question) => {
+      if (!question || !body.question) {
+        return false;
+      }
+
+      return (
+        typeof question.code === "string" &&
+        typeof question.highlight === "string" &&
+        typeof question.question === "string" &&
+        typeof body.question.code === "string" &&
+        typeof body.question.highlight === "string" &&
+        typeof body.question.question === "string" &&
+        question.code === body.question.code &&
+        question.highlight === body.question.highlight &&
+        question.question === body.question.question
+      );
+    });
+
+    if (matchingQuestion && matchingQuestion.metadata && matchingQuestion.metadata.correct) {
+      bru.setVar("answer", matchingQuestion.metadata.correct);
+    }
+  }
+}
+
+tests {
+  test("Start Game returns an initial question and progress", function() {
+    expect(res.getStatus()).to.eql(200);
+
+    const body = res.getBody();
+
+    expect(body.gameState).to.be.a("string");
+    expect(body.question).to.be.an("object");
+    expect(body.question.code).to.be.a("string");
+    expect(body.question.highlight).to.be.a("string");
+    expect(body.question.question).to.be.a("string");
+    expect(body.question.answers).to.be.an("array");
+    expect(body.question.answers.length).to.eql(4);
+    expect(body.progress.score).to.eql(0);
+    expect(body.progress.streak).to.eql(0);
+    expect(body.progress.correctAnswers).to.eql(0);
+    expect(body.progress.totalQuestions).to.be.greaterThan(0);
+    expect(body.progress.isRetryRound).to.eql(false);
+    expect(bru.getVar("answer")).to.be.a("string");
+  });
 }

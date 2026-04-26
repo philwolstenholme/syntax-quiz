@@ -1,0 +1,122 @@
+name: Bruno API Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    env:
+      PRODUCTION_URL: https://syntax-quiz.netlify.app
+      MAX_WAIT_ATTEMPTS: 60
+      WAIT_INTERVAL_SECONDS: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect Bruno-only changes
+        if: github.event_name == 'pull_request'
+        id: change-scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed_files=$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")
+
+          echo "Changed files:"
+          printf '%s\n' "${changed_files}"
+
+          if [ -z "${changed_files}" ]; then
+            echo "bruno_only=false" >> "$GITHUB_OUTPUT"
+            echo "No changed files detected; defaulting to preview deployment."
+          elif printf '%s\n' "${changed_files}" | grep -qv '^bruno/'; then
+            echo "bruno_only=false" >> "$GITHUB_OUTPUT"
+            echo "Detected non-Bruno changes; using deploy preview."
+          else
+            echo "bruno_only=true" >> "$GITHUB_OUTPUT"
+            echo "Only Bruno files changed; using production URL."
+          fi
+
+      - name: Resolve Netlify URL under test
+        id: resolve-url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ steps.change-scope.outputs.bruno_only }}" != "true" ]; then
+            PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--syntax-quiz.netlify.app"
+            echo "base_url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using Netlify deploy preview URL: ${PREVIEW_URL}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using production URL for Bruno-only PR changes: ${PRODUCTION_URL}"
+          else
+            echo "base_url=${PRODUCTION_URL}" >> "$GITHUB_OUTPUT"
+            echo "Using production URL: ${PRODUCTION_URL}"
+          fi
+
+      - name: Wait for Netlify deploy preview
+        if: github.event_name == 'pull_request' && steps.change-scope.outputs.bruno_only != 'true'
+        env:
+          BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
+        run: |
+          echo "Waiting for Netlify preview to be ready at ${BASE_URL}"
+
+          for attempt in $(seq 1 "${MAX_WAIT_ATTEMPTS}"); do
+            status_code=$(curl -L -s -o /dev/null -w "%{http_code}" "${BASE_URL}")
+
+            if [ "$status_code" = "200" ]; then
+              echo "Netlify preview is ready (HTTP 200)."
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}/${MAX_WAIT_ATTEMPTS}: got HTTP ${status_code}, retrying in ${WAIT_INTERVAL_SECONDS}s..."
+            sleep "${WAIT_INTERVAL_SECONDS}"
+          done
+
+          echo "Timed out waiting for Netlify preview URL ${BASE_URL}"
+          exit 1
+
+      - name: Run Bruno API tests against Netlify
+        env:
+          BASE_URL: ${{ steps.resolve-url.outputs.base_url }}
+        run: |
+          mkdir -p test-results/bruno
+          npm run test:api -- \
+            --env-var baseUrl=${BASE_URL} \
+            --reporter-junit ../test-results/bruno/junit.xml \
+            --reporter-json ../test-results/bruno/report.json \
+            --reporter-skip-body
+
+      - name: Publish Bruno test results
+        if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Bruno API Tests
+          path: test-results/bruno/junit.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload Bruno test results
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bruno-test-results
+          path: test-results/bruno/
+          retention-days: 30

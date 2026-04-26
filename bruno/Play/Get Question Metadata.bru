@@ -1,0 +1,35 @@
+meta {
+  name: Get Question Metadata
+  type: http
+  seq: 0
+}
+
+get {
+  url: {{baseUrl}}/api/questions?level={{level}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  level: 1
+}
+
+script:post-response {
+  const body = res.getBody();
+
+  if (Array.isArray(body)) {
+    bru.setVar("questionsPayload", JSON.stringify(body));
+  }
+}
+
+tests {
+  test("Get Question Metadata primes the play flow", function() {
+    expect(res.getStatus()).to.eql(200);
+
+    const body = res.getBody();
+
+    expect(body).to.be.an("array");
+    expect(body.length).to.be.greaterThan(0);
+    expect(bru.getVar("questionsPayload")).to.be.a("string");
+  });
+}

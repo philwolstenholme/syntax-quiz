@@ -9,3 +9,23 @@ get {
   body: none
   auth: none
 }
+
+tests {
+  test("Get Levels returns all level metadata", function() {
+    expect(res.getStatus()).to.eql(200);
+
+    const body = res.getBody();
+
+    expect(body).to.be.an("array");
+    expect(body.length).to.be.greaterThan(0);
+
+    for (const level of body) {
+      expect(level.id).to.be.a("number");
+      expect(level.name).to.be.a("string");
+      expect(level.subtitle).to.be.a("string");
+      expect(level.description).to.be.a("string");
+      expect(level.questionCount).to.be.a("number");
+      expect(level).to.not.have.property("color");
+    }
+  });
+}

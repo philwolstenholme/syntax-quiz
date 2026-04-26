@@ -13,3 +13,39 @@ get {
 vars:pre-request {
   level: 1
 }
+
+script:post-response {
+  const body = res.getBody();
+
+  if (Array.isArray(body)) {
+    bru.setVar("questionsPayload", JSON.stringify(body));
+  }
+}
+
+tests {
+  test("Get Questions returns level questions with answer metadata", function() {
+    expect(res.getStatus()).to.eql(200);
+
+    const body = res.getBody();
+
+    expect(body).to.be.an("array");
+    expect(body.length).to.be.greaterThan(0);
+
+    for (const question of body) {
+      expect(question.code).to.be.a("string");
+      expect(question.highlight).to.be.a("string");
+      expect(question.question).to.be.a("string");
+      expect(question.answers).to.be.an("array");
+      expect(question.answers.length).to.be.greaterThan(1);
+      expect(question.metadata).to.be.an("object");
+      expect(question.metadata.correct).to.be.a("string");
+      expect(question.answers).to.include(question.metadata.correct);
+      expect(question.metadata.hint).to.be.a("string");
+      expect(question.metadata.explanation).to.be.a("string");
+
+      if (question.metadata.docsLink !== undefined && question.metadata.docsLink !== null) {
+        expect(question.metadata.docsLink).to.be.a("string");
+      }
+    }
+  });
+}

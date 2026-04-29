@@ -46,10 +46,10 @@ describe("GET /questions", () => {
     }
   });
 
-  it("returns questions for all three levels", async () => {
-    for (const level of [1, 2, 3]) {
-      const result = await call(questionsRoute, { level });
-      const sourceLevel = levels.find((l) => l.id === level)!;
+  it("returns questions for every available level", async () => {
+    for (const level of levels) {
+      const result = await call(questionsRoute, { level: level.id });
+      const sourceLevel = levels.find((entry) => entry.id === level.id)!;
       expect(result).toHaveLength(sourceLevel.questions.length);
     }
   });

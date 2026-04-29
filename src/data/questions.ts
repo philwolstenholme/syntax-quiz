@@ -434,7 +434,7 @@ console.log(selectedUser, cachedValue);`,
   },
 ];
 
-const level2Questions: Question[] = [
+const level2AllQuestions: Question[] = [
   {
     code: `const numbers: Array<number> = [1, 2, 3];`,
     highlight: "<number>",
@@ -826,6 +826,13 @@ title ||= 'Untitled';`,
   },
 ];
 
+// Level 2 currently has 28 questions, so split it evenly into two 14-question levels.
+const LEVEL_2_SPLIT_INDEX = 14;
+
+const level2Questions: Question[] = level2AllQuestions.slice(0, LEVEL_2_SPLIT_INDEX);
+
+const level2_5Questions: Question[] = level2AllQuestions.slice(LEVEL_2_SPLIT_INDEX);
+
 const level3Questions: Question[] = [
   {
     code: `const value: unknown = getValue();
@@ -1018,6 +1025,14 @@ export const levels: Level[] = [
     description: "Intermediate concepts",
     questions: level2Questions,
     color: "from-yellow-500 to-orange-500",
+  },
+  {
+    id: 2.5,
+    name: "Level 2.5",
+    subtitle: "Medium+",
+    description: "More intermediate concepts",
+    questions: level2_5Questions,
+    color: "from-orange-500 to-red-500",
   },
   {
     id: 3,

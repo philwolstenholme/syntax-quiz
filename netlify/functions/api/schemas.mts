@@ -12,8 +12,8 @@ export const levelParamSchema = z
   .number()
   .min(1)
   .max(3)
-  .describe("Level number (1 = Easy, 1.5 = Easy+, 2 = Medium, 3 = Hard)");
-JSON_SCHEMA_INPUT_REGISTRY.add(levelParamSchema, { type: "number", enum: [1, 1.5, 2, 3] });
+  .describe("Level number (1 = Easy, 1.5 = Easy+, 2 = Medium, 2.5 = Medium+, 3 = Hard)");
+JSON_SCHEMA_INPUT_REGISTRY.add(levelParamSchema, { type: "number", enum: [1, 1.5, 2, 2.5, 3] });
 
 export const LevelMetaSchema = z.object({
   id: z.number().min(1).max(3),

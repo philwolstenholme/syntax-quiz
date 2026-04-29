@@ -1,10 +1,5 @@
 import { tiks } from "@rexa-developer/tiks";
-import {
-  vibrateCorrect,
-  vibrateIncorrect,
-  vibrateKeycap,
-  vibratePop,
-} from "./vibrate";
+import { vibrateCorrect, vibrateIncorrect, vibrateKeycap, vibratePop } from "./vibrate";
 
 const MUTE_KEY = "syntax-quiz-muted";
 let _muted = typeof localStorage !== "undefined" && localStorage.getItem(MUTE_KEY) === "true";

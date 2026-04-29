@@ -1,5 +1,4 @@
 import { playCorrectSound, playIncorrectSound } from "../utils/sounds";
-import { vibrateCorrect, vibrateIncorrect } from "../utils/vibrate";
 import { encodeSaveState } from "../utils/saveState";
 import type { SaveState } from "../utils/saveState";
 import { ROUTES } from "../routes";
@@ -105,11 +104,9 @@ export function useQuiz(): UseQuizReturn {
     const correct = answer === currentQuestion.correct;
 
     if (correct) {
-      vibrateCorrect();
       playCorrectSound();
       recordCorrect(hintsUsed);
     } else {
-      vibrateIncorrect();
       playIncorrectSound();
       recordIncorrect();
       addMissedQuestion(currentQuestion);

@@ -5,16 +5,8 @@ const HAPTIC_PATTERNS = {
   incorrect: [18, 28, 18, 36, 12],
 } as const satisfies Record<string, VibratePattern>;
 
-const prefersReducedMotion = (): boolean => {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return false;
-  }
-
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-};
-
 const vibrate = (pattern: VibratePattern): void => {
-  if (typeof navigator === "undefined" || !("vibrate" in navigator) || prefersReducedMotion()) {
+  if (typeof navigator === "undefined" || !("vibrate" in navigator)) {
     return;
   }
 

@@ -1,5 +1,5 @@
 import { tiks } from "@rexa-developer/tiks";
-import { vibrateCorrect, vibrateIncorrect, vibrateKeycap, vibratePop } from "./vibrate";
+import { vibrateCorrect, vibrateIncorrect } from "./vibrate";
 
 const MUTE_KEY = "syntax-quiz-muted";
 let _muted = typeof localStorage !== "undefined" && localStorage.getItem(MUTE_KEY) === "true";
@@ -25,12 +25,10 @@ export function setMuted(v: boolean): void {
 
 export const playKeycapSound = (): void => {
   ensureInit();
-  vibrateKeycap();
   tiks.click();
 };
 const playPopSound = (): void => {
   ensureInit();
-  vibratePop();
   tiks.pop();
 };
 export const playCorrectSound = (): void => {

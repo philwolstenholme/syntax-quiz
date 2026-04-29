@@ -1,4 +1,5 @@
 import { tiks } from "@rexa-developer/tiks";
+import { vibrateCorrect, vibrateIncorrect } from "./vibrate";
 
 const MUTE_KEY = "syntax-quiz-muted";
 let _muted = typeof localStorage !== "undefined" && localStorage.getItem(MUTE_KEY) === "true";
@@ -32,10 +33,12 @@ const playPopSound = (): void => {
 };
 export const playCorrectSound = (): void => {
   ensureInit();
+  vibrateCorrect();
   tiks.success();
 };
 export const playIncorrectSound = (): void => {
   ensureInit();
+  vibrateIncorrect();
   tiks.error();
 };
 

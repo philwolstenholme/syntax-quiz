@@ -5,6 +5,16 @@
     {
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "groupName": "Playwright",
+      "matchPackageNames": [
+        "@playwright/test",
+        "@axe-core/playwright",
+        "playwright",
+        "playwright-core",
+        "mcr.microsoft.com/playwright"
+      ]
     }
   ]
 }

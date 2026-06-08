@@ -33,13 +33,9 @@ JavaScript and TypeScript developers at all levels practicing syntax terminology
 
 ## Code Formatting
 
-This project uses **oxfmt** (OXC formatter) with Prettier-compatible defaults. After each set of changes, run:
+This project uses **oxfmt** (OXC formatter) with Prettier-compatible defaults, and **oxlint** for linting. Both run automatically on staged files via a `simple-git-hooks` pre-commit hook (powered by `nano-staged`), so you do not need to run the formatter or linter manually — committing will format and lint the relevant files for you.
 
-```
-npm run format
-```
-
-oxfmt formats JS, TS, JSX, TSX, JSON, and related files. Do not manually adjust whitespace, quotes, or indentation — let the formatter handle it.
+oxfmt formats JS, TS, JSX, TSX, JSON, Markdown, CSS, HTML, and YAML files. Do not manually adjust whitespace, quotes, or indentation — let the formatter handle it.
 
 ## API Development
 

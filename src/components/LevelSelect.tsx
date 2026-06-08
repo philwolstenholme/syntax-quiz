@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import clsx from "clsx";
 import { levels } from "../data/questions";
 import { PageLayout } from "./PageLayout";
+import { Footer } from "./Footer";
 import { ROUTES } from "../routes";
 import { formatNumber } from "../utils/format";
 import { CRTBackground } from "./CRTBackground";
@@ -81,6 +82,7 @@ export const LevelSelect = () => {
             </Link>
           ))}
         </div>
+        <Footer />
       </div>
     </PageLayout>
   );

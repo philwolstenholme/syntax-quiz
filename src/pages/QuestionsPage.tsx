@@ -12,6 +12,7 @@ import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 import { GripVertical, HelpCircle, RotateCcw } from "lucide-react";
 import { SubtleButton } from "../components/SubtleButton";
 import { PageLayout } from "../components/PageLayout";
+import { Footer } from "../components/Footer";
 import { QuizHeader } from "../components/QuizHeader";
 import { FeedbackBanner } from "../components/FeedbackBanner";
 import { QuestionCard } from "../components/QuestionCard";
@@ -231,6 +232,7 @@ export const QuestionsPage = () => {
               </div>
             </m.div>
           </AnimatePresence>
+          <Footer />
         </div>
       </PageLayout>
       <DragOverlay>

@@ -95,7 +95,7 @@ A React-based quiz application for testing syntax knowledge. The project is buil
 ## Testing & Quality
 
 - Always run `npm run typecheck` before committing
-- Run `npm run lint` to catch code quality issues
+- Formatting (oxfmt) and linting (oxlint) run automatically on staged files via a `simple-git-hooks` pre-commit hook (powered by `nano-staged`) — you do not need to run them manually
 - Test responsive design across different screen sizes
 - Verify animations work smoothly
 - **Note**: Currently, there is no automated test infrastructure in this project. When adding features, consider adding tests if appropriate, but they are not required.

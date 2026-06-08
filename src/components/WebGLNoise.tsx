@@ -177,7 +177,7 @@ export const WebGLNoise = ({
       gl.deleteBuffer(buf);
       gl.deleteTexture(bayerTex);
     };
-  }, [canvasW, canvasH, hlX, hlY, hlW, hlH, isDark, prefersReducedMotion]);
+  }, [canvasW, canvasH, hlX, hlY, hlW, hlH, isDark, prefersReducedMotion, scrollElRef]);
 
   if (prefersReducedMotion) return null;
 

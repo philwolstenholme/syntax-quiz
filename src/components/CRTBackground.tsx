@@ -343,12 +343,11 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
 
       // Boot sequence — organic fade-in radiating from the primary beam
       const isBooting = !booted.current;
-      let bootProgress = 1;
       let bootReach = height; // how far (px) from beam the boot glow extends
       let bootBrightness = 1;
       if (isBooting) {
         const bf = bootFrame.current;
-        bootProgress = Math.min(bf / p.bootDuration, 1);
+        const bootProgress = Math.min(bf / p.bootDuration, 1);
         // Reach expands with eased curve — starts tight around beam, grows to full height
         const reachEased =
           bootProgress < 0.15
@@ -388,21 +387,8 @@ export const CRTBackground = ({ excludeStartRef, excludeEndRef }: CRTBackgroundP
         beamStrengths[idx] = follArr[i]!.strength;
       }
 
-      // Pre-compute the Y range that any beam can influence (for early row skipping)
-      let beamMinY = Infinity;
-      let beamMaxY = -Infinity;
-      for (let i = 0; i < beamCount; i++) {
-        const lo = beamYs[i]! - beamWidths[i]!;
-        const hi = beamYs[i]! + beamWidths[i]!;
-        if (lo < beamMinY) beamMinY = lo;
-        if (hi > beamMaxY) beamMaxY = hi;
-      }
-      // Extend for afterglow
       const primaryBeam = scanArr[0]!;
       const primaryBeamY = primaryBeam.y;
-      const afterglowMinY = primaryBeamY - p.afterglowWidth;
-      if (afterglowMinY < beamMinY) beamMinY = afterglowMinY;
-      if (primaryBeamY > beamMaxY) beamMaxY = primaryBeamY;
 
       // Exclusion zone
       const er = excludeRect.current;

@@ -3,6 +3,7 @@ import { Trophy, ArrowLeft, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 import { m, useReducedMotion } from "motion/react";
 import { PageLayout } from "./PageLayout";
+import { Footer } from "./Footer";
 import { CRTBackground } from "./CRTBackground";
 import { CheatsheetModal } from "./CheatsheetModal";
 import { completionButtonClass } from "../utils/completionButtonVariants";
@@ -167,6 +168,7 @@ export const CompletionScreen = ({
           </Link>
         </m.div>
       </div>
+      <Footer />
     </PageLayout>
   );
 };
